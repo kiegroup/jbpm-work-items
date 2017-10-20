@@ -9,37 +9,9 @@
     <version>1.0.0.Final</version>
   </parent>
 
-  <artifactId>rss-workitem</artifactId>
-  <name>jBPM :: Contrib :: WorkItems :: RSS</name>
-
-  <dependencies>
-    <dependency>
-      <groupId>rome</groupId>
-      <artifactId>rome</artifactId>
-      <optional>true</optional>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-workitems-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-workitems-core</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+  <artifactId>repository</artifactId>
+  <name>jBPM :: Contrib :: WorkItems :: Repository</name>
+  <packaging>pom</packaging>
 
   <build>
     <plugins>
@@ -50,12 +22,6 @@
         <configuration>
           <source>${maven.compiler.source}</source>
           <target>${maven.compiler.target}</target>
-          <annotationProcessors>
-            <annotationProcessor>org.jbpm.process.workitem.core.util.WidProcessor</annotationProcessor>
-          </annotationProcessors>
-          <compilerArgs>
-            <arg>-AwidName=${artifactId}.wid</arg>
-          </compilerArgs>
         </configuration>
       </plugin>
       <plugin>
@@ -72,6 +38,7 @@
         </configuration>
         <executions>
           <execution>
+            <id>make-assembly</id>
             <phase>package</phase>
             <goals>
               <goal>single</goal>
