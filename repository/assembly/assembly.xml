@@ -38,6 +38,13 @@
       </includes>
     </fileSet>
     <fileSet>
+      <directory>${project.parent.basedir}/google-mail-workitem/target/google-mail-workitem-${project.version}/repository</directory>
+      <outputDirectory>google-mail--workitem</outputDirectory>
+      <includes>
+        <include>*.*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
       <directory>${project.parent.basedir}/jabber-workitem/target/jabber-workitem-${project.version}/repository</directory>
       <outputDirectory>jabber-workitem</outputDirectory>
       <includes>

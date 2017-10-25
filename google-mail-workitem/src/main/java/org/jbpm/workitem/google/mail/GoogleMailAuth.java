@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.process.workitem.google.calendar;
+package org.jbpm.workitem.google.mail;
 
 import java.io.StringReader;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -27,39 +28,50 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.calendar.CalendarScopes;
+import com.google.api.services.gmail.Gmail;
+import com.google.api.services.gmail.GmailScopes;
 
-public class GoogleCalendarAuth {
+public class GoogleMailAuth {
 
-    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+    private static final JsonFactory JSON_FACTORY =
+            JacksonFactory.getDefaultInstance();
     private static HttpTransport HTTP_TRANSPORT;
+    private static final List<String> SCOPES =
+            Arrays.asList(GmailScopes.GMAIL_LABELS,
+                          GmailScopes.GMAIL_COMPOSE,
+                          GmailScopes.GMAIL_SEND);
 
-    public com.google.api.services.calendar.Calendar getAuthorizedCalendar(String appName,
-                                                                           String clientSecretJSON) {
+    public Gmail getGmailService(String appName,
+                                 String clientSecretJSON) {
         try {
             HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
             Credential credential = authorize(clientSecretJSON);
-            return new com.google.api.services.calendar.Calendar.Builder(
-                    HTTP_TRANSPORT,
-                    JSON_FACTORY,
-                    credential).setApplicationName(appName).build();
+            return new Gmail.Builder(HTTP_TRANSPORT,
+                                     JSON_FACTORY,
+                                     credential)
+                    .setApplicationName(appName)
+                    .build();
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
         }
     }
 
     public Credential authorize(String clientSecretJSON) throws Exception {
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY,
-                                                                     new StringReader(clientSecretJSON));
+        GoogleClientSecrets clientSecrets =
+                GoogleClientSecrets.load(JSON_FACTORY,
+                                         new StringReader(clientSecretJSON));
 
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-                HTTP_TRANSPORT,
-                JSON_FACTORY,
-                clientSecrets,
-                Collections.singleton(CalendarScopes.CALENDAR))
-                .build();
-
-        return new AuthorizationCodeInstalledApp(flow,
-                                                 new LocalServerReceiver()).authorize("user");
+        GoogleAuthorizationCodeFlow flow =
+                new GoogleAuthorizationCodeFlow.Builder(
+                        HTTP_TRANSPORT,
+                        JSON_FACTORY,
+                        clientSecrets,
+                        SCOPES)
+                        .setAccessType("offline")
+                        .build();
+        Credential credential = new AuthorizationCodeInstalledApp(
+                flow,
+                new LocalServerReceiver()).authorize("user");
+        return credential;
     }
 }
