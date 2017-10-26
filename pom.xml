@@ -19,6 +19,7 @@
     <module>transform-workitem</module>
     <module>google-calendar-workitem</module>
     <module>google-mail-workitem</module>
+    <module>google-sheets-workitem</module>
     <module>repository</module>
   </modules>
 
@@ -44,6 +45,7 @@
     <version.google.api.services.calendar>v3-rev87-1.19.0</version.google.api.services.calendar>
     <version.google.api.services.gmail>v1-rev72-1.23.0</version.google.api.services.gmail>
     <version.google.http.client>1.23.0</version.google.http.client>
+    <version.google.sheets>v4-rev488-1.23.0</version.google.sheets>
     <version.powermock>1.6.3</version.powermock>
 
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -196,6 +198,11 @@
         <groupId>com.google.oauth-client</groupId>
         <artifactId>google-oauth-client-jetty</artifactId>
         <version>${version.google.http.client}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.apis</groupId>
+        <artifactId>google-api-services-sheets</artifactId>
+        <version>${version.google.sheets}</version>
       </dependency>
       <dependency>
         <groupId>com.google.api-client</groupId>

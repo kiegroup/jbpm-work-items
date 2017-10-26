@@ -45,6 +45,13 @@
       </includes>
     </fileSet>
     <fileSet>
+      <directory>${project.parent.basedir}/google-sheets-workitem/target/google-sheets-workitem-${project.version}/repository</directory>
+      <outputDirectory>google-sheets--workitem</outputDirectory>
+      <includes>
+        <include>*.*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
       <directory>${project.parent.basedir}/jabber-workitem/target/jabber-workitem-${project.version}/repository</directory>
       <outputDirectory>jabber-workitem</outputDirectory>
       <includes>
