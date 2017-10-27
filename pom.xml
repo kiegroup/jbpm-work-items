@@ -24,8 +24,7 @@
   </modules>
 
   <properties>
-    <project.version>7.5.0-SNAPSHOT</project.version>
-    <version.org.kie>7.5.0-SNAPSHOT</version.org.kie>
+    <version.org.kie>${version}</version.org.kie>
     <version.org.junit>4.12</version.org.junit>
     <version.commons.compress>1.12</version.commons.compress>
     <version.commons.io>2.5</version.commons.io>
