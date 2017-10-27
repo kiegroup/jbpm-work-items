@@ -46,8 +46,6 @@ import org.slf4j.LoggerFactory;
         displayName = "GoogleAddEvent",
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.calendar.AddEventWorkitemHandler()",
         parameters = {
-                @WidParameter(name = "AppName"),
-                @WidParameter(name = "ClientSecret"),
                 @WidParameter(name = "CalendarSummary"),
                 @WidParameter(name = "EventSummary"),
                 @WidParameter(name = "EventStart"),
@@ -60,22 +58,28 @@ import org.slf4j.LoggerFactory;
         },
         mavenDepends = {
                 @WidMavenDepends(group = "com.google.apis", artifact = "google-api-services-calendar", version = "v3-rev87-1.19.0"),
-                @WidMavenDepends(group = "com.google.oauth-client", artifact = "google-oauth-client-jetty", version = "1.19.0"),
-                @WidMavenDepends(group = "com.google.http-client", artifact = "google-http-client-jackson2", version = "1.19.0")
+                @WidMavenDepends(group = "com.google.oauth-client", artifact = "google-oauth-client-jetty", version = "1.23.0"),
+                @WidMavenDepends(group = "com.google.http-client", artifact = "google-http-client-jackson2", version = "1.23.0")
         })
 public class AddEventWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(AddEventWorkitemHandler.class);
     private static final String RESULTS_ALL_EVENTS = "Event";
 
+    private String appName;
+    private String clientSecret;
     private GoogleCalendarAuth auth = new GoogleCalendarAuth();
+
+    public AddEventWorkitemHandler(String appName,
+                                   String clentSecret) {
+        this.appName = appName;
+        this.clientSecret = clentSecret;
+    }
 
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager workItemManager) {
 
         Map<String, Object> results = new HashMap<String, Object>();
-        String paramAppName = (String) workItem.getParameter("AppName");
-        String paramClientSecretJSON = (String) workItem.getParameter("ClientSecret");
         String paramCalendarSummary = (String) workItem.getParameter("CalendarSummary");
         String paramEventSummary = (String) workItem.getParameter("EventSummary");
         String paramEventStart = (String) workItem.getParameter("EventStart");
@@ -85,8 +89,8 @@ public class AddEventWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 
         try {
 
-            com.google.api.services.calendar.Calendar client = auth.getAuthorizedCalendar(paramAppName,
-                                                                                          paramClientSecretJSON);
+            com.google.api.services.calendar.Calendar client = auth.getAuthorizedCalendar(appName,
+                                                                                          clientSecret);
 
             results.put(RESULTS_ALL_EVENTS,
                         addEvent(client,

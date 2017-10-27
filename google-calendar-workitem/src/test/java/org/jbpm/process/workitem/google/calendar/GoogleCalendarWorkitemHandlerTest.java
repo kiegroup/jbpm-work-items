@@ -73,12 +73,11 @@ public class GoogleCalendarWorkitemHandlerTest extends AbstractBaseTest {
             when(auth.getAuthorizedCalendar(anyString(),
                                             anyString())).thenReturn(client);
             when(client.events()).thenReturn(clientEvents);
-            when(clientEvents.insert(anyString(), anyObject())).thenReturn(calendarEventsInsert);
+            when(clientEvents.insert(anyString(),
+                                     anyObject())).thenReturn(calendarEventsInsert);
             when(calendarEventsInsert.execute()).thenReturn(new com.google.api.services.calendar.model.Event());
             when(clientEvents.list(anyString())).thenReturn(calendarEventsList);
             when(calendarEventsList.execute()).thenReturn(new com.google.api.services.calendar.model.Events());
-
-
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -89,17 +88,12 @@ public class GoogleCalendarWorkitemHandlerTest extends AbstractBaseTest {
 
         TestWorkItemManager manager = new TestWorkItemManager();
         WorkItemImpl workItem = new WorkItemImpl();
-        workItem.setParameter("AppName",
-                              "myapp");
         workItem.setParameter("CalendarSummary",
                               "mycalendarsummary");
-        workItem.setParameter("ClientSecret",
-                              "{}");
 
-        AddCalendarWorkitemHandler handler = new AddCalendarWorkitemHandler();
+        AddCalendarWorkitemHandler handler = new AddCalendarWorkitemHandler("myAppName",
+                                                                            "{}");
         handler.setAuth(auth);
-        handler.executeWorkItem(workItem,
-                                manager);
 
         handler.executeWorkItem(workItem,
                                 manager);
@@ -115,12 +109,8 @@ public class GoogleCalendarWorkitemHandlerTest extends AbstractBaseTest {
     public void testAddEventHandler() throws Exception {
         TestWorkItemManager manager = new TestWorkItemManager();
         WorkItemImpl workItem = new WorkItemImpl();
-        workItem.setParameter("AppName",
-                              "myapp");
         workItem.setParameter("CalendarSummary",
                               "mycalendarsummary");
-        workItem.setParameter("ClientSecret",
-                              "{}");
         workItem.setParameter("EventSummary",
                               "myeventsummary");
         workItem.setParameter("EventStart",
@@ -132,10 +122,9 @@ public class GoogleCalendarWorkitemHandlerTest extends AbstractBaseTest {
         workItem.setParameter("EventCreator",
                               "myeventcreator");
 
-        AddEventWorkitemHandler handler = new AddEventWorkitemHandler();
+        AddEventWorkitemHandler handler = new AddEventWorkitemHandler("myAppName",
+                                                                      "{}");
         handler.setAuth(auth);
-        handler.executeWorkItem(workItem,
-                                manager);
 
         handler.executeWorkItem(workItem,
                                 manager);
@@ -151,15 +140,10 @@ public class GoogleCalendarWorkitemHandlerTest extends AbstractBaseTest {
     public void testGetCalendarsHandler() throws Exception {
         TestWorkItemManager manager = new TestWorkItemManager();
         WorkItemImpl workItem = new WorkItemImpl();
-        workItem.setParameter("AppName",
-                              "myapp");
-        workItem.setParameter("ClientSecret",
-                              "{}");
 
-        GetCalendarsWorkitemHandler handler = new GetCalendarsWorkitemHandler();
+        GetCalendarsWorkitemHandler handler = new GetCalendarsWorkitemHandler("myAppName",
+                                                                              "{}");
         handler.setAuth(auth);
-        handler.executeWorkItem(workItem,
-                                manager);
 
         handler.executeWorkItem(workItem,
                                 manager);
@@ -169,24 +153,18 @@ public class GoogleCalendarWorkitemHandlerTest extends AbstractBaseTest {
         assertTrue(manager.getResults().containsKey(workItem.getId()));
 
         assertTrue((manager.getResults().get(workItem.getId())).get("AllCalendars") instanceof com.google.api.services.calendar.model.CalendarList);
-
     }
 
     @Test
     public void testGetEventsHandler() throws Exception {
         TestWorkItemManager manager = new TestWorkItemManager();
         WorkItemImpl workItem = new WorkItemImpl();
-        workItem.setParameter("AppName",
-                              "myapp");
-        workItem.setParameter("ClientSecret",
-                              "{}");
         workItem.setParameter("CalendarSummary",
                               "mycalendarsummary");
 
-        GetEventsWorkitemHandler handler = new GetEventsWorkitemHandler();
+        GetEventsWorkitemHandler handler = new GetEventsWorkitemHandler("myAppName",
+                                                                        "{}");
         handler.setAuth(auth);
-        handler.executeWorkItem(workItem,
-                                manager);
 
         handler.executeWorkItem(workItem,
                                 manager);
@@ -196,8 +174,5 @@ public class GoogleCalendarWorkitemHandlerTest extends AbstractBaseTest {
         assertTrue(manager.getResults().containsKey(workItem.getId()));
 
         assertTrue((manager.getResults().get(workItem.getId())).get("AllEvents") instanceof com.google.api.services.calendar.model.Events);
-
     }
-
-
 }

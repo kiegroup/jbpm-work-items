@@ -18,6 +18,7 @@
     <module>rss-workitem</module>
     <module>transform-workitem</module>
     <module>google-calendar-workitem</module>
+    <module>google-mail-workitem</module>
     <module>repository</module>
   </modules>
 
@@ -40,8 +41,9 @@
     <version.h2.database>1.3.173</version.h2.database>
     <version.jackson.databind>2.6.2</version.jackson.databind>
     <version.rome>1.0</version.rome>
-    <version.google.api.servies.calendar>v3-rev87-1.19.0</version.google.api.servies.calendar>
-    <version.google.http.client>1.19.0</version.google.http.client>
+    <version.google.api.services.calendar>v3-rev87-1.19.0</version.google.api.services.calendar>
+    <version.google.api.services.gmail>v1-rev72-1.23.0</version.google.api.services.gmail>
+    <version.google.http.client>1.23.0</version.google.http.client>
     <version.powermock>1.6.3</version.powermock>
 
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -93,6 +95,11 @@
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-workitems-core</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-document</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
@@ -173,7 +180,12 @@
       <dependency>
         <groupId>com.google.apis</groupId>
         <artifactId>google-api-services-calendar</artifactId>
-        <version>${version.google.api.servies.calendar}</version>
+        <version>${version.google.api.services.calendar}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.apis</groupId>
+        <artifactId>google-api-services-gmail</artifactId>
+        <version>${version.google.api.services.gmail}</version>
       </dependency>
       <dependency>
         <groupId>com.google.http-client</groupId>
@@ -183,6 +195,11 @@
       <dependency>
         <groupId>com.google.oauth-client</groupId>
         <artifactId>google-oauth-client-jetty</artifactId>
+        <version>${version.google.http.client}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.api-client</groupId>
+        <artifactId>google-api-client</artifactId>
         <version>${version.google.http.client}</version>
       </dependency>
 
