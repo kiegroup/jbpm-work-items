@@ -93,6 +93,13 @@
         <include>*.*</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>${project.parent.basedir}/ibm-watson-workitem/target/ibm-watson-workitem-${project.version}/repository</directory>
+      <outputDirectory>ibm-watson-workitem</outputDirectory>
+      <includes>
+        <include>*.*</include>
+      </includes>
+    </fileSet>
   </fileSets>
 
 </assembly>
