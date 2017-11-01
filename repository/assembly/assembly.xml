@@ -100,6 +100,13 @@
         <include>*.*</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>${project.parent.basedir}/dropbox-workitem/target/dropbox-workitem-${project.version}/repository</directory>
+      <outputDirectory>dropbox-workitem</outputDirectory>
+      <includes>
+        <include>*.*</include>
+      </includes>
+    </fileSet>
   </fileSets>
 
 </assembly>
