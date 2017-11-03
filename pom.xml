@@ -20,6 +20,7 @@
     <module>google-calendar-workitem</module>
     <module>google-mail-workitem</module>
     <module>google-sheets-workitem</module>
+    <module>ibm-watson-workitem</module>
     <module>repository</module>
   </modules>
 
@@ -46,6 +47,7 @@
     <version.google.http.client>1.23.0</version.google.http.client>
     <version.google.sheets>v4-rev488-1.23.0</version.google.sheets>
     <version.powermock>1.6.3</version.powermock>
+    <version.ibm.developer.cloud>4.0.0</version.ibm.developer.cloud>
 
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -207,6 +209,11 @@
         <groupId>com.google.api-client</groupId>
         <artifactId>google-api-client</artifactId>
         <version>${version.google.http.client}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.ibm.watson.developer_cloud</groupId>
+        <artifactId>java-sdk</artifactId>
+        <version>${version.ibm.developer.cloud}</version>
       </dependency>
 
       <!-- test depends -->

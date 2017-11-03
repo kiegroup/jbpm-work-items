@@ -85,8 +85,6 @@ public class GoogleSheetsWorkitemHandlerTest extends AbstractBaseTest {
         ReadSheetValuesWorkitemHandler handler = new ReadSheetValuesWorkitemHandler("testAppName",
                                                                                     "{}");
         handler.setAuth(auth);
-        handler.executeWorkItem(workItem,
-                                manager);
 
         handler.executeWorkItem(workItem,
                                 manager);
