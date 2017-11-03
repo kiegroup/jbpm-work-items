@@ -21,6 +21,7 @@
     <module>google-mail-workitem</module>
     <module>google-sheets-workitem</module>
     <module>ibm-watson-workitem</module>
+    <module>dropbox-workitem</module>
     <module>repository</module>
   </modules>
 
@@ -48,6 +49,7 @@
     <version.google.sheets>v4-rev488-1.23.0</version.google.sheets>
     <version.powermock>1.6.3</version.powermock>
     <version.ibm.developer.cloud>4.0.0</version.ibm.developer.cloud>
+    <version.dropbox.core>3.0.5</version.dropbox.core>
 
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -214,6 +216,11 @@
         <groupId>com.ibm.watson.developer_cloud</groupId>
         <artifactId>java-sdk</artifactId>
         <version>${version.ibm.developer.cloud}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.dropbox.core</groupId>
+        <artifactId>dropbox-core-sdk</artifactId>
+        <version>${version.dropbox.core}</version>
       </dependency>
 
       <!-- test depends -->
