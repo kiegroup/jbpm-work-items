@@ -107,6 +107,13 @@
         <include>*.*</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>${project.parent.basedir}/ifttt-workitem/target/ifttt-workitem-${project.version}/repository</directory>
+      <outputDirectory>ifttt-workitem</outputDirectory>
+      <includes>
+        <include>*.*</include>
+      </includes>
+    </fileSet>
   </fileSets>
 
 </assembly>
