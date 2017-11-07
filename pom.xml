@@ -22,6 +22,7 @@
     <module>google-sheets-workitem</module>
     <module>ibm-watson-workitem</module>
     <module>dropbox-workitem</module>
+    <module>ifttt-workitem</module>
     <module>repository</module>
   </modules>
 
@@ -50,6 +51,9 @@
     <version.powermock>1.6.3</version.powermock>
     <version.ibm.developer.cloud>4.0.0</version.ibm.developer.cloud>
     <version.dropbox.core>3.0.5</version.dropbox.core>
+    <version.commons.lang>3.4</version.commons.lang>
+    <version.org.jboss.resteasy>3.1.4.Final</version.org.jboss.resteasy>
+    <version.jboss.jaxrs.api>1.0.0.Final</version.jboss.jaxrs.api>
 
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -121,6 +125,11 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-exec</artifactId>
         <version>${version.commons.exec}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${version.commons.lang}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -221,6 +230,16 @@
         <groupId>com.dropbox.core</groupId>
         <artifactId>dropbox-core-sdk</artifactId>
         <version>${version.dropbox.core}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.spec.javax.ws.rs</groupId>
+        <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
+        <version>${version.jboss.jaxrs.api}</version>
       </dependency>
 
       <!-- test depends -->

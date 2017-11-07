@@ -17,7 +17,6 @@ package org.jbpm.process.workitem.ibm.watson;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.ibm.watson.developer_cloud.http.ServiceCall;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
