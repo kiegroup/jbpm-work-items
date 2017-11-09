@@ -20,6 +20,7 @@
     <module>google-calendar-workitem</module>
     <module>google-mail-workitem</module>
     <module>google-sheets-workitem</module>
+    <module>google-tasks-workitem</module>
     <module>ibm-watson-workitem</module>
     <module>dropbox-workitem</module>
     <module>ifttt-workitem</module>
@@ -48,6 +49,7 @@
     <version.google.api.services.gmail>v1-rev72-1.23.0</version.google.api.services.gmail>
     <version.google.http.client>1.23.0</version.google.http.client>
     <version.google.sheets>v4-rev488-1.23.0</version.google.sheets>
+    <version.google.tasks>v1-rev48-1.23.0</version.google.tasks>
     <version.powermock>1.6.3</version.powermock>
     <version.ibm.developer.cloud>4.0.0</version.ibm.developer.cloud>
     <version.dropbox.core>3.0.5</version.dropbox.core>
@@ -215,6 +217,11 @@
         <groupId>com.google.apis</groupId>
         <artifactId>google-api-services-sheets</artifactId>
         <version>${version.google.sheets}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.apis</groupId>
+        <artifactId>google-api-services-tasks</artifactId>
+        <version>${version.google.tasks}</version>
       </dependency>
       <dependency>
         <groupId>com.google.api-client</groupId>

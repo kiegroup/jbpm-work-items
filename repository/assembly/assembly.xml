@@ -52,6 +52,13 @@
       </includes>
     </fileSet>
     <fileSet>
+      <directory>${project.parent.basedir}/google-tasks-workitem/target/google-tasks-workitem-${project.version}/repository</directory>
+      <outputDirectory>google-tasks--workitem</outputDirectory>
+      <includes>
+        <include>*.*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
       <directory>${project.parent.basedir}/jabber-workitem/target/jabber-workitem-${project.version}/repository</directory>
       <outputDirectory>jabber-workitem</outputDirectory>
       <includes>
