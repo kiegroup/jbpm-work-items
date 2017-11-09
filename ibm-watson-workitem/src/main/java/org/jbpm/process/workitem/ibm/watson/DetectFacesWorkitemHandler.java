@@ -55,7 +55,7 @@ public class DetectFacesWorkitemHandler extends AbstractLogOrThrowWorkItemHandle
     private static final Logger logger = LoggerFactory.getLogger(DetectFacesWorkitemHandler.class);
     private static final String RESULT_VALUE = "Detection";
 
-    private VisualRecognition service;
+    private WatsonAuth auth = new WatsonAuth();
     private String apiKey;
 
     public DetectFacesWorkitemHandler(String apiKey) {
@@ -71,10 +71,7 @@ public class DetectFacesWorkitemHandler extends AbstractLogOrThrowWorkItemHandle
         if (detectionImage != null) {
 
             try {
-                if (service == null) {
-                    VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_20);
-                    service.setApiKey(apiKey);
-                }
+                VisualRecognition service = auth.getService(apiKey);
 
                 ByteArrayInputStream imageStream = new ByteArrayInputStream(detectionImage.getContent());
 
@@ -113,7 +110,7 @@ public class DetectFacesWorkitemHandler extends AbstractLogOrThrowWorkItemHandle
     }
 
     // for testing
-    public void setService(VisualRecognition service) {
-        this.service = service;
+    public void setAuth(WatsonAuth auth) {
+        this.auth = auth;
     }
 }
