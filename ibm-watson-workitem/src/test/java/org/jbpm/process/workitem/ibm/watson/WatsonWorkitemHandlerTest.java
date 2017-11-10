@@ -50,6 +50,9 @@ import static org.mockito.Mockito.*;
 public class WatsonWorkitemHandlerTest {
 
     @Mock
+    WatsonAuth auth;
+
+    @Mock
     VisualRecognition associationService;
 
     @Mock
@@ -81,6 +84,7 @@ public class WatsonWorkitemHandlerTest {
 
     @Before
     public void setUp() {
+
         // image classification
         ClassResult classResultObj = new ClassResult();
         classResultObj.setClassName("testClassName");
@@ -134,6 +138,8 @@ public class WatsonWorkitemHandlerTest {
 
     @Test
     public void testClassifyImage() throws Exception {
+        when(auth.getService(anyString())).thenReturn(associationService);
+
         TestWorkItemManager manager = new TestWorkItemManager();
         DocumentImpl imageToClassify = new DocumentImpl();
         imageToClassify.setName("testImageToClassify.png");
@@ -144,7 +150,7 @@ public class WatsonWorkitemHandlerTest {
                               imageToClassify);
 
         ClassifyImageWorkitemHandler handler = new ClassifyImageWorkitemHandler("{testApiKey}");
-        handler.setService(associationService);
+        handler.setAuth(auth);
         handler.executeWorkItem(workItem,
                                 manager);
 
@@ -170,6 +176,8 @@ public class WatsonWorkitemHandlerTest {
 
     @Test
     public void testDetectFaces() throws Exception {
+        when(auth.getService(anyString())).thenReturn(recognitionService);
+
         TestWorkItemManager manager = new TestWorkItemManager();
         DocumentImpl imagetoDetect = new DocumentImpl();
         imagetoDetect.setName("testImageToDetect.png");
@@ -179,7 +187,7 @@ public class WatsonWorkitemHandlerTest {
                               imagetoDetect);
 
         DetectFacesWorkitemHandler handler = new DetectFacesWorkitemHandler("{testApiKey}");
-        handler.setService(recognitionService);
+        handler.setAuth(auth);
         handler.executeWorkItem(workItem,
                                 manager);
 
