@@ -5,6 +5,7 @@
   <id>bin</id>
   <formats>
     <format>dir</format>
+    <format>zip</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
 
@@ -15,6 +16,11 @@
       <includes>
         <include>*.*</include>
       </includes>
+      <excludes>
+        <exclude>*-test-sources.jar</exclude>
+        <exclude>*-sources.jar</exclude>
+        <exclude>*-tests.jar</exclude>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.parent.basedir}/exec-workitem/target/exec-workitem-${project.version}/repository</directory>
@@ -22,6 +28,11 @@
       <includes>
         <include>*.*</include>
       </includes>
+      <excludes>
+        <exclude>*-test-sources.jar</exclude>
+        <exclude>*-sources.jar</exclude>
+        <exclude>*-tests.jar</exclude>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.parent.basedir}/ftp-workitem/target/ftp-workitem-${project.version}/repository</directory>
@@ -29,34 +40,59 @@
       <includes>
         <include>*.*</include>
       </includes>
+      <excludes>
+        <exclude>*-test-sources.jar</exclude>
+        <exclude>*-sources.jar</exclude>
+        <exclude>*-tests.jar</exclude>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.parent.basedir}/google-calendar-workitem/target/google-calendar-workitem-${project.version}/repository</directory>
-      <outputDirectory>google-calendar--workitem</outputDirectory>
+      <outputDirectory>google-calendar-workitem</outputDirectory>
       <includes>
         <include>*.*</include>
       </includes>
+      <excludes>
+        <exclude>*-test-sources.jar</exclude>
+        <exclude>*-sources.jar</exclude>
+        <exclude>*-tests.jar</exclude>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.parent.basedir}/google-mail-workitem/target/google-mail-workitem-${project.version}/repository</directory>
-      <outputDirectory>google-mail--workitem</outputDirectory>
+      <outputDirectory>google-mail-workitem</outputDirectory>
       <includes>
         <include>*.*</include>
       </includes>
+      <excludes>
+        <exclude>*-test-sources.jar</exclude>
+        <exclude>*-sources.jar</exclude>
+        <exclude>*-tests.jar</exclude>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.parent.basedir}/google-sheets-workitem/target/google-sheets-workitem-${project.version}/repository</directory>
-      <outputDirectory>google-sheets--workitem</outputDirectory>
+      <outputDirectory>google-sheets-workitem</outputDirectory>
       <includes>
         <include>*.*</include>
       </includes>
+      <excludes>
+        <exclude>*-test-sources.jar</exclude>
+        <exclude>*-sources.jar</exclude>
+        <exclude>*-tests.jar</exclude>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.parent.basedir}/google-tasks-workitem/target/google-tasks-workitem-${project.version}/repository</directory>
-      <outputDirectory>google-tasks--workitem</outputDirectory>
+      <outputDirectory>google-tasks-workitem</outputDirectory>
       <includes>
         <include>*.*</include>
       </includes>
+      <excludes>
+        <exclude>*-test-sources.jar</exclude>
+        <exclude>*-sources.jar</exclude>
+        <exclude>*-tests.jar</exclude>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.parent.basedir}/jabber-workitem/target/jabber-workitem-${project.version}/repository</directory>
@@ -64,6 +100,11 @@
       <includes>
         <include>*.*</include>
       </includes>
+      <excludes>
+        <exclude>*-test-sources.jar</exclude>
+        <exclude>*-sources.jar</exclude>
+        <exclude>*-tests.jar</exclude>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.parent.basedir}/java-workitem/target/java-workitem-${project.version}/repository</directory>
@@ -71,6 +112,11 @@
       <includes>
         <include>*.*</include>
       </includes>
+      <excludes>
+        <exclude>*-test-sources.jar</exclude>
+        <exclude>*-sources.jar</exclude>
+        <exclude>*-tests.jar</exclude>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.parent.basedir}/jpa-workitem/target/jpa-workitem-${project.version}/repository</directory>
@@ -78,6 +124,11 @@
       <includes>
         <include>*.*</include>
       </includes>
+      <excludes>
+        <exclude>*-test-sources.jar</exclude>
+        <exclude>*-sources.jar</exclude>
+        <exclude>*-tests.jar</exclude>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.parent.basedir}/parser-workitem/target/parser-workitem-${project.version}/repository</directory>
@@ -85,6 +136,11 @@
       <includes>
         <include>*.*</include>
       </includes>
+      <excludes>
+        <exclude>*-test-sources.jar</exclude>
+        <exclude>*-sources.jar</exclude>
+        <exclude>*-tests.jar</exclude>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.parent.basedir}/rss-workitem/target/rss-workitem-${project.version}/repository</directory>
@@ -92,6 +148,11 @@
       <includes>
         <include>*.*</include>
       </includes>
+      <excludes>
+        <exclude>*-test-sources.jar</exclude>
+        <exclude>*-sources.jar</exclude>
+        <exclude>*-tests.jar</exclude>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.parent.basedir}/transform-workitem/target/transform-workitem-${project.version}/repository</directory>
@@ -99,6 +160,11 @@
       <includes>
         <include>*.*</include>
       </includes>
+      <excludes>
+        <exclude>*-test-sources.jar</exclude>
+        <exclude>*-sources.jar</exclude>
+        <exclude>*-tests.jar</exclude>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.parent.basedir}/ibm-watson-workitem/target/ibm-watson-workitem-${project.version}/repository</directory>
@@ -106,6 +172,11 @@
       <includes>
         <include>*.*</include>
       </includes>
+      <excludes>
+        <exclude>*-test-sources.jar</exclude>
+        <exclude>*-sources.jar</exclude>
+        <exclude>*-tests.jar</exclude>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.parent.basedir}/dropbox-workitem/target/dropbox-workitem-${project.version}/repository</directory>
@@ -113,12 +184,29 @@
       <includes>
         <include>*.*</include>
       </includes>
+      <excludes>
+        <exclude>*-test-sources.jar</exclude>
+        <exclude>*-sources.jar</exclude>
+        <exclude>*-tests.jar</exclude>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.parent.basedir}/ifttt-workitem/target/ifttt-workitem-${project.version}/repository</directory>
       <outputDirectory>ifttt-workitem</outputDirectory>
       <includes>
         <include>*.*</include>
+      </includes>
+      <excludes>
+        <exclude>*-test-sources.jar</exclude>
+        <exclude>*-sources.jar</exclude>
+        <exclude>*-tests.jar</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
+      <directory>target/classes</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>*.html</include>
       </includes>
     </fileSet>
   </fileSets>
