@@ -13,4 +13,33 @@
   <name>jBPM :: Contrib :: WorkItems :: Repository</name>
   <packaging>pom</packaging>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <configuration>
+          <encoding>UTF-8</encoding>
+          <resources>
+            <resource>
+              <directory>src/main/resources</directory>
+              <includes>
+                <include>index.html</include>
+              </includes>
+              <filtering>true</filtering>
+            </resource>
+          </resources>
+          <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
