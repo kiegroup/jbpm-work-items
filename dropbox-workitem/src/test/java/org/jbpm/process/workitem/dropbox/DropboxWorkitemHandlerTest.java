@@ -40,6 +40,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
+import static org.junit.Assert.*;
+
 @RunWith(MockitoJUnitRunner.class)
 public class DropboxWorkitemHandlerTest extends AbstractBaseTest {
 
