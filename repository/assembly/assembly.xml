@@ -95,6 +95,18 @@
       </excludes>
     </fileSet>
     <fileSet>
+      <directory>${project.parent.basedir}/google-drive-workitem/target/google-drive-workitem-${project.version}/repository</directory>
+      <outputDirectory>google-drive-workitem</outputDirectory>
+      <includes>
+        <include>*.*</include>
+      </includes>
+      <excludes>
+        <exclude>*-test-sources.jar</exclude>
+        <exclude>*-sources.jar</exclude>
+        <exclude>*-tests.jar</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
       <directory>${project.parent.basedir}/jabber-workitem/target/jabber-workitem-${project.version}/repository</directory>
       <outputDirectory>jabber-workitem</outputDirectory>
       <includes>
