@@ -219,6 +219,7 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>*.html</include>
+        <include>*.conf</include>
       </includes>
     </fileSet>
   </fileSets>
