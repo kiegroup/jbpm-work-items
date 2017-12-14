@@ -11,6 +11,14 @@
 
   <fileSets>
     <fileSet>
+      <directory>target/classes</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>*.html</include>
+        <include>*.conf</include>
+      </includes>
+    </fileSet>
+    <fileSet>
       <directory>${project.parent.basedir}/archive-workitem/target/archive-workitem-${project.version}/repository</directory>
       <outputDirectory>archive-workitem</outputDirectory>
       <includes>
@@ -213,14 +221,6 @@
         <exclude>*-sources.jar</exclude>
         <exclude>*-tests.jar</exclude>
       </excludes>
-    </fileSet>
-    <fileSet>
-      <directory>target/classes</directory>
-      <outputDirectory></outputDirectory>
-      <includes>
-        <include>*.html</include>
-        <include>*.conf</include>
-      </includes>
     </fileSet>
   </fileSets>
 
