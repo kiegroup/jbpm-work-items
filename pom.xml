@@ -66,6 +66,15 @@
     <version.google.drive>v2-rev285-1.23.0</version.google.drive>
     <version.ibm.developer.cloud>4.0.0</version.ibm.developer.cloud>
     <version.dropbox.core>3.0.5</version.dropbox.core>
+    <version.jetty>8.1.17.v20150415</version.jetty>
+
+    <!-- Failsafe plugin-related properties -->
+    <failsafe.arg.line>
+      -Dfile.encoding=${project.build.sourceEncoding}
+      -Xms256m
+      -Xmx1024m
+    </failsafe.arg.line>
+    <it.test/>
   </properties>
 
   <dependencyManagement>
@@ -218,6 +227,37 @@
         <type>test-jar</type>
         <version>${version.org.kie}</version>
       </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-server</artifactId>
+        <version>${version.org.eclipse.jetty}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.eclipse.jetty.orbit</groupId>
+            <artifactId>javax.servlet</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-servlet</artifactId>
+        <version>${version.org.eclipse.jetty}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-servlets</artifactId>
+        <version>${version.org.eclipse.jetty}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-webapp</artifactId>
+        <version>${version.org.eclipse.jetty}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-client</artifactId>
+        <version>${version.org.eclipse.jetty}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -286,6 +326,30 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>integration-test-execution</id>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+          <execution>
+            <phase>none</phase>
+          </execution>
+        </executions>
+        <configuration>
+          <failIfNoTests>false</failIfNoTests>
+          <test>${it.test}</test>
+          <includes>
+            <include>**/*Test.java</include>
+          </includes>
+          <argLine>${failsafe.arg.line}</argLine>
+        </configuration>
       </plugin>
     </plugins>
   </build>
