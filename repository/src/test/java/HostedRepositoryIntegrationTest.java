@@ -16,15 +16,11 @@
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.nio.charset.StandardCharsets;
-
 import java.util.Map;
-import java.util.Properties;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -33,10 +29,8 @@ import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.IO;
-
 import org.jbpm.process.workitem.WorkDefinitionImpl;
 import org.jbpm.process.workitem.WorkItemRepository;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -49,22 +43,14 @@ public class HostedRepositoryIntegrationTest {
 
     private static Server server;
     private static ServerConnector connector;
-    private static Properties configProperties;
 
     private static int PORT = 0;
     private static String DEFAULT_HOST = "localhost";
 
     @BeforeClass
     public static void setUp() throws Exception {
-        // load properties
-        try (InputStream inProps = HostedRepositoryIntegrationTest.class.getResourceAsStream("testconfig.properties")) {
-            configProperties = new Properties();
-            configProperties.load(inProps);
-        }
-
-        // uncomment this and change builddir and version
-        // to debug locally in IDE
-        //setConfigPropertiesForDebugging();
+        // uncomment this to debug locally in IDE
+        //setConfigSystemPropertiesForDebugging();
 
         server = new Server();
         connector = new ServerConnector(server);
@@ -76,7 +62,9 @@ public class HostedRepositoryIntegrationTest {
         ServletHolder defaultServ = new ServletHolder("default",
                                                       DefaultServlet.class);
         defaultServ.setInitParameter("resourceBase",
-                                     configProperties.getProperty("builddir") + "/repository-" + configProperties.getProperty("version") + "/");
+                                     System.getProperty("builddir") + "/" +
+                                             System.getProperty("artifactId") + "-" +
+                                             System.getProperty("version") + "/");
         defaultServ.setInitParameter("dirAllowed",
                                      "true");
         context.addServlet(defaultServ,
@@ -92,7 +80,7 @@ public class HostedRepositoryIntegrationTest {
         try {
             server.stop();
         } catch (Exception e) {
-            e.printStackTrace();
+            fail(e.getMessage());
         }
     }
 
@@ -136,15 +124,14 @@ public class HostedRepositoryIntegrationTest {
         }
     }
 
-    private static void setConfigPropertiesForDebugging() {
-        configProperties = new Properties();
-        configProperties.setProperty("groupId",
-                                     "org.jbpm.contrib");
-        configProperties.setProperty("artifactId",
-                                     "repository");
-        configProperties.setProperty("version",
-                                     "7.6.0-SNAPSHOT");
-        configProperties.setProperty("builddir",
-                                     "/Users/tsurdilovic/devel/jbpm-work-items/repository/target");
+    private static void setConfigSystemPropertiesForDebugging() {
+        System.setProperty("groupId",
+                           "org.jbpm.contrib");
+        System.setProperty("builddir",
+                           "/Users/tsurdilovic/devel/jbpm-work-items/repository/target");
+        System.setProperty("artifactId",
+                           "repository");
+        System.setProperty("version",
+                           "7.6.0-SNAPSHOT");
     }
 }
