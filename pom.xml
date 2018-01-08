@@ -31,6 +31,7 @@
     <module>ibm-watson-workitem</module>
     <module>dropbox-workitem</module>
     <module>ifttt-workitem</module>
+    <module>twitter-workitem</module>
     <module>repository</module>
   </modules>
 
@@ -67,6 +68,7 @@
     <version.ibm.developer.cloud>4.0.0</version.ibm.developer.cloud>
     <version.dropbox.core>3.0.5</version.dropbox.core>
     <version.jetty>8.1.17.v20150415</version.jetty>
+    <version.twitter4j>4.0.6</version.twitter4j>
 
     <!-- Failsafe plugin-related properties -->
     <failsafe.arg.line>
@@ -258,6 +260,11 @@
         <artifactId>jetty-client</artifactId>
         <version>${version.org.eclipse.jetty}</version>
       </dependency>
+      <dependency>
+        <groupId>org.twitter4j</groupId>
+        <artifactId>twitter4j-core</artifactId>
+        <version>${version.twitter4j}</version>
+      </dependency>
 
       <!-- module dependencies -->
       <dependency>
@@ -343,6 +350,11 @@
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
         <artifactId>transform-workitem</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>twitter-workitem</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>
