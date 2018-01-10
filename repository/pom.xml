@@ -173,6 +173,10 @@
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>transform-workitem</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.jbpm.contrib</groupId>
+      <artifactId>twitter-workitem</artifactId>
+    </dependency>
 
     <!-- wid processor depends -->
     <dependency>
