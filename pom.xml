@@ -32,6 +32,7 @@
     <module>dropbox-workitem</module>
     <module>ifttt-workitem</module>
     <module>twitter-workitem</module>
+    <module>github-workitem</module>
     <module>repository</module>
   </modules>
 
@@ -69,6 +70,7 @@
     <version.dropbox.core>3.0.5</version.dropbox.core>
     <version.jetty>8.1.17.v20150415</version.jetty>
     <version.twitter4j>4.0.6</version.twitter4j>
+    <version.egit.github>2.1.5</version.egit.github>
 
     <!-- Failsafe plugin-related properties -->
     <failsafe.arg.line>
@@ -210,6 +212,11 @@
         <groupId>com.dropbox.core</groupId>
         <artifactId>dropbox-core-sdk</artifactId>
         <version>${version.dropbox.core}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.mylyn.github</groupId>
+        <artifactId>org.eclipse.egit.github.core</artifactId>
+        <version>${version.egit.github}</version>
       </dependency>
 
       <!-- test depends -->
@@ -355,6 +362,11 @@
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
         <artifactId>twitter-workitem</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>github-workitem</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>
