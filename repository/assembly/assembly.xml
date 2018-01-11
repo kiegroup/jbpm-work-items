@@ -234,6 +234,18 @@
         <exclude>*-tests.jar</exclude>
       </excludes>
     </fileSet>
+    <fileSet>
+      <directory>${project.parent.basedir}/github-workitem/target/github-workitem-${project.version}/repository</directory>
+      <outputDirectory>github-workitem</outputDirectory>
+      <includes>
+        <include>*.*</include>
+      </includes>
+      <excludes>
+        <exclude>*-test-sources.jar</exclude>
+        <exclude>*-sources.jar</exclude>
+        <exclude>*-tests.jar</exclude>
+      </excludes>
+    </fileSet>
   </fileSets>
 
 </assembly>
