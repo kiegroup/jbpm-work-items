@@ -246,6 +246,18 @@
         <exclude>*-tests.jar</exclude>
       </excludes>
     </fileSet>
+    <fileSet>
+      <directory>${project.parent.basedir}/jira-workitem/target/jira-workitem-${project.version}/repository</directory>
+      <outputDirectory>jira-workitem</outputDirectory>
+      <includes>
+        <include>*.*</include>
+      </includes>
+      <excludes>
+        <exclude>*-test-sources.jar</exclude>
+        <exclude>*-sources.jar</exclude>
+        <exclude>*-tests.jar</exclude>
+      </excludes>
+    </fileSet>
   </fileSets>
 
 </assembly>
