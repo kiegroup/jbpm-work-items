@@ -258,6 +258,18 @@
         <exclude>*-tests.jar</exclude>
       </excludes>
     </fileSet>
+    <fileSet>
+      <directory>${project.parent.basedir}/ethereum-workitem/target/ethereum-workitem-${project.version}/repository</directory>
+      <outputDirectory>ethereum-workitem</outputDirectory>
+      <includes>
+        <include>*.*</include>
+      </includes>
+      <excludes>
+        <exclude>*-test-sources.jar</exclude>
+        <exclude>*-sources.jar</exclude>
+        <exclude>*-tests.jar</exclude>
+      </excludes>
+    </fileSet>
   </fileSets>
 
 </assembly>

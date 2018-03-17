@@ -35,6 +35,7 @@
     <module>twitter-workitem</module>
     <module>github-workitem</module>
     <module>jira-workitem</module>
+    <module>ethereum-workitem</module>
     <module>repository</module>
   </modules>
 
@@ -74,6 +75,10 @@
     <version.twitter4j>4.0.6</version.twitter4j>
     <version.egit.github>2.1.5</version.egit.github>
     <version.atlassian.jira>1.0</version.atlassian.jira>
+    <version.web3j>3.3.1</version.web3j>
+    <version.github.jnr>0.15</version.github.jnr>
+    <version.squareup.okhttp3>3.8.1</version.squareup.okhttp3>
+    <version.rxjava>1.2.4</version.rxjava>
 
     <!-- Failsafe plugin-related properties -->
     <failsafe.arg.line>
@@ -225,6 +230,47 @@
         <groupId>com.atlassian.jira</groupId>
         <artifactId>jira-rest-java-client</artifactId>
         <version>${version.atlassian.jira}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.web3j</groupId>
+        <artifactId>core</artifactId>
+        <version>${version.web3j}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.web3j</groupId>
+        <artifactId>abi</artifactId>
+        <version>${version.web3j}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.web3j</groupId>
+        <artifactId>crypto</artifactId>
+        <version>${version.web3j}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.web3j</groupId>
+        <artifactId>tuples</artifactId>
+        <version>${version.web3j}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.web3j</groupId>
+        <artifactId>utils</artifactId>
+        <version>${version.web3j}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.jnr</groupId>
+        <artifactId>jnr-unixsocket</artifactId>
+        <version>${version.github.jnr}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.squareup.okhttp3</groupId>
+        <artifactId>okhttp</artifactId>
+        <version>${version.squareup.okhttp3}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.reactivex</groupId>
+        <artifactId>rxjava</artifactId>
+        <version>${version.rxjava}</version>
       </dependency>
 
       <!-- test depends -->
@@ -385,6 +431,11 @@
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
         <artifactId>jira-workitem</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>ethereum-workitem</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>

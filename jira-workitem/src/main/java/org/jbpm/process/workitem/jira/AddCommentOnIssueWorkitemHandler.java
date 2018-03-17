@@ -57,7 +57,6 @@ public class AddCommentOnIssueWorkitemHandler extends AbstractLogOrThrowWorkItem
     private JiraAuth auth;
 
     private static final Logger logger = LoggerFactory.getLogger(AddCommentOnIssueWorkitemHandler.class);
-    private static final String RESULTS_VALUE = "SearchResults";
 
     public AddCommentOnIssueWorkitemHandler(String userName,
                                             String password,
