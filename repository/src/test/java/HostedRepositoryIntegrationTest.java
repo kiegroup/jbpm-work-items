@@ -132,6 +132,6 @@ public class HostedRepositoryIntegrationTest {
         System.setProperty("artifactId",
                            "repository");
         System.setProperty("version",
-                           "7.7.0-SNAPSHOT");
+                           "7.7.1-SNAPSHOT");
     }
 }
