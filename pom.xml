@@ -36,6 +36,7 @@
     <module>github-workitem</module>
     <module>jira-workitem</module>
     <module>repository</module>
+    <module>repository-springboot</module>
   </modules>
 
   <properties>
