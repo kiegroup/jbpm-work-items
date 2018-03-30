@@ -319,8 +319,8 @@ public class EthereumWorkitemHandlerTest {
         WorkItemImpl workItem = new WorkItemImpl();
         workItem.setParameter("ServiceURL",
                               "http://localhost:8545/");
-        workItem.setParameter("ContracBinary",
-                              "0x00211e7e");
+        workItem.setParameter("ContractPath",
+                              "contract/Storage.bin");
         workItem.setParameter("DepositAmount",
                               "10");
         workItem.setParameter("WaitForReceipt",

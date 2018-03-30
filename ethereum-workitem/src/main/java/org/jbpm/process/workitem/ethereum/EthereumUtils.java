@@ -15,13 +15,19 @@
  */
 package org.jbpm.process.workitem.ethereum;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.io.IOUtils;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -52,14 +58,14 @@ import org.web3j.tx.Transfer;
 import org.web3j.utils.Convert;
 import org.web3j.utils.Numeric;
 
-;
-
 public class EthereumUtils {
 
     public static final BigInteger DEFAULT_GAS_PRICE = BigInteger.valueOf(20000000000L);
     public static final BigInteger DEFAULT_GAS_LIMIT = BigInteger.valueOf(500000L);
     public static final int DEFAULT_SLEEP_DURATION = 15000;
     public static final int DEFAULT_ATTEMPTS = 40;
+    public static final String TMP_FILE_PREFIX = "tmpfile";
+    public static final String TMP_FILE_SUFFIX = ".tmp";
 
     private static final Logger logger = LoggerFactory.getLogger(EthereumUtils.class);
 
@@ -362,5 +368,29 @@ public class EthereumUtils {
         TypeReference<Type> typeRef = TypeReference.create(type);
 
         web3j.ethLogObservable(filter).subscribe(action1);
+    }
+
+    public static File createTmpFile(InputStream in) throws IOException {
+        return createTmpFile(in,
+                             TMP_FILE_PREFIX,
+                             TMP_FILE_SUFFIX);
+    }
+
+    public static File createTmpFile(InputStream in,
+                                     String filePrefix,
+                                     String fileSuffix) throws IOException {
+        final File tempFile = File.createTempFile(filePrefix,
+                                                  fileSuffix);
+        tempFile.deleteOnExit();
+        try (FileOutputStream out = new FileOutputStream(tempFile)) {
+            IOUtils.copy(in,
+                         out);
+        }
+        return tempFile;
+    }
+
+    public static String convertStreamToStr(InputStream inputStream) throws IOException {
+        return IOUtils.toString(inputStream,
+                                StandardCharsets.UTF_8);
     }
 }
