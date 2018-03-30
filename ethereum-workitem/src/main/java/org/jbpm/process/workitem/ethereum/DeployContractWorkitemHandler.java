@@ -37,7 +37,7 @@ import org.web3j.protocol.http.HttpService;
         defaultHandler = "mvel: new org.jbpm.process.workitem.ethereum.DeployContractWorkitemHandler()",
         parameters = {
                 @WidParameter(name = "ServiceURL"),
-                @WidParameter(name = "ContracBinary"),
+                @WidParameter(name = "ContractPath"),
                 @WidParameter(name = "DepositAmount"),
                 @WidParameter(name = "WaitForReceipt")
         },
@@ -81,11 +81,11 @@ public class DeployContractWorkitemHandler extends AbstractLogOrThrowWorkItemHan
                                 WorkItemManager workItemManager) {
         try {
             String serviceURL = (String) workItem.getParameter("ServiceURL");
-            String contractBinary = (String) workItem.getParameter("ContracBinary");
+            String contractPath = (String) workItem.getParameter("ContractPath");
             String depositAmount = (String) workItem.getParameter("DepositAmount");
             String waitForReceiptStr = (String) workItem.getParameter("WaitForReceipt");
 
-            if (StringUtils.isNotEmpty(serviceURL) && StringUtils.isNotEmpty(contractBinary)) {
+            if (StringUtils.isNotEmpty(serviceURL) && StringUtils.isNotEmpty(contractPath)) {
 
                 Map<String, Object> results = new HashMap<String, Object>();
 
@@ -110,7 +110,7 @@ public class DeployContractWorkitemHandler extends AbstractLogOrThrowWorkItemHan
 
                 String createdContractAddress = EthereumUtils.deployContract(credentials,
                                                                              web3j,
-                                                                             contractBinary,
+                                                                             EthereumUtils.convertStreamToStr(classLoader.getResourceAsStream(contractPath)),
                                                                              depositEtherAmountToSend,
                                                                              waitForReceipt,
                                                                              EthereumUtils.DEFAULT_SLEEP_DURATION,
@@ -122,8 +122,8 @@ public class DeployContractWorkitemHandler extends AbstractLogOrThrowWorkItemHan
                 workItemManager.completeWorkItem(workItem.getId(),
                                                  results);
             } else {
-                logger.error("Missing service url, or contract creation code.");
-                throw new IllegalArgumentException("Missing service url, or contract creation code.");
+                logger.error("Missing service url, or contract path.");
+                throw new IllegalArgumentException("Missing service url, or contract path.");
             }
         } catch (Exception e) {
             logger.error("Error executing workitem: " + e.getMessage());
