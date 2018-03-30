@@ -191,6 +191,7 @@
                     <include>**/*.wid</include>
                     <include>**/*.html</include>
                     <include>**/*.conf</include>
+                    <include>**/*.xml</include>
                     <include>**/*.jar</include>
                   </includes>
                   <filtering>false</filtering>
