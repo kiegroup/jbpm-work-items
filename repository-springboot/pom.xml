@@ -1,60 +1,70 @@
 <?xml version="1.0"?>
 <project
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.5.10.RELEASE</version>
-    <relativePath/> <!-- lookup parent from repository -->
+    <groupId>org.jbpm.contrib</groupId>
+    <artifactId>workitems</artifactId>
+    <version>7.8.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.jbpm.contrib</groupId>
   <artifactId>repository-springboot</artifactId>
-  <version>7.8.0-SNAPSHOT</version>
-  <packaging>jar</packaging>
   <name>jBPM :: Contrib :: WorkItems :: Repository :: SpringBoot</name>
+  
+  <properties>
+    <version.org.springboot>1.5.10.RELEASE</version.org.springboot>
+  </properties>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <!-- Import dependency management from Spring Boot -->
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${version.org.springboot}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
 
     <!-- module dependencies -->
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
-      <artifactId>archive-workitem</artifactId>
-      <version>${project.version}</version>
+      <artifactId>archive-workitem</artifactId>      
     </dependency>
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>dropbox-workitem</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>exec-workitem</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>ftp-workitem</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>google-calendar-workitem</artifactId>
-      <version>${project.version}</version>
       <exclusions>
         <exclusion>
           <groupId>com.google.oauth-client</groupId>
           <artifactId>google-oauth-client-jetty</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava-jdk5</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>google-drive-workitem</artifactId>
-      <version>${project.version}</version>
       <exclusions>
         <exclusion>
           <groupId>com.google.oauth-client</groupId>
@@ -65,7 +75,6 @@
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>google-mail-workitem</artifactId>
-      <version>${project.version}</version>
       <exclusions>
         <exclusion>
           <groupId>com.google.oauth-client</groupId>
@@ -76,7 +85,6 @@
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>google-sheets-workitem</artifactId>
-      <version>${project.version}</version>
       <exclusions>
         <exclusion>
           <groupId>com.google.oauth-client</groupId>
@@ -87,7 +95,6 @@
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>google-tasks-workitem</artifactId>
-      <version>${project.version}</version>
       <exclusions>
         <exclusion>
           <groupId>com.google.oauth-client</groupId>
@@ -98,62 +105,83 @@
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>ibm-watson-workitem</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>ifttt-workitem</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>jabber-workitem</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>java-workitem</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>jpa-workitem</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>parser-workitem</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>rss-workitem</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>transform-workitem</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>twitter-workitem</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>github-workitem</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>jira-workitem</artifactId>
-      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.sun.jersey</groupId>
+          <artifactId>jersey-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>repository</artifactId>
-      <version>${project.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>    
+    
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure</artifactId>
     </dependency>
 
     <dependency>
@@ -204,6 +232,7 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>${version.org.springboot}</version>
         <configuration>
           <mainClass>org.jbpm.process.workitem.repositoryspringboot.RepositorySpringBootApplication</mainClass>
         </configuration>
