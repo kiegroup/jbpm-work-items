@@ -21,8 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -41,9 +41,9 @@ import org.web3j.protocol.http.HttpService;
         displayName = "EthereumTransactExistingContract",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ethereum.TransactExistingContractWorkitemHandler()",
         parameters = {
-                @WidParameter(name = "ServiceURL"),
-                @WidParameter(name = "ContractAddress"),
-                @WidParameter(name = "MethodName"),
+                @WidParameter(name = "ServiceURL", required = true),
+                @WidParameter(name = "ContractAddress", required = true),
+                @WidParameter(name = "MethodName", required = true),
                 @WidParameter(name = "MethodInputType"),
                 @WidParameter(name = "WaitForReceipt"),
                 @WidParameter(name = "DepositAmount"),
@@ -88,6 +88,9 @@ public class TransactExistingContractWorkitemHandler extends AbstractLogOrThrowW
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager workItemManager) {
         try {
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             String serviceURL = (String) workItem.getParameter("ServiceURL");
             String contractAddress = (String) workItem.getParameter("ContractAddress");
             String waitForReceiptStr = (String) workItem.getParameter("WaitForReceipt");
@@ -95,57 +98,51 @@ public class TransactExistingContractWorkitemHandler extends AbstractLogOrThrowW
             Type methodInputType = (Type) workItem.getParameter("MethodInputType");
             String depositAmount = (String) workItem.getParameter("DepositAmount");
 
-            if (StringUtils.isNotEmpty(serviceURL) && StringUtils.isNotEmpty(contractAddress) && StringUtils.isNotEmpty(methodName)) {
+            Map<String, Object> results = new HashMap<String, Object>();
 
-                Map<String, Object> results = new HashMap<String, Object>();
-
-                if (web3j == null) {
-                    web3j = Web3j.build(new HttpService(serviceURL));
-                }
-
-                auth = new EthereumAuth(walletPassword,
-                                        walletPath,
-                                        classLoader);
-                Credentials credentials = auth.getCredentials();
-
-                int depositEtherAmountToSend = 0;
-                if (depositAmount != null) {
-                    depositEtherAmountToSend = Integer.parseInt(depositAmount);
-                }
-
-                boolean waitForReceipt = false;
-                if (waitForReceiptStr != null) {
-                    waitForReceipt = Boolean.parseBoolean(waitForReceiptStr);
-                }
-
-                List<Type> methodInputTypeList = new ArrayList<>();
-                if (methodInputType != null) {
-                    methodInputTypeList = Collections.singletonList(methodInputType);
-                }
-
-                TransactionReceipt transactionReceipt = EthereumUtils.transactExistingContract(
-                        credentials,
-                        web3j,
-                        depositEtherAmountToSend,
-                        EthereumUtils.DEFAULT_GAS_PRICE,
-                        EthereumUtils.DEFAULT_GAS_LIMIT,
-                        contractAddress,
-                        methodName,
-                        methodInputTypeList,
-                        null,
-                        waitForReceipt,
-                        EthereumUtils.DEFAULT_SLEEP_DURATION,
-                        EthereumUtils.DEFAULT_ATTEMPTS);
-
-                results.put(RESULTS,
-                            transactionReceipt);
-
-                workItemManager.completeWorkItem(workItem.getId(),
-                                                 results);
-            } else {
-                logger.error("Missing service url, valid toAddress or method name to execute.");
-                throw new IllegalArgumentException("Missing service url, valid toAddress or method name to execute.");
+            if (web3j == null) {
+                web3j = Web3j.build(new HttpService(serviceURL));
             }
+
+            auth = new EthereumAuth(walletPassword,
+                                    walletPath,
+                                    classLoader);
+            Credentials credentials = auth.getCredentials();
+
+            int depositEtherAmountToSend = 0;
+            if (depositAmount != null) {
+                depositEtherAmountToSend = Integer.parseInt(depositAmount);
+            }
+
+            boolean waitForReceipt = false;
+            if (waitForReceiptStr != null) {
+                waitForReceipt = Boolean.parseBoolean(waitForReceiptStr);
+            }
+
+            List<Type> methodInputTypeList = new ArrayList<>();
+            if (methodInputType != null) {
+                methodInputTypeList = Collections.singletonList(methodInputType);
+            }
+
+            TransactionReceipt transactionReceipt = EthereumUtils.transactExistingContract(
+                    credentials,
+                    web3j,
+                    depositEtherAmountToSend,
+                    EthereumUtils.DEFAULT_GAS_PRICE,
+                    EthereumUtils.DEFAULT_GAS_LIMIT,
+                    contractAddress,
+                    methodName,
+                    methodInputTypeList,
+                    null,
+                    waitForReceipt,
+                    EthereumUtils.DEFAULT_SLEEP_DURATION,
+                    EthereumUtils.DEFAULT_ATTEMPTS);
+
+            results.put(RESULTS,
+                        transactionReceipt);
+
+            workItemManager.completeWorkItem(workItem.getId(),
+                                             results);
         } catch (Exception e) {
             logger.error("Error executing workitem: " + e.getMessage());
             handleException(e);

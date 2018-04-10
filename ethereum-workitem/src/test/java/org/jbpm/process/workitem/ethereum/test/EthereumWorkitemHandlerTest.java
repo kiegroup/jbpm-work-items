@@ -364,4 +364,71 @@ public class EthereumWorkitemHandlerTest {
 
         assertNotNull(manager.getResults());
     }
+
+    @Test
+    public void testInvalidParameters() throws Exception {
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        DeployContractWorkitemHandler deployContractHandler = new DeployContractWorkitemHandler(TEST_WALLET_PASSWORD,
+                                                                                                "wallet/testwallet.json");
+        try {
+            deployContractHandler.executeWorkItem(workItem,
+                                                  manager);
+            fail("Exception on invalid parameters no thrown");
+        } catch (Exception e) {
+            assertTrue(e instanceof RuntimeException);
+        }
+
+        GetBalanceWorkitemHandler getBalanceHandler = new GetBalanceWorkitemHandler(TEST_WALLET_PASSWORD,
+                                                                                    "wallet/testwallet.json");
+
+        try {
+            getBalanceHandler.executeWorkItem(workItem,
+                                              manager);
+            fail("Exception on invalid parameters no thrown");
+        } catch (Exception e) {
+            assertTrue(e instanceof RuntimeException);
+        }
+
+        ObserveContractEventWorkitemHandler observeContractHandler = new ObserveContractEventWorkitemHandler(kieSession);
+        try {
+            observeContractHandler.executeWorkItem(workItem,
+                                                   manager);
+            fail("Exception on invalid parameters no thrown");
+        } catch (Exception e) {
+            assertTrue(e instanceof RuntimeException);
+        }
+
+        QueryExistingContractWorkitemHandler queryExistingHandler = new QueryExistingContractWorkitemHandler(TEST_WALLET_PASSWORD,
+                                                                                                             "wallet/testwallet.json");
+
+        try {
+            queryExistingHandler.executeWorkItem(workItem,
+                                                 manager);
+            fail("Exception on invalid parameters no thrown");
+        } catch (Exception e) {
+            assertTrue(e instanceof RuntimeException);
+        }
+
+        SendEtherWorkitemHandler sendEtherHandler = new SendEtherWorkitemHandler(TEST_WALLET_PASSWORD,
+                                                                                 "wallet/testwallet.json");
+        try {
+            sendEtherHandler.executeWorkItem(workItem,
+                                             manager);
+            fail("Exception on invalid parameters no thrown");
+        } catch (Exception e) {
+            assertTrue(e instanceof RuntimeException);
+        }
+
+        TransactExistingContractWorkitemHandler transactExistingHandler = new TransactExistingContractWorkitemHandler(TEST_WALLET_PASSWORD,
+                                                                                                                      "wallet/testwallet.json");
+        try {
+            transactExistingHandler.executeWorkItem(workItem,
+                                                    manager);
+            fail("Exception on invalid parameters no thrown");
+        } catch (Exception e) {
+            assertTrue(e instanceof RuntimeException);
+        }
+    }
 }

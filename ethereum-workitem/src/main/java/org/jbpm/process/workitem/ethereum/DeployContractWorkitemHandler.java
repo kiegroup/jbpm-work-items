@@ -18,8 +18,8 @@ package org.jbpm.process.workitem.ethereum;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -36,8 +36,8 @@ import org.web3j.protocol.http.HttpService;
         displayName = "EthereumDeployContract",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ethereum.DeployContractWorkitemHandler()",
         parameters = {
-                @WidParameter(name = "ServiceURL"),
-                @WidParameter(name = "ContractPath"),
+                @WidParameter(name = "ServiceURL", required = true),
+                @WidParameter(name = "ContractPath", required = true),
                 @WidParameter(name = "DepositAmount"),
                 @WidParameter(name = "WaitForReceipt")
         },
@@ -80,51 +80,48 @@ public class DeployContractWorkitemHandler extends AbstractLogOrThrowWorkItemHan
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager workItemManager) {
         try {
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             String serviceURL = (String) workItem.getParameter("ServiceURL");
             String contractPath = (String) workItem.getParameter("ContractPath");
             String depositAmount = (String) workItem.getParameter("DepositAmount");
             String waitForReceiptStr = (String) workItem.getParameter("WaitForReceipt");
 
-            if (StringUtils.isNotEmpty(serviceURL) && StringUtils.isNotEmpty(contractPath)) {
+            Map<String, Object> results = new HashMap<String, Object>();
 
-                Map<String, Object> results = new HashMap<String, Object>();
-
-                if (web3j == null) {
-                    web3j = Web3j.build(new HttpService(serviceURL));
-                }
-
-                auth = new EthereumAuth(walletPassword,
-                                        walletPath,
-                                        classLoader);
-                Credentials credentials = auth.getCredentials();
-
-                int depositEtherAmountToSend = 0;
-                if (depositAmount != null) {
-                    depositEtherAmountToSend = Integer.parseInt(depositAmount);
-                }
-
-                boolean waitForReceipt = false;
-                if (waitForReceiptStr != null) {
-                    waitForReceipt = Boolean.parseBoolean(waitForReceiptStr);
-                }
-
-                String createdContractAddress = EthereumUtils.deployContract(credentials,
-                                                                             web3j,
-                                                                             EthereumUtils.convertStreamToStr(classLoader.getResourceAsStream(contractPath)),
-                                                                             depositEtherAmountToSend,
-                                                                             waitForReceipt,
-                                                                             EthereumUtils.DEFAULT_SLEEP_DURATION,
-                                                                             org.jbpm.process.workitem.ethereum.EthereumUtils.DEFAULT_ATTEMPTS);
-
-                results.put(RESULTS,
-                            createdContractAddress);
-
-                workItemManager.completeWorkItem(workItem.getId(),
-                                                 results);
-            } else {
-                logger.error("Missing service url, or contract path.");
-                throw new IllegalArgumentException("Missing service url, or contract path.");
+            if (web3j == null) {
+                web3j = Web3j.build(new HttpService(serviceURL));
             }
+
+            auth = new EthereumAuth(walletPassword,
+                                    walletPath,
+                                    classLoader);
+            Credentials credentials = auth.getCredentials();
+
+            int depositEtherAmountToSend = 0;
+            if (depositAmount != null) {
+                depositEtherAmountToSend = Integer.parseInt(depositAmount);
+            }
+
+            boolean waitForReceipt = false;
+            if (waitForReceiptStr != null) {
+                waitForReceipt = Boolean.parseBoolean(waitForReceiptStr);
+            }
+
+            String createdContractAddress = EthereumUtils.deployContract(credentials,
+                                                                         web3j,
+                                                                         EthereumUtils.convertStreamToStr(classLoader.getResourceAsStream(contractPath)),
+                                                                         depositEtherAmountToSend,
+                                                                         waitForReceipt,
+                                                                         EthereumUtils.DEFAULT_SLEEP_DURATION,
+                                                                         org.jbpm.process.workitem.ethereum.EthereumUtils.DEFAULT_ATTEMPTS);
+
+            results.put(RESULTS,
+                        createdContractAddress);
+
+            workItemManager.completeWorkItem(workItem.getId(),
+                                             results);
         } catch (Exception e) {
             logger.error("Error executing workitem: " + e.getMessage());
             handleException(e);

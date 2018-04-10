@@ -18,9 +18,8 @@ package org.jbpm.process.workitem.ethereum;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -41,9 +40,9 @@ import org.web3j.tx.Transfer;
         displayName = "EthereumSendEther",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ethereum.SendEtherWorkitemHandler()",
         parameters = {
-                @WidParameter(name = "ServiceURL"),
-                @WidParameter(name = "Amount"),
-                @WidParameter(name = "ToAddress")
+                @WidParameter(name = "ServiceURL", required = true),
+                @WidParameter(name = "Amount", required = true),
+                @WidParameter(name = "ToAddress", required = true)
         },
         results = {
                 @WidResult(name = "Receipt")
@@ -86,50 +85,48 @@ public class SendEtherWorkitemHandler extends AbstractLogOrThrowWorkItemHandler 
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager workItemManager) {
         try {
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             String serviceURL = (String) workItem.getParameter("ServiceURL");
             String amount = (String) workItem.getParameter("Amount");
             String toAddress = (String) workItem.getParameter("ToAddress");
 
-            if (StringUtils.isNotEmpty(serviceURL) && StringUtils.isNotEmpty(toAddress) && StringUtils.isNotEmpty(amount) && NumberUtils.isDigits(amount)) {
-                Map<String, Object> results = new HashMap<String, Object>();
+            Map<String, Object> results = new HashMap<String, Object>();
 
-                if (web3j == null) {
-                    web3j = Web3j.build(new HttpService(serviceURL));
-                }
-
-                auth = new EthereumAuth(walletPassword,
-                                        walletPath,
-                                        classLoader);
-                Credentials credentials = auth.getCredentials();
-
-                TransactionManager transactionManager = new RawTransactionManager(web3j,
-                                                                                  credentials);
-
-                if (transfer == null) {
-                    transfer = new Transfer(web3j,
-                                            transactionManager);
-                }
-
-                int amountToSend = 0;
-                if (amount != null) {
-                    amountToSend = Integer.parseInt(amount);
-                }
-
-                TransactionReceipt transactionReceipt = EthereumUtils.sendFundsToContract(credentials,
-                                                                                          web3j,
-                                                                                          amountToSend,
-                                                                                          toAddress,
-                                                                                          transfer);
-
-                results.put(RESULTS,
-                            transactionReceipt);
-
-                workItemManager.completeWorkItem(workItem.getId(),
-                                                 results);
-            } else {
-                logger.error("Missing service url or valid ether amount or toAddress.");
-                throw new IllegalArgumentException("Missing service url or valid ether amount or toAddress.");
+            if (web3j == null) {
+                web3j = Web3j.build(new HttpService(serviceURL));
             }
+
+            auth = new EthereumAuth(walletPassword,
+                                    walletPath,
+                                    classLoader);
+            Credentials credentials = auth.getCredentials();
+
+            TransactionManager transactionManager = new RawTransactionManager(web3j,
+                                                                              credentials);
+
+            if (transfer == null) {
+                transfer = new Transfer(web3j,
+                                        transactionManager);
+            }
+
+            int amountToSend = 0;
+            if (amount != null) {
+                amountToSend = Integer.parseInt(amount);
+            }
+
+            TransactionReceipt transactionReceipt = EthereumUtils.sendFundsToContract(credentials,
+                                                                                      web3j,
+                                                                                      amountToSend,
+                                                                                      toAddress,
+                                                                                      transfer);
+
+            results.put(RESULTS,
+                        transactionReceipt);
+
+            workItemManager.completeWorkItem(workItem.getId(),
+                                             results);
         } catch (Exception e) {
             logger.error("Error executing workitem: " + e.getMessage());
             handleException(e);

@@ -15,12 +15,11 @@
  */
 package org.jbpm.process.workitem.ethereum;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -37,7 +36,7 @@ import org.web3j.protocol.http.HttpService;
         displayName = "EthereumGetBalance",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ethereum.GetBalanceWorkitemHandler()",
         parameters = {
-                @WidParameter(name = "ServiceURL")
+                @WidParameter(name = "ServiceURL", required = true)
         },
         results = {
                 @WidResult(name = "Balance")
@@ -58,7 +57,9 @@ public class GetBalanceWorkitemHandler extends AbstractLogOrThrowWorkItemHandler
 
     public GetBalanceWorkitemHandler(String walletPassword,
                                      String walletPath) {
-        this(walletPassword, walletPath, null);
+        this(walletPassword,
+             walletPath,
+             null);
     }
 
     public GetBalanceWorkitemHandler(String walletPassword,
@@ -66,7 +67,7 @@ public class GetBalanceWorkitemHandler extends AbstractLogOrThrowWorkItemHandler
                                      ClassLoader classLoader) {
         this.walletPassword = walletPassword;
         this.walletPath = walletPath;
-        if(classLoader == null) {
+        if (classLoader == null) {
             this.classLoader = this.getClass().getClassLoader();
         } else {
             this.classLoader = classLoader;
@@ -76,30 +77,28 @@ public class GetBalanceWorkitemHandler extends AbstractLogOrThrowWorkItemHandler
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager workItemManager) {
         try {
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             String serviceURL = (String) workItem.getParameter("ServiceURL");
 
-            if (StringUtils.isNotEmpty(serviceURL)) {
-                Map<String, Object> results = new HashMap<String, Object>();
+            Map<String, Object> results = new HashMap<String, Object>();
 
-                if (web3j == null) {
-                    web3j = Web3j.build(new HttpService(serviceURL));
-                }
-
-                auth = new EthereumAuth(walletPassword,
-                                        walletPath,
-                                        classLoader);
-                Credentials credentials = auth.getCredentials();
-
-                results.put(RESULTS_VALUE,
-                            EthereumUtils.getBalanceInEther(credentials,
-                                                            web3j));
-
-                workItemManager.completeWorkItem(workItem.getId(),
-                                                 results);
-            } else {
-                logger.error("Missing service url.");
-                throw new IllegalArgumentException("Missing service url.");
+            if (web3j == null) {
+                web3j = Web3j.build(new HttpService(serviceURL));
             }
+
+            auth = new EthereumAuth(walletPassword,
+                                    walletPath,
+                                    classLoader);
+            Credentials credentials = auth.getCredentials();
+
+            results.put(RESULTS_VALUE,
+                        EthereumUtils.getBalanceInEther(credentials,
+                                                        web3j));
+
+            workItemManager.completeWorkItem(workItem.getId(),
+                                             results);
         } catch (Exception e) {
             logger.error("Error executing workitem: " + e.getMessage());
             handleException(e);
