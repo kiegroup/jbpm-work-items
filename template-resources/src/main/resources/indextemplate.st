@@ -37,6 +37,7 @@
         <tr>
             <th>Name</th>
             <th>Type</th>
+            <th>Required</th>
         </tr>
         </thead>
         <tbody>
@@ -44,6 +45,7 @@
         <tr>
             <td>$k1$</td>
             <td>$widInfo.(k).parameters.(k1).type$</td>
+            <td>$widInfo.(k).parameters.(k1).required$</td>
         </tr>
         }$
         </tbody>

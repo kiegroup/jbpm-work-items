@@ -20,8 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -39,9 +39,9 @@ import org.web3j.protocol.http.HttpService;
         displayName = "EthereumQueryExistingContract",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ethereum.QueryExistingContractWorkitemHandler()",
         parameters = {
-                @WidParameter(name = "ServiceURL"),
-                @WidParameter(name = "ContractAddress"),
-                @WidParameter(name = "ContractMethodName"),
+                @WidParameter(name = "ServiceURL", required = true),
+                @WidParameter(name = "ContractAddress", required = true),
+                @WidParameter(name = "ContractMethodName", required = true),
                 @WidParameter(name = "MethodOutputType")
         },
         results = {
@@ -83,46 +83,44 @@ public class QueryExistingContractWorkitemHandler extends AbstractLogOrThrowWork
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager workItemManager) {
         try {
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             String serviceURL = (String) workItem.getParameter("ServiceURL");
             String contractAddress = (String) workItem.getParameter("ContractAddress");
             String contractMethodName = (String) workItem.getParameter("ContractMethodName");
             String contractMethodOutputType = (String) workItem.getParameter("MethodOutputType");
 
-            if (StringUtils.isNotEmpty(serviceURL) && StringUtils.isNotEmpty(contractAddress) && StringUtils.isNotEmpty(contractMethodName)) {
-                Map<String, Object> results = new HashMap<String, Object>();
+            Map<String, Object> results = new HashMap<String, Object>();
 
-                if (web3j == null) {
-                    web3j = Web3j.build(new HttpService(serviceURL));
-                }
-
-                auth = new EthereumAuth(walletPassword,
-                                        walletPath,
-                                        classLoader);
-                Credentials credentials = auth.getCredentials();
-
-                List<TypeReference<?>> outputTypeList = null;
-
-                if (contractMethodOutputType != null) {
-                    Class typeClazz = Class.forName(contractMethodOutputType);
-                    outputTypeList = Collections.singletonList(TypeReference.create(typeClazz));
-                }
-
-                Object queryReturnObj = EthereumUtils.queryExistingContract(credentials,
-                                                                            web3j,
-                                                                            contractAddress,
-                                                                            contractMethodName,
-                                                                            null,
-                                                                            outputTypeList);
-
-                results.put(RESULTS,
-                            queryReturnObj);
-
-                workItemManager.completeWorkItem(workItem.getId(),
-                                                 results);
-            } else {
-                logger.error("Missing service url, valid address or method name to execute.");
-                throw new IllegalArgumentException("Missing service url, valid address or method name to execute.");
+            if (web3j == null) {
+                web3j = Web3j.build(new HttpService(serviceURL));
             }
+
+            auth = new EthereumAuth(walletPassword,
+                                    walletPath,
+                                    classLoader);
+            Credentials credentials = auth.getCredentials();
+
+            List<TypeReference<?>> outputTypeList = null;
+
+            if (contractMethodOutputType != null) {
+                Class typeClazz = Class.forName(contractMethodOutputType);
+                outputTypeList = Collections.singletonList(TypeReference.create(typeClazz));
+            }
+
+            Object queryReturnObj = EthereumUtils.queryExistingContract(credentials,
+                                                                        web3j,
+                                                                        contractAddress,
+                                                                        contractMethodName,
+                                                                        null,
+                                                                        outputTypeList);
+
+            results.put(RESULTS,
+                        queryReturnObj);
+
+            workItemManager.completeWorkItem(workItem.getId(),
+                                             results);
         } catch (Exception e) {
             logger.error("Error executing workitem: " + e.getMessage());
             handleException(e);

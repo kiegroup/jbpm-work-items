@@ -18,8 +18,8 @@ package org.jbpm.process.workitem.ethereum;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -36,13 +36,13 @@ import org.web3j.protocol.http.HttpService;
         displayName = "EthereumObserveContractEvent",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ethereum.ObserveContractEventWorkitemHandler()",
         parameters = {
-                @WidParameter(name = "ServiceURL"),
-                @WidParameter(name = "ContractAddress"),
-                @WidParameter(name = "EventName"),
+                @WidParameter(name = "ServiceURL", required = true),
+                @WidParameter(name = "ContractAddress", required = true),
+                @WidParameter(name = "EventName", required = true),
                 @WidParameter(name = "EventReturnType"),
                 @WidParameter(name = "EventIndexedParameter"),
                 @WidParameter(name = "EventNonIndexedParameter"),
-                @WidParameter(name = "SignalName"),
+                @WidParameter(name = "SignalName", required = true),
                 @WidParameter(name = "AbortOnUpdate")
         },
         mavenDepends = {
@@ -63,6 +63,9 @@ public class ObserveContractEventWorkitemHandler extends AbstractLogOrThrowWorkI
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager workItemManager) {
         try {
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             String serviceURL = (String) workItem.getParameter("ServiceURL");
             String contractAddress = (String) workItem.getParameter("ContractAddress");
             String eventName = (String) workItem.getParameter("EventName");
@@ -72,37 +75,31 @@ public class ObserveContractEventWorkitemHandler extends AbstractLogOrThrowWorkI
             String signalName = (String) workItem.getParameter("SignalName");
             String abortOnUpdate = (String) workItem.getParameter("AbortOnUpdate");
 
-            if (StringUtils.isNotEmpty(serviceURL) && StringUtils.isNotEmpty(contractAddress) && StringUtils.isNotEmpty(eventName) && StringUtils.isNotEmpty(signalName)) {
+            boolean doAbortOnUpdate = Boolean.parseBoolean(abortOnUpdate);
 
-                boolean doAbortOnUpdate = Boolean.parseBoolean(abortOnUpdate);
-
-                if (eventIndexedParameter == null) {
-                    eventIndexedParameter = new ArrayList<>();
-                }
-
-                if (eventNonIndexedParameter == null) {
-                    eventNonIndexedParameter = new ArrayList<>();
-                }
-
-                if (web3j == null) {
-                    web3j = Web3j.build(new HttpService(serviceURL));
-                }
-
-                EthereumUtils.observeContractEvent(web3j,
-                                                   eventName,
-                                                   contractAddress,
-                                                   eventIndexedParameter,
-                                                   eventNonIndexedParameter,
-                                                   eventReturnType,
-                                                   kieSession,
-                                                   signalName,
-                                                   doAbortOnUpdate,
-                                                   workItemManager,
-                                                   workItem);
-            } else {
-                logger.error("Missing service url, or contract address, signal or event name.");
-                throw new IllegalArgumentException("Missing service url, or contract address, signal or event name.");
+            if (eventIndexedParameter == null) {
+                eventIndexedParameter = new ArrayList<>();
             }
+
+            if (eventNonIndexedParameter == null) {
+                eventNonIndexedParameter = new ArrayList<>();
+            }
+
+            if (web3j == null) {
+                web3j = Web3j.build(new HttpService(serviceURL));
+            }
+
+            EthereumUtils.observeContractEvent(web3j,
+                                               eventName,
+                                               contractAddress,
+                                               eventIndexedParameter,
+                                               eventNonIndexedParameter,
+                                               eventReturnType,
+                                               kieSession,
+                                               signalName,
+                                               doAbortOnUpdate,
+                                               workItemManager,
+                                               workItem);
         } catch (Exception e) {
             logger.error("Error executing workitem: " + e.getMessage());
             handleException(e);
