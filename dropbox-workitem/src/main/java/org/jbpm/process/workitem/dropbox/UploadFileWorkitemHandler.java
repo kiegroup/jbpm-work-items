@@ -32,11 +32,13 @@ import org.slf4j.LoggerFactory;
 @Wid(widfile = "DropboxUploadFileDefinitions.wid", name = "DropboxUploadFile",
         displayName = "DropboxUploadFile",
         defaultHandler = "mvel: new org.jbpm.process.workitem.dropbox.UploadFileWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "Path"),
                 @WidParameter(name = "Document")
         },
         mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}"),
                 @WidMavenDepends(group = "com.dropbox.core", artifact = "dropbox-core-sdk", version = "3.0.5")
         })
 public class UploadFileWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {

@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 @Wid(widfile = "ClassifyImageDefinitions.wid", name = "IBMWatsonClassifyImage",
         displayName = "IBMWatsonClassifyImage",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ibm.watson.ClassifyImageWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "ImageToClassify")
         },
@@ -49,6 +50,7 @@ import org.slf4j.LoggerFactory;
                 @WidResult(name = "Classification")
         },
         mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}"),
                 @WidMavenDepends(group = "com.ibm.watson.developer_cloud", artifact = "java-sdk", version = "4.0.0")
         })
 public class ClassifyImageWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {

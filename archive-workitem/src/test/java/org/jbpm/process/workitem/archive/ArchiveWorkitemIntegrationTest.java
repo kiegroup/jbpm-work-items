@@ -30,7 +30,7 @@ public class ArchiveWorkitemIntegrationTest {
     public void testWorkitemValidity() {
         String repoPath = "file://" + System.getProperty("builddir") +
                 "/" + System.getProperty("artifactId") + "-" +
-                System.getProperty("version") + "/repository";
+                System.getProperty("version") + "/";
 
         System.out.println(System.getProperty("builddir"));
         System.out.println(System.getProperty("artifactId"));

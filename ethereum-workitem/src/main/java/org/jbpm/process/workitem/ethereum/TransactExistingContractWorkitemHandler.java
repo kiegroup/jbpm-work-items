@@ -40,6 +40,7 @@ import org.web3j.protocol.http.HttpService;
 @Wid(widfile = "EthereumTransactExistingContract.wid", name = "EthereumTransactExistingContract",
         displayName = "EthereumTransactExistingContract",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ethereum.TransactExistingContractWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "ServiceURL", required = true),
                 @WidParameter(name = "ContractAddress", required = true),
@@ -52,6 +53,7 @@ import org.web3j.protocol.http.HttpService;
                 @WidResult(name = "Receipt")
         },
         mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}"),
                 @WidMavenDepends(group = "org.web3j", artifact = "core", version = "3.3.1")
         })
 public class TransactExistingContractWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {

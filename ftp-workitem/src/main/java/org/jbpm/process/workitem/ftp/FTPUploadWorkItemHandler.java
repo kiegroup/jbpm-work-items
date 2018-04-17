@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 @Wid(widfile = "FTPDefinitions.wid", name = "FTP",
         displayName = "FTP",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ftp.FTPUploadWorkItemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "User"),
                 @WidParameter(name = "Password"),
@@ -43,6 +44,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "File")
         },
         mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}"),
                 @WidMavenDepends(group = "commons-net", artifact = "commons-net", version = "2.2")
         })
 public class FTPUploadWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {

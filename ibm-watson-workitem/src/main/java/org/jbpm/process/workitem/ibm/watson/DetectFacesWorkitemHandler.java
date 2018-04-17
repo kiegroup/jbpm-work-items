@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 @Wid(widfile = "DetectFacesDefinitions.wid", name = "IBMWatsonDetectFaces",
         displayName = "IBMWatsonDetectFaces",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ibm.watson.DetectFacesWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "ImageToDetect")
         },
@@ -48,6 +49,7 @@ import org.slf4j.LoggerFactory;
                 @WidResult(name = "Detection")
         },
         mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}"),
                 @WidMavenDepends(group = "com.ibm.watson.developer_cloud", artifact = "java-sdk", version = "4.0.0")
         })
 public class DetectFacesWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {

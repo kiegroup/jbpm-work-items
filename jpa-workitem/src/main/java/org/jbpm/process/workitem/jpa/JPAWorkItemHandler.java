@@ -64,6 +64,7 @@ import org.slf4j.LoggerFactory;
 @Wid(widfile = "JPADefinitions.wid", name = "JPA",
         displayName = "JPA",
         defaultHandler = "mvel: new org.jbpm.process.workitem.jpa.JPAWorkItemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "Type"),
                 @WidParameter(name = "Id"),
@@ -77,6 +78,7 @@ import org.slf4j.LoggerFactory;
                 @WidResult(name = "Result")
         },
         mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}"),
                 @WidMavenDepends(group = "org.hibernate.javax.persistence", artifact = "hibernate-jpa-2.1-api", version = "1.0.0.Final"),
                 @WidMavenDepends(group = "org.hibernate", artifact = "hibernate-entitymanager", version = "5.1.4.Final")
         })

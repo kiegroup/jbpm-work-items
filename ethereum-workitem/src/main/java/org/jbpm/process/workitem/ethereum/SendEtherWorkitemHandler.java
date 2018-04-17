@@ -39,6 +39,7 @@ import org.web3j.tx.Transfer;
 @Wid(widfile = "EthereumSendEther.wid", name = "EthereumSendEther",
         displayName = "EthereumSendEther",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ethereum.SendEtherWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "ServiceURL", required = true),
                 @WidParameter(name = "Amount", required = true),
@@ -48,6 +49,7 @@ import org.web3j.tx.Transfer;
                 @WidResult(name = "Receipt")
         },
         mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}"),
                 @WidMavenDepends(group = "org.web3j", artifact = "core", version = "3.3.1")
         })
 public class SendEtherWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {

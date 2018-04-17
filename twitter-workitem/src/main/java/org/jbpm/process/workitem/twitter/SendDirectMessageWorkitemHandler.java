@@ -34,12 +34,14 @@ import twitter4j.Twitter;
 @Wid(widfile = "TwitterSendDirectMessage.wid", name = "TwitterSendDirectMessage",
         displayName = "TwitterSendDirectMessage",
         defaultHandler = "mvel: new org.jbpm.process.workitem.twitter.SendDirectMessageWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "Message"),
                 @WidParameter(name = "ScreenName"),
                 @WidParameter(name = "DebugEnabled")
         },
         mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}"),
                 @WidMavenDepends(group = "org.twitter4j", artifact = "twitter4j-core", version = "4.0.6")
         })
 public class SendDirectMessageWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {

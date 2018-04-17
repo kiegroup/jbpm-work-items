@@ -32,10 +32,12 @@ import org.slf4j.LoggerFactory;
 @Wid(widfile = "GoogleGetCalendarsDefinitions.wid", name = "GoogleGetCalendars",
         displayName = "GoogleGetCalendars",
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.calendar.GetCalendarsWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         results = {
                 @WidResult(name = "AllCalendars")
         },
         mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}"),
                 @WidMavenDepends(group = "com.google.apis", artifact = "google-api-services-calendar", version = "v3-rev87-1.19.0"),
                 @WidMavenDepends(group = "com.google.oauth-client", artifact = "google-oauth-client-jetty", version = "1.23.0"),
                 @WidMavenDepends(group = "com.google.http-client", artifact = "google-http-client-jackson2", version = "1.23.0")
