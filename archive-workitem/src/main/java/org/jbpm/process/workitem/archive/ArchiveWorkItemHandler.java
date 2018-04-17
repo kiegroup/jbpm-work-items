@@ -36,12 +36,13 @@ import org.kie.api.runtime.process.WorkItemManager;
 @Wid(widfile = "ArchiveDefinitions.wid", name = "Archive",
         displayName = "Archive",
         defaultHandler = "mvel: new org.jbpm.process.workitem.archive.ArchiveWorkItemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "Archive"),
                 @WidParameter(name = "Files")
         },
         mavenDepends = {
-                @WidMavenDepends(group = "org.apache.commons", artifact = "commons-compress", version = "1.12")
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
         })
 public class ArchiveWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 

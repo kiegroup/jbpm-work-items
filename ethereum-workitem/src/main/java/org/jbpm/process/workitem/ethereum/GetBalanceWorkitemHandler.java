@@ -35,6 +35,7 @@ import org.web3j.protocol.http.HttpService;
 @Wid(widfile = "EthereumGetBalance.wid", name = "EthereumGetBalance",
         displayName = "EthereumGetBalance",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ethereum.GetBalanceWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "ServiceURL", required = true)
         },
@@ -42,7 +43,7 @@ import org.web3j.protocol.http.HttpService;
                 @WidResult(name = "Balance")
         },
         mavenDepends = {
-                @WidMavenDepends(group = "org.web3j", artifact = "core", version = "3.3.1")
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
         })
 public class GetBalanceWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

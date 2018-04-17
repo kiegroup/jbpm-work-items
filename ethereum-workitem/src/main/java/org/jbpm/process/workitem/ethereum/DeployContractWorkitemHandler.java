@@ -35,6 +35,7 @@ import org.web3j.protocol.http.HttpService;
 @Wid(widfile = "EthereumDeployContract.wid", name = "EthereumDeployContract",
         displayName = "EthereumDeployContract",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ethereum.DeployContractWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "ServiceURL", required = true),
                 @WidParameter(name = "ContractPath", required = true),
@@ -45,7 +46,7 @@ import org.web3j.protocol.http.HttpService;
                 @WidResult(name = "ContractAddress")
         },
         mavenDepends = {
-                @WidMavenDepends(group = "org.web3j", artifact = "core", version = "3.3.1")
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
         })
 public class DeployContractWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

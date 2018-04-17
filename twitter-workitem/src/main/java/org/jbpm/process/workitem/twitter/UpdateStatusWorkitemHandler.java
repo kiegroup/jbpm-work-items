@@ -38,13 +38,14 @@ import twitter4j.Twitter;
 @Wid(widfile = "TwitterUpdateStatus.wid", name = "TwitterUpdateStatus",
         displayName = "TwitterUpdateStatus",
         defaultHandler = "mvel: new org.jbpm.process.workitem.twitter.UpdateStatusWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "StatusUpdate"),
                 @WidParameter(name = "Media"),
                 @WidParameter(name = "DebugEnabled")
         },
         mavenDepends = {
-                @WidMavenDepends(group = "org.twitter4j", artifact = "twitter4j-core", version = "4.0.6")
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
         })
 public class UpdateStatusWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

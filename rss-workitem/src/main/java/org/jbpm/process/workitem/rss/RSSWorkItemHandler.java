@@ -33,11 +33,12 @@ import org.kie.api.runtime.process.WorkItemManager;
 @Wid(widfile = "RSSDefinitions.wid", name = "RSS",
         displayName = "RSS",
         defaultHandler = "mvel: new org.jbpm.process.workitem.rss.RSSWorkItemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "URL")
         },
         mavenDepends = {
-                @WidMavenDepends(group = "rome", artifact = "rome", version = "1.0")
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
         })
 public class RSSWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 

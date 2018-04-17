@@ -19,6 +19,7 @@ import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
 import org.jbpm.process.workitem.core.util.Wid;
+import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -26,8 +27,12 @@ import org.kie.api.runtime.process.WorkItemManager;
 @Wid(widfile = "ExecDefinitions.wid", name = "Exec",
         displayName = "Exec",
         defaultHandler = "mvel: new org.jbpm.process.workitem.exec.ExecWorkItemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "Command")
+        },
+        mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
         })
 public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 

@@ -56,6 +56,7 @@ import org.kie.api.runtime.process.WorkItemManager;
 @Wid(widfile = "ParserDefinitions.wid", name = "Parser",
         displayName = "Parser",
         defaultHandler = "mvel: new org.jbpm.process.workitem.parser.ParserWorkItemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "Format"),
                 @WidParameter(name = "Type"),
@@ -65,7 +66,7 @@ import org.kie.api.runtime.process.WorkItemManager;
                 @WidResult(name = "Result")
         },
         mavenDepends = {
-                @WidMavenDepends(group = "com.fasterxml.jackson.core", artifact = "jackson-databind", version = "2.6.2")
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
         })
 public class ParserWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 

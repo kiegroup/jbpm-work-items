@@ -1,0 +1,6 @@
+<tr>
+    <td><a href="${artifactId}/index.html">${project.name}</a></td>
+    <td>${project.description}</td>
+    <td><a href="${artifactId}/${artifactId}.wid">wid</a>&nbsp;&nbsp;<a href="${artifactId}/${artifactId}.json">json</a>&nbsp;&nbsp;<a href="${artifactId}/kie-deployment-descriptor.xml">kie-dd</a>&nbsp;&nbsp;<a href="${artifactId}/${artifactId}-${version}.jar">jar</a></td>
+    <td>${organization.name}</td>
+</tr>

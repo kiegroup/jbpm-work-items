@@ -30,7 +30,7 @@ public class TwitterWorkitemIntegrationTest {
     public void testWorkitemValidity() {
         String repoPath = "file://" + System.getProperty("builddir") +
                 "/" + System.getProperty("artifactId") + "-" +
-                System.getProperty("version") + "/repository";
+                System.getProperty("version") + "/";
 
         Map<String, WorkDefinitionImpl> repoResults = new WorkItemRepository().getWorkDefinitions(repoPath,
                                                                                                   null,

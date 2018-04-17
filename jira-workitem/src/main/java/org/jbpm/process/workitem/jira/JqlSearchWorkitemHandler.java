@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 @Wid(widfile = "JiraJqlSearch.wid", name = "JiraJqlSearch",
         displayName = "JiraJqlSearch",
         defaultHandler = "mvel: new org.jbpm.process.workitem.jira.JqlSearchWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "SearchQuery")
         },
@@ -46,7 +47,7 @@ import org.slf4j.LoggerFactory;
                 @WidResult(name = "SearchResults")
         },
         mavenDepends = {
-                @WidMavenDepends(group = "com.atlassian.jira", artifact = "jira-rest-java-client", version = "1.0")
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
         })
 public class JqlSearchWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

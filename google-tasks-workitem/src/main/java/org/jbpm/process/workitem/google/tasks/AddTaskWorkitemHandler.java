@@ -39,14 +39,13 @@ import java.util.Date;
 @Wid(widfile = "GoogleAddTaskDefinitions.wid", name = "GoogleAddTask",
         displayName = "GoogleAddTask",
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.tasks.AddTaskWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "TaskName"),
                 @WidParameter(name = "TaskKind")
         },
         mavenDepends = {
-                @WidMavenDepends(group = "com.google.apis", artifact = "google-api-services-tasks", version = "v1-rev48-1.23.0"),
-                @WidMavenDepends(group = "com.google.oauth-client", artifact = "google-oauth-client-jetty", version = "1.23.0"),
-                @WidMavenDepends(group = "com.google.api-client", artifact = "google-api-client", version = "1.23.0")
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
         })
 public class AddTaskWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

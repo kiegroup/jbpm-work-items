@@ -10,7 +10,11 @@
   </parent>
 
   <artifactId>repository-springboot</artifactId>
-  <name>jBPM :: Contrib :: WorkItems :: Repository :: SpringBoot</name>
+  <name>Repository SpringBoot</name>
+  <description>Workitems SpringBoot Repository</description>
+  <organization>
+    <name>jBPM dev team</name>
+  </organization>
   
   <properties>
     <version.org.springboot>1.5.10.RELEASE</version.org.springboot>
@@ -32,126 +36,6 @@
   <dependencies>
 
     <!-- module dependencies -->
-    <dependency>
-      <groupId>org.jbpm.contrib</groupId>
-      <artifactId>archive-workitem</artifactId>      
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm.contrib</groupId>
-      <artifactId>dropbox-workitem</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm.contrib</groupId>
-      <artifactId>exec-workitem</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm.contrib</groupId>
-      <artifactId>ftp-workitem</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm.contrib</groupId>
-      <artifactId>google-calendar-workitem</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>com.google.oauth-client</groupId>
-          <artifactId>google-oauth-client-jetty</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.google.guava</groupId>
-          <artifactId>guava-jdk5</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm.contrib</groupId>
-      <artifactId>google-drive-workitem</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>com.google.oauth-client</groupId>
-          <artifactId>google-oauth-client-jetty</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm.contrib</groupId>
-      <artifactId>google-mail-workitem</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>com.google.oauth-client</groupId>
-          <artifactId>google-oauth-client-jetty</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm.contrib</groupId>
-      <artifactId>google-sheets-workitem</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>com.google.oauth-client</groupId>
-          <artifactId>google-oauth-client-jetty</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm.contrib</groupId>
-      <artifactId>google-tasks-workitem</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>com.google.oauth-client</groupId>
-          <artifactId>google-oauth-client-jetty</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm.contrib</groupId>
-      <artifactId>ibm-watson-workitem</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm.contrib</groupId>
-      <artifactId>ifttt-workitem</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm.contrib</groupId>
-      <artifactId>jabber-workitem</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm.contrib</groupId>
-      <artifactId>java-workitem</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm.contrib</groupId>
-      <artifactId>jpa-workitem</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm.contrib</groupId>
-      <artifactId>parser-workitem</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm.contrib</groupId>
-      <artifactId>rss-workitem</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm.contrib</groupId>
-      <artifactId>transform-workitem</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm.contrib</groupId>
-      <artifactId>twitter-workitem</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm.contrib</groupId>
-      <artifactId>github-workitem</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm.contrib</groupId>
-      <artifactId>jira-workitem</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>com.sun.jersey</groupId>
-          <artifactId>jersey-core</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>repository</artifactId>
@@ -246,5 +130,36 @@
         </executions>
       </plugin>
     </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>ban-duplicated-classes</id>
+              <phase>validate</phase>
+              <goals>
+                <goal>enforce</goal>
+              </goals>
+              <configuration>
+                <rules>
+                  <banDuplicateClasses>
+                    <ignoreClasses combine.children="append">
+                      <ignoreClass>com.google.common.*</ignoreClass>
+                      <ignoreClass>com.google.thirdparty.*</ignoreClass>
+                      <ignoreClass>javax.xml.*</ignoreClass>
+                      <ignoreClass>javax.xml.stream.*</ignoreClass>
+                      <ignoreClass>javax.xml.namespace.*</ignoreClass>
+                      <ignoreClass>javax.ws.rs.*</ignoreClass>
+                    </ignoreClasses>
+                  </banDuplicateClasses>
+                </rules>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 </project>
