@@ -46,6 +46,7 @@ import org.kie.api.runtime.process.WorkItemManager;
 @Wid(widfile = "GoogleSendMailDefinitions.wid", name = "GoogleSendMail",
         displayName = "GoogleSendMail",
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.mail.SendMailWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "To"),
                 @WidParameter(name = "From"),
@@ -57,6 +58,7 @@ import org.kie.api.runtime.process.WorkItemManager;
                 @WidResult(name = "Message")
         },
         mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}"),
                 @WidMavenDepends(group = "com.google.api-client", artifact = "google-api-client", version = "1.23.0"),
                 @WidMavenDepends(group = "com.google.oauth-client", artifact = "google-oauth-client-jetty", version = "1.23.0"),
                 @WidMavenDepends(group = "com.google.apis", artifact = "google-api-services-gmail", version = "v1-rev72-1.23.0")

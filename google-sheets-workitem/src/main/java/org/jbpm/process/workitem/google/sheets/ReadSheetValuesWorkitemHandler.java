@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 @Wid(widfile = "GoogleReadSheetValuesDefinitions.wid", name = "GoogleReadSheetValues",
         displayName = "GoogleReadSheetValues",
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.sheets.ReadSheetValuesWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "SheetId"),
                 @WidParameter(name = "Range"),
@@ -42,6 +43,7 @@ import org.slf4j.LoggerFactory;
                 @WidResult(name = "SheetValues")
         },
         mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}"),
                 @WidMavenDepends(group = "com.google.apis", artifact = "google-api-services-sheets", version = "v4-rev488-1.23.0"),
                 @WidMavenDepends(group = "com.google.oauth-client", artifact = "google-oauth-client-jetty", version = "1.23.0"),
                 @WidMavenDepends(group = "com.google.api-client", artifact = "google-api-client", version = "1.23.0")

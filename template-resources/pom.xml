@@ -10,7 +10,11 @@
   </parent>
 
   <artifactId>template-resources</artifactId>
-  <name>jBPM :: Contrib :: WorkItems :: Template Resources</name>
+  <name>Template Resources</name>
+  <description>Shared Template Resources</description>
+  <organization>
+    <name>jBPM dev team</name>
+  </organization>
 
   <build>
     <plugins>
@@ -27,6 +31,7 @@
         <configuration>
           <includes>
             <include>**/*.st</include>
+            <include>**/*.part</include>
           </includes>
         </configuration>
       </plugin>

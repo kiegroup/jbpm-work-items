@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 @Wid(widfile = "DropboxDownloadFileDefinitions.wid", name = "DropboxDownloadFile",
         displayName = "DropboxDownloadFile",
         defaultHandler = "mvel: new org.jbpm.process.workitem.dropbox.DownloadFileWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "DocumentPath")
         },
@@ -46,6 +47,7 @@ import org.slf4j.LoggerFactory;
                 @WidResult(name = "Document")
         },
         mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}"),
                 @WidMavenDepends(group = "com.dropbox.core", artifact = "dropbox-core-sdk", version = "3.0.5")
         })
 public class DownloadFileWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {

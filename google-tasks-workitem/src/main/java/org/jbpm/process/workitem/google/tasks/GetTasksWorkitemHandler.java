@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 @Wid(widfile = "GoogleGetTasksDefinitions.wid", name = "GoogleGetTasks",
         displayName = "GoogleGetTasks",
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.tasks.GetTasksWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "NumOfTasks")
         },
@@ -44,6 +45,7 @@ import org.slf4j.LoggerFactory;
                 @WidResult(name = "FoundTasks")
         },
         mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}"),
                 @WidMavenDepends(group = "com.google.apis", artifact = "google-api-services-tasks", version = "v1-rev48-1.23.0"),
                 @WidMavenDepends(group = "com.google.oauth-client", artifact = "google-oauth-client-jetty", version = "1.23.0"),
                 @WidMavenDepends(group = "com.google.api-client", artifact = "google-api-client", version = "1.23.0")

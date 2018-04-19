@@ -40,12 +40,14 @@ import org.slf4j.LoggerFactory;
 @Wid(widfile = "GoogleUploadToDriveDefinitions.wid", name = "GoogleUploadToDrive",
         displayName = "GoogleUploadToDrive",
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.drive.MediaUploadWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "DocToUpload"),
                 @WidParameter(name = "DocMimeType"),
                 @WidParameter(name = "UploadPath")
         },
         mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}"),
                 @WidMavenDepends(group = "com.google.api-client", artifact = "google-api-client", version = "1.23.0"),
                 @WidMavenDepends(group = "com.google.oauth-client", artifact = "google-oauth-client-jetty", version = "1.23.0"),
                 @WidMavenDepends(group = "com.google.apis", artifact = "google-api-services-drive", version = "v2-rev285-1.23.0")

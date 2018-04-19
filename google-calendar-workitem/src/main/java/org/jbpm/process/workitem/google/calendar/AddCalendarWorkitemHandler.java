@@ -31,6 +31,7 @@ import org.kie.api.runtime.process.WorkItemManager;
 @Wid(widfile = "GoogleAddCalendarDefinitions.wid", name = "GoogleAddCalendar",
         displayName = "GoogleAddCalendar",
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.calendar.AddCalendarWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "CalendarSummary")
         },
@@ -38,6 +39,7 @@ import org.kie.api.runtime.process.WorkItemManager;
                 @WidResult(name = "Calendar")
         },
         mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}"),
                 @WidMavenDepends(group = "com.google.apis", artifact = "google-api-services-calendar", version = "v3-rev87-1.19.0"),
                 @WidMavenDepends(group = "com.google.oauth-client", artifact = "google-oauth-client-jetty", version = "1.23.0"),
                 @WidMavenDepends(group = "com.google.http-client", artifact = "google-http-client-jackson2", version = "1.23.0")

@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 @Wid(widfile = "JabberDefinitions.wid", name = "Jabber",
         displayName = "Jabber",
         defaultHandler = "mvel: new org.jbpm.process.workitem.jabber.JabberWorkItemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "User"),
                 @WidParameter(name = "Password"),
@@ -47,6 +48,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "To")
         },
         mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}"),
                 @WidMavenDepends(group = "jivesoftware", artifact = "smack", version = "3.1.0")
         })
 public class JabberWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {

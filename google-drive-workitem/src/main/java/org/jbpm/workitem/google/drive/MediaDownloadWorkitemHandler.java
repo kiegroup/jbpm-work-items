@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 @Wid(widfile = "GoogleDownloadFromDriveDefinitions.wid", name = "GoogleDownloadFromDrive",
         displayName = "GoogleDownloadFromDrive",
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.drive.MediaDownloadWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "DocumentPath")
         },
@@ -50,6 +51,7 @@ import org.slf4j.LoggerFactory;
                 @WidResult(name = "Document")
         },
         mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}"),
                 @WidMavenDepends(group = "com.google.api-client", artifact = "google-api-client", version = "1.23.0"),
                 @WidMavenDepends(group = "com.google.oauth-client", artifact = "google-oauth-client-jetty", version = "1.23.0"),
                 @WidMavenDepends(group = "com.google.apis", artifact = "google-api-services-drive", version = "v2-rev285-1.23.0")

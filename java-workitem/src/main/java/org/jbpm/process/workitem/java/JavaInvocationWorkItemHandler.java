@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
 import org.jbpm.process.workitem.core.util.Wid;
+import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.kie.api.runtime.process.WorkItem;
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
 @Wid(widfile = "JavaInvocationDefinitions.wid", name = "JavaInvocation",
         displayName = "JavaInvocation",
         defaultHandler = "mvel: new org.jbpm.process.workitem.java.JavaInvocationWorkItemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "Class"),
                 @WidParameter(name = "Method"),
@@ -45,6 +47,9 @@ import org.slf4j.LoggerFactory;
         },
         results = {
                 @WidResult(name = "Result")
+        },
+        mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
         })
 public class JavaInvocationWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 

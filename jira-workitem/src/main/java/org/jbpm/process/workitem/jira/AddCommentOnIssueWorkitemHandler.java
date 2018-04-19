@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 @Wid(widfile = "JiraAddComment.wid", name = "JiraAddComment",
         displayName = "JiraAddComment",
         defaultHandler = "mvel: new org.jbpm.process.workitem.jira.AddCommentOnIssueWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "IssueKey"),
                 @WidParameter(name = "Comment"),
@@ -46,6 +47,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "CommentVisibleTo")
         },
         mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}"),
                 @WidMavenDepends(group = "com.atlassian.jira", artifact = "jira-rest-java-client", version = "1.0")
         })
 public class AddCommentOnIssueWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {

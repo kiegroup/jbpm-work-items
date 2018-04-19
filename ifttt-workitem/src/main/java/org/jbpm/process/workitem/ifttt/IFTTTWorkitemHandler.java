@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 @Wid(widfile = "IFTTTDefinitions.wid", name = "IFTTTCall",
         displayName = "IFTTTCall",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ifttt.IFTTTWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "Trigger"),
                 @WidParameter(name = "Value1"),
@@ -43,6 +44,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "Value3")
         },
         mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}"),
                 @WidMavenDepends(group = "com.fasterxml.jackson.core", artifact = "jackson-databind", version = "2.6.2"),
                 @WidMavenDepends(group = "org.jboss.spec.javax.ws.rs", artifact = "jboss-jaxrs-api_2.0_spec", version = "1.0.0.Final")
         })
