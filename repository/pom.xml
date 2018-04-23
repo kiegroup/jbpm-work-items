@@ -20,7 +20,7 @@
   <build>
     <resources>
       <resource>
-        <directory>src/main/resources</directory>
+        <directory>${project.build.directory}/maven-shared-archive-resources</directory>
         <filtering>true</filtering>
         <includes>
           <include>*.html</include>
@@ -28,6 +28,23 @@
       </resource>
     </resources>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <version>1.5</version>
+        <configuration>
+          <resourceBundles>
+            <resourceBundle>${project.groupId}:template-resources:${project.version}</resourceBundle>
+          </resourceBundles>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>process</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
@@ -239,6 +256,11 @@
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>ethereum-workitem</artifactId>
       <type>zip</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>template-resources</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- wid processor depends -->
