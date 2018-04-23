@@ -21,6 +21,7 @@ import java.util.Map;
 import org.drools.core.spi.ProcessContext;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
 import org.jbpm.process.workitem.core.util.Wid;
+import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.kie.api.runtime.KieSession;
@@ -31,8 +32,12 @@ import org.kie.api.runtime.process.WorkflowProcessInstance;
 @Wid(widfile = "JavaDefinitions.wid", name = "Java",
         displayName = "Java",
         defaultHandler = "mvel: new org.jbpm.process.workitem.java.JavaHandlerWorkItemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "Class")
+        },
+        mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
         })
 public class JavaHandlerWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 

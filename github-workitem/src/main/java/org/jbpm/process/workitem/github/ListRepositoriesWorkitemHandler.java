@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 @Wid(widfile = "GithubListRepositories.wid", name = "GithubListRepositories",
         displayName = "GithubListRepositories",
         defaultHandler = "mvel: new org.jbpm.process.workitem.github.ListRepositoriesWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "User")
         },
@@ -45,7 +46,7 @@ import org.slf4j.LoggerFactory;
                 @WidResult(name = "RepoListInfo")
         },
         mavenDepends = {
-                @WidMavenDepends(group = "org.eclipse.mylyn.github", artifact = "org.eclipse.egit.github.core", version = "2.1.5")
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
         })
 public class ListRepositoriesWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

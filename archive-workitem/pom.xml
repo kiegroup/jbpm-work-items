@@ -10,7 +10,11 @@
   </parent>
 
   <artifactId>archive-workitem</artifactId>
-  <name>jBPM :: Contrib :: WorkItems :: Archive</name>
+  <name>Archive</name>
+  <description>Archive a list of files</description>
+  <organization>
+    <name>jBPM dev team</name>
+  </organization>
 
   <dependencies>
     <dependency>
@@ -52,7 +56,34 @@
   </dependencies>
 
   <build>
+    <sourceDirectory>${project.build.directory}/generated-sources/java</sourceDirectory>
+    <resources>
+      <resource>
+        <directory>${project.build.directory}/maven-shared-archive-resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>*.part</include>
+        </includes>
+      </resource>
+    </resources>
     <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>templating-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <executions>
+          <execution>
+            <id>filter-src</id>
+            <goals>
+              <goal>filter-sources</goal>
+            </goals>
+            <configuration>
+              <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+              <outputDirectory>${project.build.directory}/generated-sources/java</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-remote-resources-plugin</artifactId>

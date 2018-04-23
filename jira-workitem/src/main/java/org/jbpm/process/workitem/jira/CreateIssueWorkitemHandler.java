@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 @Wid(widfile = "JiraCreateIssue.wid", name = "JiraCreateIssue",
         displayName = "JiraCreateIssue",
         defaultHandler = "mvel: new org.jbpm.process.workitem.jira.CreateIssueWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "ProjectKey"),
                 @WidParameter(name = "IssueSummary"),
@@ -56,7 +57,7 @@ import org.slf4j.LoggerFactory;
                 @WidResult(name = "CreatedIssueKey")
         },
         mavenDepends = {
-                @WidMavenDepends(group = "com.atlassian.jira", artifact = "jira-rest-java-client", version = "1.0")
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
         })
 public class CreateIssueWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

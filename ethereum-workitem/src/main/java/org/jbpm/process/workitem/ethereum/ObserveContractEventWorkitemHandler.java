@@ -35,6 +35,7 @@ import org.web3j.protocol.http.HttpService;
 @Wid(widfile = "EthereumObserveContractEvent.wid", name = "EthereumObserveContractEvent",
         displayName = "EthereumObserveContractEvent",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ethereum.ObserveContractEventWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "ServiceURL", required = true),
                 @WidParameter(name = "ContractAddress", required = true),
@@ -46,7 +47,7 @@ import org.web3j.protocol.http.HttpService;
                 @WidParameter(name = "AbortOnUpdate")
         },
         mavenDepends = {
-                @WidMavenDepends(group = "org.web3j", artifact = "core", version = "3.3.1")
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
         })
 public class ObserveContractEventWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

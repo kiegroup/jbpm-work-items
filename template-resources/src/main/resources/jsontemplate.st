@@ -6,6 +6,7 @@
         "category" : "$widInfo.(k).category$",
         "description" : "$widInfo.(k).description$",
         "defaultHandler" : "$widInfo.(k).defaultHandler$",
+        "documentation" : "$widInfo.(k).documentation$",
         $if(widInfo.(k).parameters)$
         "parameters" : [
             $widInfo.(k).parameters:{k1|

@@ -41,13 +41,14 @@ import org.slf4j.LoggerFactory;
 @Wid(widfile = "JiraResolveIssue.wid", name = "JiraResolveIssue",
         displayName = "JiraResolveIssue",
         defaultHandler = "mvel: new org.jbpm.process.workitem.jira.ResolveIssueWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "IssueKey"),
                 @WidParameter(name = "Resolution"),
                 @WidParameter(name = "ResolutionComment"),
         },
         mavenDepends = {
-                @WidMavenDepends(group = "com.atlassian.jira", artifact = "jira-rest-java-client", version = "1.0")
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
         })
 public class ResolveIssueWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

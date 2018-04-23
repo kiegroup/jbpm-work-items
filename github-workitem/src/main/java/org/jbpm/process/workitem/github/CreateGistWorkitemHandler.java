@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 @Wid(widfile = "GithubCreateGist.wid", name = "GithubCreateGist",
         displayName = "GithubCreateGist",
         defaultHandler = "mvel: new org.jbpm.process.workitem.github.CreateGistWorkitemHandler()",
+        documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "Content"),
                 @WidParameter(name = "Description"),
@@ -50,7 +51,7 @@ import org.slf4j.LoggerFactory;
                 @WidResult(name = "GistURL")
         },
         mavenDepends = {
-                @WidMavenDepends(group = "org.eclipse.mylyn.github", artifact = "org.eclipse.egit.github.core", version = "2.1.5")
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
         })
 public class CreateGistWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 
