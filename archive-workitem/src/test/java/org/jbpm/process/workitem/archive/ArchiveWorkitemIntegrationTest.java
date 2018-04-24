@@ -32,10 +32,6 @@ public class ArchiveWorkitemIntegrationTest {
                 "/" + System.getProperty("artifactId") + "-" +
                 System.getProperty("version") + "/";
 
-        System.out.println(System.getProperty("builddir"));
-        System.out.println(System.getProperty("artifactId"));
-        System.out.println(System.getProperty("version"));
-
 
         Map<String, WorkDefinitionImpl> repoResults = new WorkItemRepository().getWorkDefinitions(repoPath,
                                                                                             null,
