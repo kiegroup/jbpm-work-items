@@ -11,7 +11,7 @@
         $if(widInfo.(k).parameters)$
         "parameters" : [
             $widInfo.(k).parameters:{k1|
-                "$k1$" : new $widInfo.(k).parameters.(k1).type$()
+                "$k1$" : $widInfo.(k).parameters.(k1).type$
             }; separator=","$
         ],
         $endif$
@@ -25,7 +25,7 @@
         $if(widInfo.(k).results)$
         "results" : [
             $widInfo.(k).results:{k1|
-                "$k1$" : new $widInfo.(k).results.(k1).type$()
+                "$k1$" : $widInfo.(k).results.(k1).type$
             }; separator=","$
         ],
         $endif$

@@ -12,7 +12,7 @@
             $widInfo.(k).parameters:{k1|
                $openbracket$
                    "name" : "$k1$",
-                   "type" : "new $widInfo.(k).parameters.(k1).type$()"
+                   "type" : "$widInfo.(k).parameters.(k1).type$"
                $closebracket$
             }; separator=","$
         ],"
@@ -32,7 +32,7 @@
             $widInfo.(k).results:{k1|
                $openbracket$
                    "name" : "$k1$",
-                   "type" : "new $widInfo.(k).results.(k1).type$()"
+                   "type" : "$widInfo.(k).results.(k1).type$"
                $closebracket$
             }; separator=","$
         ],
