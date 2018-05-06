@@ -36,6 +36,7 @@
     <module>github-workitem</module>
     <module>jira-workitem</module>
     <module>ethereum-workitem</module>
+    <module>camel-workitem</module>
     <module>repository</module>
     <module>repository-springboot</module>
   </modules>
@@ -273,6 +274,21 @@
         <artifactId>rxjava</artifactId>
         <version>${version.rxjava}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-core</artifactId>
+        <version>${version.org.apache.camel}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-ftp</artifactId>
+        <version>${version.org.apache.camel}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-sql</artifactId>
+        <version>${version.org.apache.camel}</version>
+      </dependency>
 
       <!-- test depends -->
       <dependency>
@@ -326,6 +342,23 @@
         <groupId>org.twitter4j</groupId>
         <artifactId>twitter4j-core</artifactId>
         <version>${version.twitter4j}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-persistence-jpa</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-persistence-jpa</artifactId>
+        <type>test-jar</type>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-query-jpa</artifactId>
+        <type>test-jar</type>
+        <version>${version.org.kie}</version>
       </dependency>
 
       <!-- module dependencies -->
@@ -437,6 +470,11 @@
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
         <artifactId>ethereum-workitem</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>camel-workitem</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -575,6 +613,12 @@
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
         <artifactId>ethereum-workitem</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>camel-workitem</artifactId>
         <version>${project.version}</version>
         <type>zip</type>
       </dependency>
