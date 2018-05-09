@@ -83,6 +83,7 @@
     <version.squareup.okhttp3>3.8.1</version.squareup.okhttp3>
     <version.rxjava>1.2.4</version.rxjava>
     <version.owm>2.5.2.2</version.owm>
+    <version.commons.net>3.6</version.commons.net>
 
     <!-- Failsafe plugin-related properties -->
     <failsafe.arg.line>
@@ -366,6 +367,12 @@
         <groupId>net.aksingh</groupId>
         <artifactId>owm-japis</artifactId>
         <version>${version.owm}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-net</groupId>
+        <artifactId>commons-net</artifactId>
+        <version>${version.commons.net}</version>
       </dependency>
 
       <!-- module dependencies -->

@@ -61,7 +61,7 @@ public abstract class CamelFtpBaseTest extends AbstractBaseTest {
 
         boolean created = ftpRoot.mkdir();
         if (!created) {
-            throw new IllegalArgumentException("FTP root directory has not been created, " + "check system property java.io.tmp");
+            throw new IllegalArgumentException("FTP root directory has not been created, " + "check system property java.io.tmpdir");
         }
         String fileName = "test_file_" + CamelFtpTest.class.getName() + "_" + UUID.randomUUID().toString();
 
