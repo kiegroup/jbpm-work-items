@@ -37,6 +37,7 @@
     <module>jira-workitem</module>
     <module>ethereum-workitem</module>
     <module>camel-workitem</module>
+    <module>openweathermap-workitem</module>
     <module>repository</module>
     <module>repository-springboot</module>
   </modules>
@@ -81,6 +82,7 @@
     <version.github.jnr>0.15</version.github.jnr>
     <version.squareup.okhttp3>3.8.1</version.squareup.okhttp3>
     <version.rxjava>1.2.4</version.rxjava>
+    <version.owm>2.5.2.2</version.owm>
 
     <!-- Failsafe plugin-related properties -->
     <failsafe.arg.line>
@@ -360,6 +362,11 @@
         <type>test-jar</type>
         <version>${version.org.kie}</version>
       </dependency>
+      <dependency>
+        <groupId>net.aksingh</groupId>
+        <artifactId>owm-japis</artifactId>
+        <version>${version.owm}</version>
+      </dependency>
 
       <!-- module dependencies -->
       <dependency>
@@ -475,6 +482,11 @@
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
         <artifactId>camel-workitem</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>openweathermap-workitem</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -619,6 +631,12 @@
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
         <artifactId>camel-workitem</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>openweathermap-workitem</artifactId>
         <version>${project.version}</version>
         <type>zip</type>
       </dependency>
