@@ -96,7 +96,7 @@ public class HostedRepositoryIntegrationTest {
         Map<String, WorkDefinitionImpl> repoResults = WorkItemRepository.getWorkDefinitions(uri.toString());
         assertNotNull(repoResults);
         // update this when new workitems are added
-        assertEquals(51,
+        assertEquals(53,
                      repoResults.size());
     }
 

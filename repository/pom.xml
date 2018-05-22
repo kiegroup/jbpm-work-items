@@ -199,6 +199,11 @@
     </dependency>
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
+      <artifactId>google-translate-workitem</artifactId>
+      <type>zip</type>
+    </dependency>
+    <dependency>
+      <groupId>org.jbpm.contrib</groupId>
       <artifactId>ibm-watson-workitem</artifactId>
       <type>zip</type>
     </dependency>
