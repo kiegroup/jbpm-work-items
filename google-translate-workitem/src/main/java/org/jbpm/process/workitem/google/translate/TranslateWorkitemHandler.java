@@ -63,12 +63,12 @@ public class TranslateWorkitemHandler extends AbstractLogOrThrowWorkItemHandler 
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager workItemManager) {
         try {
-            String toStranslate = (String) workItem.getParameter("ToTranslate");
+            String toTranslate = (String) workItem.getParameter("ToTranslate");
             String sourceLang = (String) workItem.getParameter("SourceLang");
             String targetLang = (String) workItem.getParameter("TargetLang");
             Map<String, Object> results = new HashMap<String, Object>();
 
-            if (toStranslate == null || sourceLang == null || targetLang == null) {
+            if (toTranslate == null || sourceLang == null || targetLang == null) {
                 logger.error("Missing translation text or source/target language.");
                 throw new IllegalArgumentException("Missing translation text or source/target language.");
             }
@@ -76,9 +76,9 @@ public class TranslateWorkitemHandler extends AbstractLogOrThrowWorkItemHandler 
             translationService = googleTranslateAuth.getTranslationService(apiKey);
 
             TranslateOption srcLangOption = TranslateOption.sourceLanguage(sourceLang);
-            TranslateOption targetLangOption = TranslateOption.sourceLanguage(targetLang);
+            TranslateOption targetLangOption = TranslateOption.targetLanguage(targetLang);
 
-            Translation translation = translationService.translate(toStranslate,
+            Translation translation = translationService.translate(toTranslate,
                                                                    srcLangOption,
                                                                    targetLangOption);
 
