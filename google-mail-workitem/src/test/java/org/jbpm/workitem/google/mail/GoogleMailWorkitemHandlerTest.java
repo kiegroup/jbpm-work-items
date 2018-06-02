@@ -18,6 +18,7 @@ package org.jbpm.workitem.google.mail;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.Message;
 import org.drools.core.process.instance.impl.WorkItemImpl;
+import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 import org.jbpm.document.service.impl.DocumentImpl;
 import org.jbpm.process.workitem.core.TestWorkItemManager;
 import org.jbpm.test.AbstractBaseTest;
@@ -27,10 +28,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
-
-import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GoogleMailWorkitemHandlerTest extends AbstractBaseTest {
@@ -85,7 +85,8 @@ public class GoogleMailWorkitemHandlerTest extends AbstractBaseTest {
         workItem.setParameter("Attachment",
                               attachmentDoc);
 
-        SendMailWorkitemHandler handler = new SendMailWorkitemHandler("myAppName", "{}");
+        SendMailWorkitemHandler handler = new SendMailWorkitemHandler("myAppName",
+                                                                      "{}");
         handler.setAuth(auth);
 
         handler.executeWorkItem(workItem,
@@ -94,5 +95,26 @@ public class GoogleMailWorkitemHandlerTest extends AbstractBaseTest {
         assertEquals(1,
                      manager.getResults().size());
         assertTrue(manager.getResults().containsKey(workItem.getId()));
+    }
+
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testSendEmailInvalidParams() throws Exception {
+
+        DocumentImpl attachmentDoc = new DocumentImpl();
+        attachmentDoc.setContent(new String("Attachment sources").getBytes());
+        attachmentDoc.setName("attachmentFileName.txt");
+
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        SendMailWorkitemHandler handler = new SendMailWorkitemHandler("myAppName",
+                                                                      "{}");
+        handler.setAuth(auth);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
     }
 }

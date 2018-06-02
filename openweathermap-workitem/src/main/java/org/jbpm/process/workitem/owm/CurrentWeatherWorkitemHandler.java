@@ -22,6 +22,7 @@ import net.aksingh.owmjapis.core.OWM;
 import net.aksingh.owmjapis.core.OWM.Country;
 import net.aksingh.owmjapis.model.CurrentWeather;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -60,15 +61,14 @@ public class CurrentWeatherWorkitemHandler extends AbstractLogOrThrowWorkItemHan
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager workItemManager) {
         try {
+
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             String cityName = (String) workItem.getParameter("CityName");
             String countryCode = (String) workItem.getParameter("CountryCode");
             Map<String, Object> results = new HashMap<String, Object>();
             CurrentWeatherData cwd = new CurrentWeatherData();
-
-            if (cityName == null) {
-                logger.error("Missing city name.");
-                throw new IllegalArgumentException("Missing city name.");
-            }
 
             if (owm == null) {
                 owm = new OWM(apiKey);

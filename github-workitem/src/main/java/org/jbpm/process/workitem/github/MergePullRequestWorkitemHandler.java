@@ -18,21 +18,17 @@ package org.jbpm.process.workitem.github;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-
 import org.eclipse.egit.github.core.MergeStatus;
 import org.eclipse.egit.github.core.RepositoryId;
 import org.eclipse.egit.github.core.service.PullRequestService;
-
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
-
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +37,9 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.github.MergePullRequestWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "RepoOwner"),
-                @WidParameter(name = "RepoName"),
-                @WidParameter(name = "PullRequestNum"),
+                @WidParameter(name = "RepoOwner", required = true),
+                @WidParameter(name = "RepoName", required = true),
+                @WidParameter(name = "PullRequestNum", required = true),
                 @WidParameter(name = "CommitMessage")
         },
         results = {
@@ -71,6 +67,9 @@ public class MergePullRequestWorkitemHandler extends AbstractLogOrThrowWorkItemH
                                 WorkItemManager workItemManager) {
         try {
 
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             Map<String, Object> results = new HashMap<String, Object>();
 
             String repoOwner = (String) workItem.getParameter("RepoOwner");
@@ -80,31 +79,30 @@ public class MergePullRequestWorkitemHandler extends AbstractLogOrThrowWorkItemH
 
             MergeStatus mergeStatus;
 
-            if (StringUtils.isNotEmpty(repoOwner) && StringUtils.isNotEmpty(repoName) && StringUtils.isNumeric(pullRequestNum)) {
+            PullRequestService pullRequestService = auth.getPullRequestService(this.userName,
+                                                                               this.password);
 
-                PullRequestService pullRequestService = auth.getPullRequestService(this.userName,
-                                                                                   this.password);
+            RepositoryId repositoryId = new RepositoryId(repoOwner,
+                                                         repoName);
+            if (pullRequestService.getPullRequest(repositoryId,
+                                                  Integer.parseInt(pullRequestNum)).isMergeable()) {
+                mergeStatus = pullRequestService.merge(repositoryId,
+                                                       Integer.parseInt(pullRequestNum),
+                                                       commitMessage);
 
-                RepositoryId repositoryId = new RepositoryId(repoOwner,
-                                                             repoName);
-                if (pullRequestService.getPullRequest(repositoryId,
-                                                      Integer.parseInt(pullRequestNum)).isMergeable()) {
-                    mergeStatus = pullRequestService.merge(repositoryId,
-                                                           Integer.parseInt(pullRequestNum),
-                                                           commitMessage);
+                if(mergeStatus != null && mergeStatus.isMerged()) {
                     results.put(RESULTS_VALUE,
                                 mergeStatus.isMerged());
                 } else {
-                    results.put(RESULTS_VALUE,
-                                false);
+                    throw new IllegalArgumentException("Unable to merget pull request: " + mergeStatus.getMessage());
                 }
 
-                workItemManager.completeWorkItem(workItem.getId(),
-                                                 results);
             } else {
-                logger.error("Missing repository and pull request info.");
-                throw new IllegalArgumentException("Missing repository and pull request info.");
+                throw new IllegalArgumentException("Pull request " + pullRequestNum + " is not mergeable");
             }
+
+            workItemManager.completeWorkItem(workItem.getId(),
+                                             results);
         } catch (Exception e) {
             handleException(e);
         }

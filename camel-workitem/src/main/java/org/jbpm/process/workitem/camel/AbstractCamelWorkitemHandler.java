@@ -31,6 +31,7 @@ import org.jbpm.process.workitem.camel.request.RequestMapper;
 import org.jbpm.process.workitem.camel.response.ResponseMapper;
 import org.jbpm.process.workitem.camel.uri.URIMapper;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.slf4j.Logger;
@@ -48,6 +49,9 @@ public abstract class AbstractCamelWorkitemHandler extends AbstractLogOrThrowWor
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager manager) {
         try {
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             manager.completeWorkItem(workItem.getId(),
                                      send(workItem));
         } catch (Exception e) {

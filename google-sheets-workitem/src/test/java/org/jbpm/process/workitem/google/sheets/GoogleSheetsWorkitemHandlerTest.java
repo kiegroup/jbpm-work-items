@@ -21,6 +21,7 @@ import java.util.List;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import org.drools.core.process.instance.impl.WorkItemImpl;
+import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 import org.jbpm.process.workitem.core.TestWorkItemManager;
 import org.jbpm.test.AbstractBaseTest;
 import org.junit.Before;
@@ -29,10 +30,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
-
-import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GoogleSheetsWorkitemHandlerTest extends AbstractBaseTest {
@@ -103,5 +103,21 @@ public class GoogleSheetsWorkitemHandlerTest extends AbstractBaseTest {
                      returnValues.get(0).get(0));
         assertEquals("testValueTwo",
                      returnValues.get(0).get(1));
+    }
+
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testReadSheetValuesInvalidParams() throws Exception {
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        ReadSheetValuesWorkitemHandler handler = new ReadSheetValuesWorkitemHandler("testAppName",
+                                                                                    "{}");
+        handler.setAuth(auth);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
     }
 }

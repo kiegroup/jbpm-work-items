@@ -22,28 +22,22 @@ import com.google.api.client.googleapis.media.MediaHttpUploader;
 import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
-
 import org.apache.commons.io.IOUtils;
-
 import org.drools.core.process.instance.impl.WorkItemImpl;
-
+import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 import org.jbpm.document.Document;
 import org.jbpm.document.service.impl.DocumentImpl;
 import org.jbpm.process.workitem.core.TestWorkItemManager;
 import org.jbpm.test.AbstractBaseTest;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.mockito.Mock;
-
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.junit.Assert.*;
-
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -117,6 +111,26 @@ public class GoogleDriveWorkitemHandlerTest extends AbstractBaseTest {
         assertEquals(1,
                      manager.getResults().size());
         assertTrue(manager.getResults().containsKey(workItem.getId()));
+    }
+
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testUploadInvalidParams() throws Exception {
+        DocumentImpl testUploadDoc = new DocumentImpl();
+        testUploadDoc.setContent(new String("Test file to upload").getBytes());
+        testUploadDoc.setName("testFileToUpload.txt");
+
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        MediaUploadWorkitemHandler handler = new MediaUploadWorkitemHandler("myAppName",
+                                                                            "{}");
+        handler.setAuth(auth);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
     }
 
     @Test

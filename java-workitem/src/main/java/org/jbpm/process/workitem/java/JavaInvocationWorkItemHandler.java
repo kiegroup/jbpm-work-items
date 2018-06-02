@@ -16,7 +16,6 @@
 
 package org.jbpm.process.workitem.java;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -25,21 +24,20 @@ import java.util.List;
 import java.util.Map;
 
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "JavaInvocationDefinitions.wid", name = "JavaInvocation",
         displayName = "JavaInvocation",
         defaultHandler = "mvel: new org.jbpm.process.workitem.java.JavaInvocationWorkItemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "Class"),
+                @WidParameter(name = "Class", required = true),
                 @WidParameter(name = "Method"),
                 @WidParameter(name = "Object"),
                 @WidParameter(name = "ParameterTypes"),
@@ -53,23 +51,26 @@ import org.slf4j.LoggerFactory;
         })
 public class JavaInvocationWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(JavaInvocationWorkItemHandler.class);
-
     @SuppressWarnings("unchecked")
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager manager) {
-        String className = (String) workItem.getParameter("Class");
-        String methodName = (String) workItem.getParameter("Method");
-        Object object = workItem.getParameter("Object");
-        List<String> paramTypes = (List<String>) workItem.getParameter("ParameterTypes");
-        List<Object> params = (List<Object>) workItem.getParameter("Parameters");
-        Object result = null;
         try {
+
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
+            String className = (String) workItem.getParameter("Class");
+            String methodName = (String) workItem.getParameter("Method");
+            Object object = workItem.getParameter("Object");
+            List<String> paramTypes = (List<String>) workItem.getParameter("ParameterTypes");
+            List<Object> params = (List<Object>) workItem.getParameter("Parameters");
+            Object result;
+
             Class<?> c = Class.forName(className);
             Class<?>[] classes = null;
             Method method = null;
             if (params == null) {
-                params = new ArrayList<Object>();
+                params = new ArrayList<>();
             }
             if (paramTypes == null) {
                 classes = new Class<?>[0];
@@ -104,27 +105,17 @@ public class JavaInvocationWorkItemHandler extends AbstractLogOrThrowWorkItemHan
             }
             result = method.invoke(object,
                                    params.toArray());
-            Map<String, Object> results = new HashMap<String, Object>();
+            Map<String, Object> results = new HashMap<>();
             results.put("Result",
                         result);
             manager.completeWorkItem(workItem.getId(),
                                      results);
-            return;
-        } catch (ClassNotFoundException e) {
-            handleException(e);
-        } catch (InstantiationException e) {
-            handleException(e);
-        } catch (IllegalAccessException e) {
-            handleException(e);
-        } catch (NoSuchMethodException e) {
-            handleException(e);
-        } catch (InvocationTargetException e) {
+        } catch (Exception e) {
             handleException(e);
         }
     }
 
     public void abortWorkItem(WorkItem arg0,
                               WorkItemManager arg1) {
-        // Do nothing
     }
 }

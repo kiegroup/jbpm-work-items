@@ -21,6 +21,7 @@ import java.util.Map;
 
 import com.google.api.services.calendar.model.Calendar;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -33,7 +34,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.calendar.AddCalendarWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "CalendarSummary")
+                @WidParameter(name = "CalendarSummary", required = true)
         },
         results = {
                 @WidResult(name = "Calendar")
@@ -63,18 +64,22 @@ public class AddCalendarWorkitemHandler extends AbstractLogOrThrowWorkItemHandle
 
         try {
 
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             com.google.api.services.calendar.Calendar client = auth.getAuthorizedCalendar(appName,
                                                                                           clientSecret);
 
             results.put(RESULTS_CALENDAR,
                         addCalendar(client,
                                     paramCalendarSummary));
+
+            workItemManager.completeWorkItem(workItem.getId(),
+                                             results);
         } catch (Exception e) {
             handleException(e);
         }
 
-        workItemManager.completeWorkItem(workItem.getId(),
-                                         results);
     }
 
     public Calendar addCalendar(com.google.api.services.calendar.Calendar client,

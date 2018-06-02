@@ -63,12 +63,12 @@ public class GetCalendarsWorkitemHandler extends AbstractLogOrThrowWorkItemHandl
 
             results.put(RESULTS_ALL_CALENDARS,
                         getAllCalendars(client));
+            workItemManager.completeWorkItem(workItem.getId(),
+                                             results);
         } catch (Exception e) {
             handleException(e);
         }
 
-        workItemManager.completeWorkItem(workItem.getId(),
-                                         results);
     }
 
     public CalendarList getAllCalendars(com.google.api.services.calendar.Calendar client) {

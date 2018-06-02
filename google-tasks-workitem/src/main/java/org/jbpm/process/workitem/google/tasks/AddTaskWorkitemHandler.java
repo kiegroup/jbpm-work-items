@@ -15,33 +15,27 @@
  */
 package org.jbpm.process.workitem.google.tasks;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Date;
 
+import com.google.api.client.util.DateTime;
 import com.google.api.services.tasks.Tasks;
 import com.google.api.services.tasks.model.TaskList;
-import com.google.api.services.tasks.model.TaskLists;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
-import org.jbpm.process.workitem.core.util.WidResult;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.api.services.tasks.model.TaskList;
-import com.google.api.client.util.DateTime;
-import java.util.Date;
 
 @Wid(widfile = "GoogleAddTaskDefinitions.wid", name = "GoogleAddTask",
         displayName = "GoogleAddTask",
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.tasks.AddTaskWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "TaskName"),
+                @WidParameter(name = "TaskName", required = true),
                 @WidParameter(name = "TaskKind")
         },
         mavenDepends = {
@@ -56,7 +50,7 @@ public class AddTaskWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
     private String clientSecret;
 
     public AddTaskWorkitemHandler(String appName,
-                                   String clientSecret) {
+                                  String clientSecret) {
         this.appName = appName;
         this.clientSecret = clientSecret;
     }
@@ -66,12 +60,10 @@ public class AddTaskWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
         String taskName = (String) workItem.getParameter("TaskName");
         String taskKind = (String) workItem.getParameter("TaskKind");
 
-        if (taskName == null) {
-            logger.error("Missing task name input.");
-            throw new IllegalArgumentException("Missing task name input.");
-        }
-
         try {
+
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
 
             Tasks service = auth.getTasksService(appName,
                                                  clientSecret);

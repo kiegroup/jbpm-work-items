@@ -23,8 +23,8 @@ import java.util.Map;
 import com.google.api.services.tasks.Tasks;
 import com.google.api.services.tasks.model.TaskList;
 import com.google.api.services.tasks.model.TaskLists;
-import org.apache.commons.lang3.StringUtils;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.tasks.GetTasksWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "NumOfTasks")
+                @WidParameter(name = "NumOfTasks", required = true)
         },
         results = {
                 @WidResult(name = "FoundTasks")
@@ -64,18 +64,16 @@ public class GetTasksWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager workItemManager) {
-        Map<String, Object> results = new HashMap<String, Object>();
-        String numbOfTasksStr = (String) workItem.getParameter("NumOfTasks");
-        List<TaskInfo> tasksResultsList = new ArrayList<>();
 
         try {
 
-            if (numbOfTasksStr == null || !StringUtils.isNumeric(numbOfTasksStr)) {
-                logger.error("Missing or invalid num of tasks input.");
-                throw new IllegalArgumentException("Missing or invalid num of tasks input.");
-            }
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
 
-            Long numOfTasksLong = Long.valueOf(numbOfTasksStr);
+            Map<String, Object> results = new HashMap<String, Object>();
+            Long numOfTasksLong = Long.valueOf((String) workItem.getParameter("NumOfTasks"));
+            List<TaskInfo> tasksResultsList = new ArrayList<>();
+
             if (numOfTasksLong <= 0) {
                 logger.error("Number of tasks requested must be greater than zero.");
                 throw new IllegalArgumentException("Number of tasks requested must be greater than zero.");

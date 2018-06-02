@@ -89,4 +89,23 @@ public class FTPUploadWorkItemHandlerTest {
                      manager.getResults().size());
         assertTrue(manager.getResults().containsKey(workItem.getId()));
     }
+
+    @Test
+    public void testFTPUploadInvalidParams() throws Exception {
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+        workItem.setId(123L);
+
+        FTPUploadWorkItemHandler handler = new FTPUploadWorkItemHandler();
+        handler.setLogThrownException(true);
+        handler.setFTPClient(client);
+        handler.setConnection(connection);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
+    }
 }

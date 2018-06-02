@@ -21,18 +21,14 @@ import java.util.Map;
 import com.atlassian.jira.rest.client.NullProgressMonitor;
 import com.atlassian.jira.rest.client.domain.BasicIssue;
 import com.atlassian.jira.rest.client.domain.SearchResult;
-
-import org.apache.commons.lang3.StringUtils;
-
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
-
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +37,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.jira.JqlSearchWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "SearchQuery")
+                @WidParameter(name = "SearchQuery", required = true)
         },
         results = {
                 @WidResult(name = "SearchResults")
@@ -71,37 +67,36 @@ public class JqlSearchWorkitemHandler extends AbstractLogOrThrowWorkItemHandler 
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager workItemManager) {
         try {
+
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             String jqlQuery = (String) workItem.getParameter("SearchQuery");
 
-            if (StringUtils.isNotEmpty(jqlQuery)) {
-                if (auth == null) {
-                    auth = new JiraAuth(userName,
-                                        password,
-                                        repoURI);
-                }
-
-                Map<String, Object> results = new HashMap<String, Object>();
-                Map<String, String> resultIssues = new HashMap<>();
-
-                NullProgressMonitor progressMonitor = new NullProgressMonitor();
-                SearchResult searchResult = auth.getSearchRestClient().searchJql(jqlQuery,
-                                                                                 progressMonitor);
-                Iterable<BasicIssue> foundIssues = searchResult.getIssues();
-
-                for (BasicIssue issue : foundIssues) {
-                    resultIssues.put(issue.getKey(),
-                                     issue.getSelf().toURL().toString());
-                }
-
-                results.put(RESULTS_VALUE,
-                            resultIssues);
-
-                workItemManager.completeWorkItem(workItem.getId(),
-                                                 results);
-            } else {
-                logger.error("Missing search query.");
-                throw new IllegalArgumentException("Missing search query.");
+            if (auth == null) {
+                auth = new JiraAuth(userName,
+                                    password,
+                                    repoURI);
             }
+
+            Map<String, Object> results = new HashMap<String, Object>();
+            Map<String, String> resultIssues = new HashMap<>();
+
+            NullProgressMonitor progressMonitor = new NullProgressMonitor();
+            SearchResult searchResult = auth.getSearchRestClient().searchJql(jqlQuery,
+                                                                             progressMonitor);
+            Iterable<BasicIssue> foundIssues = searchResult.getIssues();
+
+            for (BasicIssue issue : foundIssues) {
+                resultIssues.put(issue.getKey(),
+                                 issue.getSelf().toURL().toString());
+            }
+
+            results.put(RESULTS_VALUE,
+                        resultIssues);
+
+            workItemManager.completeWorkItem(workItem.getId(),
+                                             results);
         } catch (Exception e) {
             logger.error("Error executing workitem: " + e.getMessage());
             handleException(e);

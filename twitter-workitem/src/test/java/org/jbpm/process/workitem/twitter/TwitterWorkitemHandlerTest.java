@@ -16,29 +16,23 @@
 package org.jbpm.process.workitem.twitter;
 
 import org.drools.core.process.instance.impl.WorkItemImpl;
-
+import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 import org.jbpm.document.service.impl.DocumentImpl;
 import org.jbpm.process.workitem.core.TestWorkItemManager;
 import org.jbpm.test.AbstractBaseTest;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.mockito.Mock;
-
 import org.powermock.modules.junit4.PowerMockRunner;
-
 import twitter4j.DirectMessage;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 
 import static org.junit.Assert.*;
-
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
@@ -98,6 +92,24 @@ public class TwitterWorkitemHandlerTest extends AbstractBaseTest {
                      handlerStatusUpdate.getStatus());
     }
 
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testUpdateStatusInvalidParams() throws Exception {
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        UpdateStatusWorkitemHandler handler = new UpdateStatusWorkitemHandler("testConsumerKey",
+                                                                              "testConsumerSecret",
+                                                                              "testAccessKey",
+                                                                              "testAccessSecret");
+        handler.setAuth(auth);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
+    }
+
     @Test
     public void testUpdateStatusWithMedia() throws Exception {
         DocumentImpl testMediaDoc = new DocumentImpl();
@@ -151,5 +163,23 @@ public class TwitterWorkitemHandlerTest extends AbstractBaseTest {
         assertEquals(1,
                      manager.getResults().size());
         assertTrue(manager.getResults().containsKey(workItem.getId()));
+    }
+
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testSendDirectMessageInvalidParams() throws Exception {
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        SendDirectMessageWorkitemHandler handler = new SendDirectMessageWorkitemHandler("testConsumerKey",
+                                                                                        "testConsumerSecret",
+                                                                                        "testAccessKey",
+                                                                                        "testAccessSecret");
+        handler.setAuth(auth);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
     }
 }

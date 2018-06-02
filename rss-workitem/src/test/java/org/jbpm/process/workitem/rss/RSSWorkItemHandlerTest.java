@@ -20,6 +20,7 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 import org.drools.core.process.instance.impl.WorkItemImpl;
+import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 import org.jbpm.process.workitem.core.TestWorkItemManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,5 +57,22 @@ public class RSSWorkItemHandlerTest {
         assertEquals(1,
                      manager.getResults().size());
         assertTrue(manager.getResults().containsKey(workItem.getId()));
+    }
+
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testAddFeedInvalidParams() throws Exception {
+        when(input.build(any(XmlReader.class))).thenReturn(feed);
+
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        RSSWorkItemHandler handler = new RSSWorkItemHandler();
+        handler.setInput(input);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
     }
 }

@@ -22,18 +22,15 @@ import com.google.api.client.http.FileContent;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
-
 import org.apache.commons.io.FilenameUtils;
-
 import org.jbpm.document.Document;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
-
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,9 +39,9 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.drive.MediaUploadWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "DocToUpload"),
-                @WidParameter(name = "DocMimeType"),
-                @WidParameter(name = "UploadPath")
+                @WidParameter(name = "DocToUpload", required = true),
+                @WidParameter(name = "DocMimeType", required = true),
+                @WidParameter(name = "UploadPath", required = true)
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
@@ -70,41 +67,40 @@ public class MediaUploadWorkitemHandler extends AbstractLogOrThrowWorkItemHandle
         String docMimeType = (String) workItem.getParameter("DocMimeType");
         String uploadPath = (String) workItem.getParameter("UploadPath");
 
-        if (docToUpload != null && docMimeType != null && uploadPath != null) {
-            try {
-                Drive drive = auth.getDriveService(appName,
-                                                   clientSecret);
-                File fileMetadata = new File();
-                fileMetadata.setTitle(docToUpload.getName());
-                fileMetadata.setAlternateLink(docToUpload.getLink());
-                if (docToUpload.getLastModified() != null) {
-                    fileMetadata.setModifiedDate(new DateTime(docToUpload.getLastModified()));
-                }
+        try {
 
-                java.io.File tempDocFile = java.io.File.createTempFile(FilenameUtils.getBaseName(docToUpload.getName()),
-                                                                       "." + FilenameUtils.getExtension(docToUpload.getName()));
-                FileOutputStream fos = new FileOutputStream(tempDocFile);
-                fos.write(docToUpload.getContent());
-                fos.close();
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
 
-                FileContent mediaContent = new FileContent(docMimeType,
-                                                           tempDocFile);
-
-                Drive.Files.Insert insert = drive.files().insert(fileMetadata,
-                                                                 mediaContent);
-                MediaHttpUploader uploader = insert.getMediaHttpUploader();
-                uploader.setDirectUploadEnabled(true);
-                uploader.setProgressListener(new MediaUploadProgressListener());
-                insert.execute();
-
-                workItemManager.completeWorkItem(workItem.getId(),
-                                                 null);
-            } catch (Exception e) {
-                handleException(e);
+            Drive drive = auth.getDriveService(appName,
+                                               clientSecret);
+            File fileMetadata = new File();
+            fileMetadata.setTitle(docToUpload.getName());
+            fileMetadata.setAlternateLink(docToUpload.getLink());
+            if (docToUpload.getLastModified() != null) {
+                fileMetadata.setModifiedDate(new DateTime(docToUpload.getLastModified()));
             }
-        } else {
-            logger.error("Missing upload document information.");
-            throw new IllegalArgumentException("Missing upload document information.");
+
+            java.io.File tempDocFile = java.io.File.createTempFile(FilenameUtils.getBaseName(docToUpload.getName()),
+                                                                   "." + FilenameUtils.getExtension(docToUpload.getName()));
+            FileOutputStream fos = new FileOutputStream(tempDocFile);
+            fos.write(docToUpload.getContent());
+            fos.close();
+
+            FileContent mediaContent = new FileContent(docMimeType,
+                                                       tempDocFile);
+
+            Drive.Files.Insert insert = drive.files().insert(fileMetadata,
+                                                             mediaContent);
+            MediaHttpUploader uploader = insert.getMediaHttpUploader();
+            uploader.setDirectUploadEnabled(true);
+            uploader.setProgressListener(new MediaUploadProgressListener());
+            insert.execute();
+
+            workItemManager.completeWorkItem(workItem.getId(),
+                                             null);
+        } catch (Exception e) {
+            handleException(e);
         }
     }
 

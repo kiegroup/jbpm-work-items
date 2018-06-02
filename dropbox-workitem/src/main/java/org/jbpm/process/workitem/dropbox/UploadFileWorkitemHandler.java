@@ -28,14 +28,15 @@ import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 
 @Wid(widfile = "DropboxUploadFileDefinitions.wid", name = "DropboxUploadFile",
         displayName = "DropboxUploadFile",
         defaultHandler = "mvel: new org.jbpm.process.workitem.dropbox.UploadFileWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "Path"),
-                @WidParameter(name = "Document")
+                @WidParameter(name = "Path", required = true),
+                @WidParameter(name = "Document", required = true)
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
@@ -58,6 +59,10 @@ public class UploadFileWorkitemHandler extends AbstractLogOrThrowWorkItemHandler
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager workItemManager) {
         try {
+
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             if (auth == null) {
                 auth = new DropboxAuth();
             }

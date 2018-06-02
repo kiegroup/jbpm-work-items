@@ -22,16 +22,14 @@ import java.util.Map;
 
 import org.eclipse.egit.github.core.Repository;
 import org.eclipse.egit.github.core.service.RepositoryService;
-
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
-
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +38,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.github.ListRepositoriesWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "User")
+                @WidParameter(name = "User", required = true)
         },
         results = {
                 @WidResult(name = "RepoListInfo")
@@ -57,7 +55,8 @@ public class ListRepositoriesWorkitemHandler extends AbstractLogOrThrowWorkItemH
     private static final Logger logger = LoggerFactory.getLogger(ListRepositoriesWorkitemHandler.class);
     private static final String RESULTS_VALUE = "RepoListInfo";
 
-    public ListRepositoriesWorkitemHandler(String userName, String password) {
+    public ListRepositoriesWorkitemHandler(String userName,
+                                           String password) {
         this.userName = userName;
         this.password = password;
     }
@@ -66,35 +65,32 @@ public class ListRepositoriesWorkitemHandler extends AbstractLogOrThrowWorkItemH
                                 WorkItemManager workItemManager) {
         try {
 
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             Map<String, Object> results = new HashMap<String, Object>();
 
             String user = (String) workItem.getParameter("User");
 
-            if (user != null) {
+            RepositoryService repoService = auth.getRespositoryService(this.userName,
+                                                                       this.password);
 
-                RepositoryService repoService = auth.getRespositoryService(this.userName,
-                                                                           this.password);
+            List<Repository> userRepos = repoService.getRepositories(user);
+            List<RepositoryInfo> resultRepositoryInformation = new ArrayList<>();
 
-                List<Repository> userRepos = repoService.getRepositories(user);
-                List<RepositoryInfo> resultRepositoryInformation = new ArrayList<>();
-
-                if (userRepos != null) {
-                    for (Repository repo : userRepos) {
-                        resultRepositoryInformation.add(new RepositoryInfo(repo));
-                    }
-                } else {
-                    logger.info("No repositories found for " + user);
+            if (userRepos != null) {
+                for (Repository repo : userRepos) {
+                    resultRepositoryInformation.add(new RepositoryInfo(repo));
                 }
-
-                results.put(RESULTS_VALUE,
-                            resultRepositoryInformation);
-
-                workItemManager.completeWorkItem(workItem.getId(),
-                                                 results);
             } else {
-                logger.error("Missing user name.");
-                throw new IllegalArgumentException("Missing user name.");
+                logger.info("No repositories found for " + user);
             }
+
+            results.put(RESULTS_VALUE,
+                        resultRepositoryInformation);
+
+            workItemManager.completeWorkItem(workItem.getId(),
+                                             results);
         } catch (Exception e) {
             handleException(e);
         }

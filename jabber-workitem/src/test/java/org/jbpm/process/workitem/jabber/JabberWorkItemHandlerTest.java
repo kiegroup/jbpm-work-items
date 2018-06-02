@@ -17,6 +17,7 @@
 package org.jbpm.process.workitem.jabber;
 
 import org.drools.core.process.instance.impl.WorkItemImpl;
+import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 import org.jbpm.process.workitem.core.TestWorkItemManager;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
@@ -93,5 +94,33 @@ public class JabberWorkItemHandlerTest {
         verify(chat).sendMessage(messageCaptor.capture());
         assertEquals("hello world",
                      messageCaptor.getValue().getBody());
+    }
+
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testSendMessageInvalidParams() throws Exception {
+        ArgumentCaptor<Message> messageCaptor = ArgumentCaptor.forClass(Message.class);
+
+        doNothing().when(xmppConnection).connect();
+        doNothing().when(xmppConnection).login(anyString(),
+                                               anyString());
+        doNothing().when(xmppConnection).sendPacket(any(Presence.class));
+        doNothing().when(xmppConnection).disconnect();
+        when(xmppConnection.getChatManager()).thenReturn(chatManager);
+        when(chatManager.createChat(anyString(),
+                                    anyObject())).thenReturn(chat);
+
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        JabberWorkItemHandler handler = new JabberWorkItemHandler();
+        handler.setConf(connectionConf);
+        handler.setConnection(xmppConnection);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
     }
 }

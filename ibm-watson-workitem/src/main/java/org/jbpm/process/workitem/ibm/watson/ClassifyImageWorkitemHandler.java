@@ -29,6 +29,7 @@ import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifyOption
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ErrorInfo;
 import org.jbpm.document.Document;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -44,7 +45,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.ibm.watson.ClassifyImageWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "ImageToClassify")
+                @WidParameter(name = "ImageToClassify", required = true)
         },
         results = {
                 @WidResult(name = "Classification")
@@ -66,47 +67,46 @@ public class ClassifyImageWorkitemHandler extends AbstractLogOrThrowWorkItemHand
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager workItemManager) {
 
-        Document classificationImage = (Document) workItem.getParameter("ImageToClassify");
+        try {
 
-        Map<String, Object> widResults = new HashMap<String, Object>();
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
 
-        if (classificationImage != null) {
+            Document classificationImage = (Document) workItem.getParameter("ImageToClassify");
 
-            try {
-                VisualRecognition service = auth.getService(apiKey);
+            Map<String, Object> widResults = new HashMap<String, Object>();
 
-                ByteArrayInputStream imageStream = new ByteArrayInputStream(classificationImage.getContent());
 
-                ClassifyOptions classifyOptions = new ClassifyOptions.Builder()
-                        .imagesFile(imageStream)
-                        .imagesFilename(classificationImage.getName())
-                        .parameters("{\"owners\": [\"me\"]}")
-                        .build();
-                ClassifiedImage result = service.classify(classifyOptions).execute().getImages().get(0);
-                if (result.getError() != null) {
-                    ErrorInfo errorInfo = result.getError();
-                    logger.error("Error classifying image: " + errorInfo.getDescription());
-                    workItemManager.abortWorkItem(workItem.getId());
-                } else {
-                    List<ImageClassificationResult> resultList = new ArrayList<>();
-                    for (ClassifierResult classification : result.getClassifiers()) {
-                        for (ClassResult classResult : classification.getClasses()) {
-                            resultList.add(new ImageClassificationResult(classification,
-                                                                         classResult));
-                        }
+            VisualRecognition service = auth.getService(apiKey);
 
-                        widResults.put(RESULT_VALUE,
-                                       resultList);
+            ByteArrayInputStream imageStream = new ByteArrayInputStream(classificationImage.getContent());
+
+            ClassifyOptions classifyOptions = new ClassifyOptions.Builder()
+                    .imagesFile(imageStream)
+                    .imagesFilename(classificationImage.getName())
+                    .parameters("{\"owners\": [\"me\"]}")
+                    .build();
+            ClassifiedImage result = service.classify(classifyOptions).execute().getImages().get(0);
+            if (result.getError() != null) {
+                ErrorInfo errorInfo = result.getError();
+                logger.error("Error classifying image: " + errorInfo.getDescription());
+                workItemManager.abortWorkItem(workItem.getId());
+            } else {
+                List<ImageClassificationResult> resultList = new ArrayList<>();
+                for (ClassifierResult classification : result.getClassifiers()) {
+                    for (ClassResult classResult : classification.getClasses()) {
+                        resultList.add(new ImageClassificationResult(classification,
+                                                                     classResult));
                     }
-                    workItemManager.completeWorkItem(workItem.getId(),
-                                                     widResults);
+
+                    widResults.put(RESULT_VALUE,
+                                   resultList);
                 }
-            } catch (Exception e) {
-                handleException(e);
+                workItemManager.completeWorkItem(workItem.getId(),
+                                                 widResults);
             }
-        } else {
-            logger.error("Missing image for classification.");
-            throw new IllegalArgumentException("Missing image for classification.");
+        } catch (Exception e) {
+            handleException(e);
         }
     }
 

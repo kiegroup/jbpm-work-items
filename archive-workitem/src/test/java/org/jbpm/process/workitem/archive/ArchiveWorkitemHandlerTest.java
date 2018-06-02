@@ -89,4 +89,22 @@ public class ArchiveWorkitemHandlerTest {
                      manager.getResults().size());
         assertTrue(manager.getResults().containsKey(workItem.getId()));
     }
+
+    @Test
+    public void testNoArchiveSpecified() throws Exception {
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+        workItem.setParameter("Files",
+                              new ArrayList<File>());
+
+        ArchiveWorkItemHandler archiveWorkItemHandler = new ArchiveWorkItemHandler();
+        archiveWorkItemHandler.setLogThrownException(true);
+
+        archiveWorkItemHandler.executeWorkItem(workItem,
+                                               manager);
+
+        assertEquals(1,
+                     manager.getAbortedWorkItems().size());
+        assertTrue(manager.getAbortedWorkItems().contains(workItem.getId()));
+    }
 }

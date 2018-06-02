@@ -15,28 +15,24 @@
  */
 package org.jbpm.workitem.google.drive;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.google.api.services.drive.Drive;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-
 import org.jbpm.document.Document;
 import org.jbpm.document.service.impl.DocumentImpl;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
-
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +41,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.drive.MediaDownloadWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "DocumentPath")
+                @WidParameter(name = "DocumentPath", required = true)
         },
         results = {
                 @WidResult(name = "Document")
@@ -74,36 +70,35 @@ public class MediaDownloadWorkitemHandler extends AbstractLogOrThrowWorkItemHand
 
         String documentPath = (String) workItem.getParameter("DocumentPath");
 
-        if (documentPath != null) {
-            try {
-                Drive drive = auth.getDriveService(appName,
-                                                   clientSecret);
+        try {
 
-                Drive.Files.Get request = drive.files().get(documentPath);
-                request.getMediaHttpDownloader().setProgressListener(new MediaDownloadProgressListener());
-                request.getMediaHttpDownloader().setDirectDownloadEnabled(true);
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
 
-                InputStream docInputStream = request.executeMediaAsInputStream();
+            Drive drive = auth.getDriveService(appName,
+                                               clientSecret);
 
-                Document doc = new DocumentImpl();
-                String docBaseName = FilenameUtils.getBaseName(documentPath);
-                String docExtension = FilenameUtils.getExtension(documentPath);
-                doc.setName(docBaseName + "." + docExtension);
-                doc.setIdentifier(documentPath);
-                doc.setLastModified(new Date());
-                doc.setContent(IOUtils.toByteArray(docInputStream));
+            Drive.Files.Get request = drive.files().get(documentPath);
+            request.getMediaHttpDownloader().setProgressListener(new MediaDownloadProgressListener());
+            request.getMediaHttpDownloader().setDirectDownloadEnabled(true);
 
-                results.put(RESULTS_DOCUMENT,
-                            doc);
+            InputStream docInputStream = request.executeMediaAsInputStream();
 
-                workItemManager.completeWorkItem(workItem.getId(),
-                                                 results);
-            } catch (Exception e) {
-                handleException(e);
-            }
-        } else {
-            logger.error("Missing download document information.");
-            throw new IllegalArgumentException("Missing download document information.");
+            Document doc = new DocumentImpl();
+            String docBaseName = FilenameUtils.getBaseName(documentPath);
+            String docExtension = FilenameUtils.getExtension(documentPath);
+            doc.setName(docBaseName + "." + docExtension);
+            doc.setIdentifier(documentPath);
+            doc.setLastModified(new Date());
+            doc.setContent(IOUtils.toByteArray(docInputStream));
+
+            results.put(RESULTS_DOCUMENT,
+                        doc);
+
+            workItemManager.completeWorkItem(workItem.getId(),
+                                             results);
+        } catch (Exception e) {
+            handleException(e);
         }
     }
 

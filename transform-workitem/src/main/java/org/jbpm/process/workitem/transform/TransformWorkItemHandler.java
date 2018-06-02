@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -35,8 +36,8 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.transform.TransformWorkItemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "InputObject"),
-                @WidParameter(name = "OutputType")
+                @WidParameter(name = "InputObject", required = true),
+                @WidParameter(name = "OutputType", required = true)
         },
         results = {
                 @WidResult(name = "OutputObject")
@@ -56,11 +57,15 @@ public class TransformWorkItemHandler extends AbstractLogOrThrowWorkItemHandler 
     private Map<Class<?>, Map<Class<?>, Method>> transforms =
             new HashMap<Class<?>, Map<Class<?>, Method>>();
 
-    public void executeWorkItem(WorkItem inputItem,
-                                WorkItemManager itemMgr) {
+    public void executeWorkItem(WorkItem workItem,
+                                WorkItemManager manager) {
         try {
-            Object in = inputItem.getParameter(INPUT_KEY);
-            String outputType = (String) inputItem.getParameter(OUTPUT_TYPE_KEY);
+
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
+            Object in = workItem.getParameter(INPUT_KEY);
+            String outputType = (String) workItem.getParameter(OUTPUT_TYPE_KEY);
             Object output = Class.forName(outputType).newInstance();
             Method txMethod = this.findTransform(output.getClass(),
                                                  in.getClass());
@@ -71,7 +76,7 @@ public class TransformWorkItemHandler extends AbstractLogOrThrowWorkItemHandler 
                 Map<String, Object> result = new HashMap<String, Object>();
                 result.put(VARIABLE_OUTPUT_NAME,
                            out);
-                itemMgr.completeWorkItem(inputItem.getId(),
+                manager.completeWorkItem(workItem.getId(),
                                          result);
             } else {
                 logger.error("Failed to find a transform ");

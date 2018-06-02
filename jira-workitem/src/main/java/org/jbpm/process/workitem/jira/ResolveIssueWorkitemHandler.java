@@ -24,17 +24,13 @@ import com.atlassian.jira.rest.client.domain.Issue;
 import com.atlassian.jira.rest.client.domain.Transition;
 import com.atlassian.jira.rest.client.domain.input.FieldInput;
 import com.atlassian.jira.rest.client.domain.input.TransitionInput;
-
-import org.apache.commons.lang3.StringUtils;
-
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
-
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,8 +39,8 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.jira.ResolveIssueWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "IssueKey"),
-                @WidParameter(name = "Resolution"),
+                @WidParameter(name = "IssueKey", required = true),
+                @WidParameter(name = "Resolution", required = true),
                 @WidParameter(name = "ResolutionComment"),
         },
         mavenDepends = {
@@ -72,46 +68,43 @@ public class ResolveIssueWorkitemHandler extends AbstractLogOrThrowWorkItemHandl
                                 WorkItemManager workItemManager) {
         try {
 
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             String issueKey = (String) workItem.getParameter("IssueKey");
             String resolution = (String) workItem.getParameter("Resolution");
             String resolutionComment = (String) workItem.getParameter("ResolutionComment");
 
-            if (StringUtils.isNotEmpty(issueKey) && StringUtils.isNotEmpty(resolution)) {
+            if (auth == null) {
+                auth = new JiraAuth(userName,
+                                    password,
+                                    repoURI);
+            }
 
-                if (auth == null) {
-                    auth = new JiraAuth(userName,
-                                        password,
-                                        repoURI);
-                }
+            NullProgressMonitor progressMonitor = new NullProgressMonitor();
+            Issue issue = auth.getIssueRestClient().getIssue(issueKey,
+                                                             progressMonitor);
 
-                NullProgressMonitor progressMonitor = new NullProgressMonitor();
-                Issue issue = auth.getIssueRestClient().getIssue(issueKey,
-                                                                 progressMonitor);
+            if (issue != null) {
+                Iterable<Transition> transitions = auth.getIssueRestClient().getTransitions(issue.getTransitionsUri(),
+                                                                                            progressMonitor);
 
-                if (issue != null) {
-                    Iterable<Transition> transitions = auth.getIssueRestClient().getTransitions(issue.getTransitionsUri(),
-                                                                                                progressMonitor);
+                Transition resolveIssueTransition = getTransitionByName(transitions,
+                                                                        "Resolve Issue");
+                Collection<FieldInput> fieldInputs = Arrays.asList(new FieldInput("resolution",
+                                                                                  resolution));
+                TransitionInput transitionInput = new TransitionInput(resolveIssueTransition.getId(),
+                                                                      fieldInputs,
+                                                                      Comment.valueOf(resolutionComment));
+                auth.getIssueRestClient().transition(issue.getTransitionsUri(),
+                                                     transitionInput,
+                                                     progressMonitor);
 
-                    Transition resolveIssueTransition = getTransitionByName(transitions,
-                                                                            "Resolve Issue");
-                    Collection<FieldInput> fieldInputs = Arrays.asList(new FieldInput("resolution",
-                                                                                      resolution));
-                    TransitionInput transitionInput = new TransitionInput(resolveIssueTransition.getId(),
-                                                                          fieldInputs,
-                                                                          Comment.valueOf(resolutionComment));
-                    auth.getIssueRestClient().transition(issue.getTransitionsUri(),
-                                                         transitionInput,
-                                                         progressMonitor);
-
-                    workItemManager.completeWorkItem(workItem.getId(),
-                                                     null);
-                } else {
-                    logger.error("Could not find issue with key: " + issueKey);
-                    throw new IllegalArgumentException("Could not find issue with key: " + issueKey);
-                }
+                workItemManager.completeWorkItem(workItem.getId(),
+                                                 null);
             } else {
-                logger.error("Missing issue key or resolution.");
-                throw new IllegalArgumentException("Missing issue key or resolution.");
+                logger.error("Could not find issue with key: " + issueKey);
+                throw new IllegalArgumentException("Could not find issue with key: " + issueKey);
             }
         } catch (Exception e) {
             logger.error("Error executing workitem: " + e.getMessage());

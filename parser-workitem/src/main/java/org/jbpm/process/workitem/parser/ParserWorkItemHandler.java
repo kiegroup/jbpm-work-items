@@ -29,6 +29,7 @@ import javax.xml.bind.Marshaller;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -58,7 +59,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         defaultHandler = "mvel: new org.jbpm.process.workitem.parser.ParserWorkItemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "Format"),
+                @WidParameter(name = "Format", required = true),
                 @WidParameter(name = "Type"),
                 @WidParameter(name = "Input")
         },
@@ -112,6 +113,10 @@ public class ParserWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
         boolean toObject;
         Map<String, Object> results = new HashMap<String, Object>();
         try {
+
+            RequiredParameterValidator.validate(this.getClass(),
+                                                wi);
+
             String format = wi.getParameter(FORMAT).toString();
             Class<?> type = null;
             input = wi.getParameter(INPUT);

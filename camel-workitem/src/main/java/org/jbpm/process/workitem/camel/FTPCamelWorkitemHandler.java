@@ -28,7 +28,7 @@ import org.jbpm.process.workitem.core.util.WidResult;
         defaultHandler = "mvel: new org.jbpm.process.workitem.camel.FTPCamelWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "payload", required = true),
+                @WidParameter(name = "payload"),
                 @WidParameter(name = "hostname", required = true),
                 @WidParameter(name = "username", required = true),
                 @WidParameter(name = "password", required = true),
