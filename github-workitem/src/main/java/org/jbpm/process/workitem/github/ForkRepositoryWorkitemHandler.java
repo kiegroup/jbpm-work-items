@@ -19,20 +19,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-
 import org.eclipse.egit.github.core.Repository;
 import org.eclipse.egit.github.core.RepositoryId;
 import org.eclipse.egit.github.core.service.RepositoryService;
-
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
-
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +38,8 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.github.ForkRepositoryWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "RepoOwner"),
-                @WidParameter(name = "RepoName"),
+                @WidParameter(name = "RepoOwner", required = true),
+                @WidParameter(name = "RepoName", required = true),
                 @WidParameter(name = "Organization")
         },
         results = {
@@ -70,6 +67,9 @@ public class ForkRepositoryWorkitemHandler extends AbstractLogOrThrowWorkItemHan
                                 WorkItemManager workItemManager) {
         try {
 
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             Map<String, Object> results = new HashMap<String, Object>();
 
             String repoOwner = (String) workItem.getParameter("RepoOwner");
@@ -78,29 +78,23 @@ public class ForkRepositoryWorkitemHandler extends AbstractLogOrThrowWorkItemHan
 
             Repository forkedRepository;
 
-            if (StringUtils.isNotEmpty(repoOwner) && StringUtils.isNotEmpty(repoName)) {
+            RepositoryService repoService = auth.getRespositoryService(this.userName,
+                                                                       this.password);
 
-                RepositoryService repoService = auth.getRespositoryService(this.userName,
-                                                                           this.password);
-
-                RepositoryId toBeForkedRepo = new RepositoryId(repoOwner,
-                                                               repoName);
-                if (StringUtils.isNotEmpty(organization)) {
-                    forkedRepository = repoService.forkRepository(toBeForkedRepo,
-                                                                  organization);
-                } else {
-                    forkedRepository = repoService.forkRepository(toBeForkedRepo);
-                }
-
-                results.put(RESULTS_VALUE,
-                            new RepositoryInfo(forkedRepository));
-
-                workItemManager.completeWorkItem(workItem.getId(),
-                                                 results);
+            RepositoryId toBeForkedRepo = new RepositoryId(repoOwner,
+                                                           repoName);
+            if (StringUtils.isNotEmpty(organization)) {
+                forkedRepository = repoService.forkRepository(toBeForkedRepo,
+                                                              organization);
             } else {
-                logger.error("Missing repository info to fork.");
-                throw new IllegalArgumentException("Missing repository info to fork.");
+                forkedRepository = repoService.forkRepository(toBeForkedRepo);
             }
+
+            results.put(RESULTS_VALUE,
+                        new RepositoryInfo(forkedRepository));
+
+            workItemManager.completeWorkItem(workItem.getId(),
+                                             results);
         } catch (Exception e) {
             handleException(e);
         }

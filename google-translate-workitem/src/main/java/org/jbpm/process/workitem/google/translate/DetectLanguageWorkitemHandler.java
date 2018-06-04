@@ -21,6 +21,7 @@ import java.util.Map;
 import com.google.cloud.translate.Detection;
 import com.google.cloud.translate.Translate;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -49,7 +50,7 @@ public class DetectLanguageWorkitemHandler extends AbstractLogOrThrowWorkItemHan
 
     private static final String RESULTS_DETECTION = "DetectedLanguage";
 
-    private GoogleTranslateAuth googleTranslateAuth;
+    private GoogleTranslateAuth googleTranslateAuth = new GoogleTranslateAuth();
     private Translate translationService;
     private String apiKey;
 
@@ -60,13 +61,12 @@ public class DetectLanguageWorkitemHandler extends AbstractLogOrThrowWorkItemHan
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager workItemManager) {
         try {
+
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             String toDetectText = (String) workItem.getParameter("ToDetectText");
             Map<String, Object> results = new HashMap<String, Object>();
-
-            if (toDetectText == null) {
-                logger.error("Missing text to detect.");
-                throw new IllegalArgumentException("Missing text to detect.");
-            }
 
             translationService = googleTranslateAuth.getTranslationService(apiKey);
             Detection detection = translationService.detect(toDetectText);

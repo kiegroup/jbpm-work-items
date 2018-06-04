@@ -27,6 +27,7 @@ import org.apache.commons.io.IOUtils;
 import org.jbpm.document.Document;
 import org.jbpm.document.service.impl.DocumentImpl;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -41,7 +42,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.dropbox.DownloadFileWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "DocumentPath")
+                @WidParameter(name = "DocumentPath", required = true)
         },
         results = {
                 @WidResult(name = "Document")
@@ -71,6 +72,9 @@ public class DownloadFileWorkitemHandler extends AbstractLogOrThrowWorkItemHandl
         Map<String, Object> results = new HashMap<String, Object>();
 
         try {
+
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
 
             if (auth == null) {
                 auth = new DropboxAuth();

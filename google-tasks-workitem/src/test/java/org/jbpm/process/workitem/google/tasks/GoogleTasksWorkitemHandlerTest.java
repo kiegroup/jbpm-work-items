@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
@@ -107,6 +108,21 @@ public class GoogleTasksWorkitemHandlerTest extends AbstractBaseTest {
                      returnedTasks.get(0).getTitle());
         assertEquals("pickup kid from school",
                      returnedTasks.get(1).getTitle());
+    }
+
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testGetTasksInvalidParams() throws Exception {
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        GetTasksWorkitemHandler handler = new GetTasksWorkitemHandler("testAppName",
+                                                                      "{}");
+        handler.setAuth(auth);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+        assertEquals(0,
+                     manager.getResults().size());
     }
 
     @Test

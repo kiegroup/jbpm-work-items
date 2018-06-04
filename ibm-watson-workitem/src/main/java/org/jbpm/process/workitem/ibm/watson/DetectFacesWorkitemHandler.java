@@ -28,6 +28,7 @@ import com.ibm.watson.developer_cloud.visual_recognition.v3.model.Face;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ImageWithFaces;
 import org.jbpm.document.Document;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -43,7 +44,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.ibm.watson.DetectFacesWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "ImageToDetect")
+                @WidParameter(name = "ImageToDetect", required = true)
         },
         results = {
                 @WidResult(name = "Detection")
@@ -66,43 +67,41 @@ public class DetectFacesWorkitemHandler extends AbstractLogOrThrowWorkItemHandle
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager workItemManager) {
 
-        Document detectionImage = (Document) workItem.getParameter("ImageToDetect");
-        Map<String, Object> widResults = new HashMap<String, Object>();
+        try {
 
-        if (detectionImage != null) {
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
 
-            try {
-                VisualRecognition service = auth.getService(apiKey);
+            Document detectionImage = (Document) workItem.getParameter("ImageToDetect");
+            Map<String, Object> widResults = new HashMap<String, Object>();
 
-                ByteArrayInputStream imageStream = new ByteArrayInputStream(detectionImage.getContent());
+            VisualRecognition service = auth.getService(apiKey);
 
-                DetectFacesOptions detectFacesOptions = new DetectFacesOptions.Builder()
-                        .imagesFile(imageStream)
-                        .build();
-                DetectedFaces result = service.detectFaces(detectFacesOptions).execute();
-                if (result == null || result.getImages() == null || result.getImages().size() < 1) {
-                    logger.error("Unable to detect faces on provided image.");
-                    workItemManager.abortWorkItem(workItem.getId());
-                } else {
-                    List<FaceDetectionResult> resultList = new ArrayList<>();
-                    for (ImageWithFaces imageWithFaces : result.getImages()) {
-                        for (Face face : imageWithFaces.getFaces()) {
-                            resultList.add(new FaceDetectionResult(imageWithFaces,
-                                                                   face));
-                        }
+            ByteArrayInputStream imageStream = new ByteArrayInputStream(detectionImage.getContent());
+
+            DetectFacesOptions detectFacesOptions = new DetectFacesOptions.Builder()
+                    .imagesFile(imageStream)
+                    .build();
+            DetectedFaces result = service.detectFaces(detectFacesOptions).execute();
+            if (result == null || result.getImages() == null || result.getImages().size() < 1) {
+                logger.error("Unable to detect faces on provided image.");
+                workItemManager.abortWorkItem(workItem.getId());
+            } else {
+                List<FaceDetectionResult> resultList = new ArrayList<>();
+                for (ImageWithFaces imageWithFaces : result.getImages()) {
+                    for (Face face : imageWithFaces.getFaces()) {
+                        resultList.add(new FaceDetectionResult(imageWithFaces,
+                                                               face));
                     }
-
-                    widResults.put(RESULT_VALUE,
-                                   resultList);
-                    workItemManager.completeWorkItem(workItem.getId(),
-                                                     widResults);
                 }
-            } catch (Exception e) {
-                handleException(e);
+
+                widResults.put(RESULT_VALUE,
+                               resultList);
+                workItemManager.completeWorkItem(workItem.getId(),
+                                                 widResults);
             }
-        } else {
-            logger.error("Missing image for face detection.");
-            throw new IllegalArgumentException("Missing image for face detection.");
+        } catch (Exception e) {
+            handleException(e);
         }
     }
 

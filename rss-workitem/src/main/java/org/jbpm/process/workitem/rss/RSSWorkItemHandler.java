@@ -24,6 +24,7 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -35,7 +36,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         defaultHandler = "mvel: new org.jbpm.process.workitem.rss.RSSWorkItemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "URL")
+                @WidParameter(name = "URL", required = true)
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
@@ -48,6 +49,9 @@ public class RSSWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager manager) {
         try {
+
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
 
             List<String> urls = new ArrayList<String>();
             String urlsList = (String) workItem.getParameter("URL");

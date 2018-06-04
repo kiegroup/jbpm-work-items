@@ -33,6 +33,7 @@ import com.google.api.services.calendar.model.Event.Creator;
 import com.google.api.services.calendar.model.EventAttendee;
 import com.google.api.services.calendar.model.EventDateTime;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -47,8 +48,8 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.calendar.AddEventWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "CalendarSummary"),
-                @WidParameter(name = "EventSummary"),
+                @WidParameter(name = "CalendarSummary", required = true),
+                @WidParameter(name = "EventSummary", required = true),
                 @WidParameter(name = "EventStart"),
                 @WidParameter(name = "EventEnd"),
                 @WidParameter(name = "EventAttendees"),
@@ -88,6 +89,9 @@ public class AddEventWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 
         try {
 
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             com.google.api.services.calendar.Calendar client = auth.getAuthorizedCalendar(appName,
                                                                                           clientSecret);
 
@@ -101,12 +105,13 @@ public class AddEventWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
                                  paramEventAttendees,
                                  paramEventCreator
                         ));
+
+            workItemManager.completeWorkItem(workItem.getId(),
+                                             results);
         } catch (Exception e) {
             handleException(e);
         }
 
-        workItemManager.completeWorkItem(workItem.getId(),
-                                         results);
     }
 
     public Event addEvent(com.google.api.services.calendar.Calendar client,

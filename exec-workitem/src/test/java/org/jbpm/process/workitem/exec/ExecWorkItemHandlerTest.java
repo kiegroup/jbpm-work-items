@@ -43,4 +43,20 @@ public class ExecWorkItemHandlerTest {
                      manager.getResults().size());
         assertTrue(manager.getResults().containsKey(workItem.getId()));
     }
+
+    @Test
+    public void testExecCommandInvalidParam() throws Exception {
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        ExecWorkItemHandler handler = new ExecWorkItemHandler();
+        handler.setLogThrownException(true);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
+    }
 }

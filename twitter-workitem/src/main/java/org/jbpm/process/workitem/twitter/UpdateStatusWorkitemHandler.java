@@ -18,20 +18,16 @@ package org.jbpm.process.workitem.twitter;
 import java.io.ByteArrayInputStream;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import org.jbpm.document.Document;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
-
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 
@@ -40,7 +36,7 @@ import twitter4j.Twitter;
         defaultHandler = "mvel: new org.jbpm.process.workitem.twitter.UpdateStatusWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "StatusUpdate"),
+                @WidParameter(name = "StatusUpdate", required = true),
                 @WidParameter(name = "Media"),
                 @WidParameter(name = "DebugEnabled")
         },
@@ -72,47 +68,45 @@ public class UpdateStatusWorkitemHandler extends AbstractLogOrThrowWorkItemHandl
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager workItemManager) {
 
-        String statusMessage = (String) workItem.getParameter("StatusUpdate");
+        try {
 
-        // media is optional
-        Document statusMedia = null;
-        if (workItem.getParameter("Media") != null) {
-            statusMedia = (Document) workItem.getParameter("Media");
-        }
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
 
-        // debug is optional (default to false)
-        boolean debugOption = false;
-        if (workItem.getParameter("DebugEnabled") != null) {
-            debugOption = Boolean.parseBoolean((String) workItem.getParameter("DebugEnabled"));
-        }
+            String statusMessage = (String) workItem.getParameter("StatusUpdate");
 
-        if (StringUtils.isNotEmpty(statusMessage)) {
-
-            try {
-                Twitter twitter = auth.getTwitterService(this.consumerKey,
-                                                         this.consumerSecret,
-                                                         this.accessKey,
-                                                         this.accessSecret,
-                                                         debugOption);
-
-                statusUpdate = new StatusUpdate(statusMessage);
-                if (statusMedia != null) {
-
-                    statusUpdate.setMedia(FilenameUtils.getBaseName(statusMedia.getName()) +
-                                                  "." + FilenameUtils.getExtension(statusMedia.getName()),
-                                          new ByteArrayInputStream(statusMedia.getContent()));
-                }
-
-                twitter.updateStatus(statusUpdate);
-
-                workItemManager.completeWorkItem(workItem.getId(),
-                                                 null);
-            } catch (Exception e) {
-                handleException(e);
+            // media is optional
+            Document statusMedia = null;
+            if (workItem.getParameter("Media") != null) {
+                statusMedia = (Document) workItem.getParameter("Media");
             }
-        } else {
-            logger.error("Missing status message.");
-            throw new IllegalArgumentException("Missing status message.");
+
+            // debug is optional (default to false)
+            boolean debugOption = false;
+            if (workItem.getParameter("DebugEnabled") != null) {
+                debugOption = Boolean.parseBoolean((String) workItem.getParameter("DebugEnabled"));
+            }
+
+            Twitter twitter = auth.getTwitterService(this.consumerKey,
+                                                     this.consumerSecret,
+                                                     this.accessKey,
+                                                     this.accessSecret,
+                                                     debugOption);
+
+            statusUpdate = new StatusUpdate(statusMessage);
+            if (statusMedia != null) {
+
+                statusUpdate.setMedia(FilenameUtils.getBaseName(statusMedia.getName()) +
+                                              "." + FilenameUtils.getExtension(statusMedia.getName()),
+                                      new ByteArrayInputStream(statusMedia.getContent()));
+            }
+
+            twitter.updateStatus(statusUpdate);
+
+            workItemManager.completeWorkItem(workItem.getId(),
+                                             null);
+        } catch (Exception e) {
+            handleException(e);
         }
     }
 

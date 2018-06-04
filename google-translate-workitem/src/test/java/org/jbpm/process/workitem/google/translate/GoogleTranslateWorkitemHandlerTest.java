@@ -20,6 +20,7 @@ import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.Translate.TranslateOption;
 import com.google.cloud.translate.Translation;
 import org.drools.core.process.instance.impl.WorkItemImpl;
+import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 import org.jbpm.process.workitem.core.TestWorkItemManager;
 import org.jbpm.test.AbstractBaseTest;
 import org.junit.Before;
@@ -85,6 +86,21 @@ public class GoogleTranslateWorkitemHandlerTest extends AbstractBaseTest {
                      detectedLanguage);
     }
 
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testDetectLanguageInvalidParams() throws Exception {
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        DetectLanguageWorkitemHandler handler = new DetectLanguageWorkitemHandler("testApiKey");
+        handler.setTranslationAuth(auth);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
+    }
+
     @Test
     public void testTranslateText() throws Exception {
         TestWorkItemManager manager = new TestWorkItemManager();
@@ -110,5 +126,20 @@ public class GoogleTranslateWorkitemHandlerTest extends AbstractBaseTest {
         assertNotNull(translation);
         assertEquals("Dobar dan",
                      translation);
+    }
+
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testTranslateTextInvalidParams() throws Exception {
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        TranslateWorkitemHandler handler = new TranslateWorkitemHandler("testApiKey");
+        handler.setTranslationAuth(auth);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
     }
 }

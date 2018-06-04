@@ -36,20 +36,16 @@ import com.atlassian.jira.rest.client.domain.Transition;
 import com.atlassian.jira.rest.client.domain.User;
 import com.atlassian.jira.rest.client.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.domain.input.TransitionInput;
-
 import org.drools.core.process.instance.impl.WorkItemImpl;
-
+import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 import org.jbpm.process.workitem.core.TestWorkItemManager;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
-
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -215,6 +211,25 @@ public class JiraWorkitemHandlerTest {
                      cretedJiraKey);
     }
 
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testCreateIssueInvalidParams() throws Exception {
+
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        CreateIssueWorkitemHandler handler = new CreateIssueWorkitemHandler("testusername",
+                                                                            "testpassword",
+                                                                            "testjiraurl");
+        handler.setAuth(auth);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
+    }
+
     @Test
     public void testJqlSearch() throws Exception {
 
@@ -244,6 +259,25 @@ public class JiraWorkitemHandlerTest {
                      searchResults.size());
     }
 
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testJqlSearchInvalidParams() throws Exception {
+
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        JqlSearchWorkitemHandler handler = new JqlSearchWorkitemHandler("testusername",
+                                                                        "testpassword",
+                                                                        "testjiraurl");
+        handler.setAuth(auth);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
+    }
+
     @Test
     public void testAddComment() throws Exception {
         TestWorkItemManager manager = new TestWorkItemManager();
@@ -271,6 +305,24 @@ public class JiraWorkitemHandlerTest {
         assertTrue(manager.getResults().containsKey(workItem.getId()));
     }
 
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testAddCommentInvalidParams() throws Exception {
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        AddCommentOnIssueWorkitemHandler handler = new AddCommentOnIssueWorkitemHandler("testusername",
+                                                                                        "testpassword",
+                                                                                        "testjiraurl");
+        handler.setAuth(auth);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
+    }
+
     @Test
     public void testResolveIssue() throws Exception {
         TestWorkItemManager manager = new TestWorkItemManager();
@@ -294,5 +346,23 @@ public class JiraWorkitemHandlerTest {
         assertEquals(1,
                      manager.getResults().size());
         assertTrue(manager.getResults().containsKey(workItem.getId()));
+    }
+
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testResolveIssueInvalidParams() throws Exception {
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        ResolveIssueWorkitemHandler handler = new ResolveIssueWorkitemHandler("testusername",
+                                                                              "testpassword",
+                                                                              "testjiraurl");
+        handler.setAuth(auth);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
     }
 }

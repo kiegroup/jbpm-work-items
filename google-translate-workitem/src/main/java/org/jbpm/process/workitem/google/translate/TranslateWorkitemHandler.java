@@ -30,6 +30,7 @@ import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 
 @Wid(widfile = "GoogleTranslateDefinitions.wid", name = "GoogleTranslate",
         displayName = "GoogleTranslate",
@@ -52,7 +53,7 @@ public class TranslateWorkitemHandler extends AbstractLogOrThrowWorkItemHandler 
 
     private static final String RESULTS_TRANSLATION = "Translation";
 
-    private GoogleTranslateAuth googleTranslateAuth;
+    private GoogleTranslateAuth googleTranslateAuth = new GoogleTranslateAuth();
     private Translate translationService;
     private String apiKey;
 
@@ -63,15 +64,14 @@ public class TranslateWorkitemHandler extends AbstractLogOrThrowWorkItemHandler 
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager workItemManager) {
         try {
+
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             String toTranslate = (String) workItem.getParameter("ToTranslate");
             String sourceLang = (String) workItem.getParameter("SourceLang");
             String targetLang = (String) workItem.getParameter("TargetLang");
             Map<String, Object> results = new HashMap<String, Object>();
-
-            if (toTranslate == null || sourceLang == null || targetLang == null) {
-                logger.error("Missing translation text or source/target language.");
-                throw new IllegalArgumentException("Missing translation text or source/target language.");
-            }
 
             translationService = googleTranslateAuth.getTranslationService(apiKey);
 

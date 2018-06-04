@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.drools.core.spi.ProcessContext;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -34,7 +35,7 @@ import org.kie.api.runtime.process.WorkflowProcessInstance;
         defaultHandler = "mvel: new org.jbpm.process.workitem.java.JavaHandlerWorkItemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "Class")
+                @WidParameter(name = "Class", required = true)
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
@@ -50,8 +51,13 @@ public class JavaHandlerWorkItemHandler extends AbstractLogOrThrowWorkItemHandle
     @SuppressWarnings("unchecked")
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager manager) {
-        String className = (String) workItem.getParameter("Class");
         try {
+
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
+            String className = (String) workItem.getParameter("Class");
+
             Class<JavaHandler> c = (Class<JavaHandler>) Class.forName(className);
             JavaHandler handler = c.newInstance();
             ProcessContext kcontext = new ProcessContext(ksession);
@@ -66,12 +72,8 @@ public class JavaHandlerWorkItemHandler extends AbstractLogOrThrowWorkItemHandle
             manager.completeWorkItem(workItem.getId(),
                                      results);
             return;
-        } catch (ClassNotFoundException cnfe) {
-            handleException(cnfe);
-        } catch (InstantiationException ie) {
-            handleException(ie);
-        } catch (IllegalAccessException iae) {
-            handleException(iae);
+        } catch (Exception e) {
+            handleException(e);
         }
     }
 

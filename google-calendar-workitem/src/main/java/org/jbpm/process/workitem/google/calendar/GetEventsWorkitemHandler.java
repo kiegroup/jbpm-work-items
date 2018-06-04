@@ -25,6 +25,7 @@ import com.google.api.services.calendar.model.CalendarList;
 import com.google.api.services.calendar.model.CalendarListEntry;
 import com.google.api.services.calendar.model.Events;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -39,7 +40,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.calendar.GetEventsWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "CalendarSummary")
+                @WidParameter(name = "CalendarSummary", required = true)
         },
         results = {
                 @WidResult(name = "AllEvents")
@@ -57,7 +58,7 @@ public class GetEventsWorkitemHandler extends AbstractLogOrThrowWorkItemHandler 
     private GoogleCalendarAuth auth = new GoogleCalendarAuth();
 
     public GetEventsWorkitemHandler(String appName,
-                                       String clentSecret) {
+                                    String clentSecret) {
         this.appName = appName;
         this.clientSecret = clentSecret;
     }
@@ -70,6 +71,9 @@ public class GetEventsWorkitemHandler extends AbstractLogOrThrowWorkItemHandler 
 
         try {
 
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             com.google.api.services.calendar.Calendar client = auth.getAuthorizedCalendar(appName,
                                                                                           clientSecret);
 
@@ -77,12 +81,12 @@ public class GetEventsWorkitemHandler extends AbstractLogOrThrowWorkItemHandler 
                         getAllEvents(client,
                                      getCalendarIdBySummary(client,
                                                             paramCalendarSummary)));
+
+            workItemManager.completeWorkItem(workItem.getId(),
+                                             results);
         } catch (Exception e) {
             handleException(e);
         }
-
-        workItemManager.completeWorkItem(workItem.getId(),
-                                         results);
     }
 
     public String getCalendarIdBySummary(com.google.api.services.calendar.Calendar client,

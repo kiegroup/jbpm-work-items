@@ -25,6 +25,7 @@ import javax.ws.rs.core.MediaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -38,7 +39,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.ifttt.IFTTTWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "Trigger"),
+                @WidParameter(name = "Trigger", required = true),
                 @WidParameter(name = "Value1"),
                 @WidParameter(name = "Value2"),
                 @WidParameter(name = "Value3")
@@ -61,41 +62,40 @@ public class IFTTTWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager workItemManager) {
-        String trigger = (String) workItem.getParameter("Trigger");
-        // ifttt trigger endpoint allows up to three values atm
-        String valueOne = (String) workItem.getParameter("Value1");
-        String valueTwo = (String) workItem.getParameter("Value2");
-        String valueThree = (String) workItem.getParameter("Value3");
 
-        if (trigger != null) {
-            try {
+        try {
 
-                if (client == null) {
-                    client = ClientBuilder.newClient();
-                }
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
 
-                WebTarget target = client.
-                        target(String.format(IFTTT_TRIGGER_ENDPOINT,
-                                             trigger,
-                                             key));
+            String trigger = (String) workItem.getParameter("Trigger");
+            // ifttt trigger endpoint allows up to three values atm
+            String valueOne = (String) workItem.getParameter("Value1");
+            String valueTwo = (String) workItem.getParameter("Value2");
+            String valueThree = (String) workItem.getParameter("Value3");
 
-                iftttRequest = new IFTTTRequest(valueOne,
-                                                valueTwo,
-                                                valueThree);
-
-                target.request()
-                        .post(Entity.entity(iftttRequest.toJSON(),
-                                            MediaType.APPLICATION_JSON),
-                              String.class);
-
-                workItemManager.completeWorkItem(workItem.getId(),
-                                                 null);
-            } catch (Exception e) {
-                handleException(e);
+            if (client == null) {
+                client = ClientBuilder.newClient();
             }
-        } else {
-            logger.error("Missing trigger for maker call.");
-            throw new IllegalArgumentException("Missing trigger for maker call.");
+
+            WebTarget target = client.
+                    target(String.format(IFTTT_TRIGGER_ENDPOINT,
+                                         trigger,
+                                         key));
+
+            iftttRequest = new IFTTTRequest(valueOne,
+                                            valueTwo,
+                                            valueThree);
+
+            target.request()
+                    .post(Entity.entity(iftttRequest.toJSON(),
+                                        MediaType.APPLICATION_JSON),
+                          String.class);
+
+            workItemManager.completeWorkItem(workItem.getId(),
+                                             null);
+        } catch (Exception e) {
+            handleException(e);
         }
     }
 

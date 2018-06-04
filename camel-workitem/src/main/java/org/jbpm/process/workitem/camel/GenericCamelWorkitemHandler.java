@@ -30,8 +30,8 @@ import org.jbpm.process.workitem.core.util.WidResult;
         defaultHandler = "mvel: new org.jbpm.process.workitem.camel.GenericCamelWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "path", required = true),
-                @WidParameter(name = "payload", required = true)
+                @WidParameter(name = "path"),
+                @WidParameter(name = "payload")
         },
         results = {
                 @WidResult(name = "response")

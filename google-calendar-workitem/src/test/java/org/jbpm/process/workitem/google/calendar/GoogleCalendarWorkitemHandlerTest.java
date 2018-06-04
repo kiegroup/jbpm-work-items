@@ -19,6 +19,7 @@ import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.Calendar.Calendars;
 import com.google.api.services.calendar.model.CalendarList;
 import org.drools.core.process.instance.impl.WorkItemImpl;
+import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 import org.jbpm.process.workitem.core.TestWorkItemManager;
 import org.jbpm.test.AbstractBaseTest;
 import org.junit.Before;
@@ -27,10 +28,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
-
-import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GoogleCalendarWorkitemHandlerTest extends AbstractBaseTest {
@@ -105,6 +105,23 @@ public class GoogleCalendarWorkitemHandlerTest extends AbstractBaseTest {
         assertTrue(manager.getResults().containsKey(workItem.getId()));
 
         assertTrue((manager.getResults().get(workItem.getId())).get("Calendar") instanceof com.google.api.services.calendar.model.Calendar);
+    }
+
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testAddCalendarHandlerInvalidParams() throws Exception {
+
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        AddCalendarWorkitemHandler handler = new AddCalendarWorkitemHandler("myAppName",
+                                                                            "{}");
+        handler.setAuth(auth);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
     }
 
     @Test

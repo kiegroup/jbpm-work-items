@@ -26,6 +26,7 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -69,7 +70,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "Type"),
                 @WidParameter(name = "Id"),
                 @WidParameter(name = "Entity"),
-                @WidParameter(name = "Action"),
+                @WidParameter(name = "Action", required = true),
                 @WidParameter(name = "Query"),
                 @WidParameter(name = "QueryParameters"),
                 @WidParameter(name = "QueryResults")
@@ -107,7 +108,6 @@ public class JPAWorkItemHandler extends AbstractLogOrThrowWorkItemHandler
 
     public JPAWorkItemHandler(String persistenceUnit,
                               ClassLoader cl) {
-        setLogThrownException(true);
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(cl);
@@ -129,10 +129,7 @@ public class JPAWorkItemHandler extends AbstractLogOrThrowWorkItemHandler
         Map<String, Object> params = new HashMap<String, Object>();
         List<Object> queryResults = Collections.emptyList();
         String action;
-        if (actionParam == null) {
-            throw new IllegalArgumentException(
-                    "An action is required. Use 'delete', 'create', 'update', query or 'get'");
-        }
+
         // Only QUERY does no require an entity parameter
         if (entity == null && P_ACTION.equals(QUERY_ACTION)) {
             throw new IllegalArgumentException(
@@ -144,6 +141,10 @@ public class JPAWorkItemHandler extends AbstractLogOrThrowWorkItemHandler
                      entity);
         EntityManager em = emf.createEntityManager();
         try {
+
+            RequiredParameterValidator.validate(this.getClass(),
+                                                wi);
+
             // join the process transaction
             em.joinTransaction();
             switch (action) {
@@ -182,19 +183,19 @@ public class JPAWorkItemHandler extends AbstractLogOrThrowWorkItemHandler
                     throw new IllegalArgumentException(
                             "Action " + action + " not recognized. Use 'delete', 'create', 'update', query, or 'get'");
             }
+            params.put(P_RESULT,
+                       entity);
+            params.put(P_QUERY_RESULTS,
+                       queryResults);
+            wim.completeWorkItem(wi.getId(),
+                                 params);
         } catch (Exception e) {
             logger.debug("Error performing JPA action ",
                          e);
-            throw e;
+            handleException(e);
         } finally {
             em.close();
         }
-        params.put(P_RESULT,
-                   entity);
-        params.put(P_QUERY_RESULTS,
-                   queryResults);
-        wim.completeWorkItem(wi.getId(),
-                             params);
     }
 
     @SuppressWarnings("unchecked")

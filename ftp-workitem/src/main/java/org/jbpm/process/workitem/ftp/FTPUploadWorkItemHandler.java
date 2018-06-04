@@ -24,6 +24,7 @@ import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -41,7 +42,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "User"),
                 @WidParameter(name = "Password"),
                 @WidParameter(name = "FilePath"),
-                @WidParameter(name = "File")
+                @WidParameter(name = "File", required = true)
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
@@ -85,49 +86,47 @@ public class FTPUploadWorkItemHandler extends AbstractLogOrThrowWorkItemHandler 
         }
 
         try {
-            if (connection != null) {
-                client.connect(connection.getHost(),
-                               Integer.parseInt(connection.getPort()));
-                int reply = client.getReplyCode();
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
 
-                if (FTPReply.isPositiveCompletion(reply)) {
+            client.connect(connection.getHost(),
+                           Integer.parseInt(connection.getPort()));
+            int reply = client.getReplyCode();
 
-                    if (client.login(user,
-                                     password)) {
+            if (FTPReply.isPositiveCompletion(reply)) {
 
-                        InputStream input;
-                        if (filePath != null) {
-                            input = new FileInputStream(filePath);
-                        } else {
-                            input = new FileInputStream(file);
-                        }
+                if (client.login(user,
+                                 password)) {
 
-                        client.setFileType(FTP.BINARY_FILE_TYPE);
-                        this.setResult(client.storeFile(filePath,
-                                                        input));
-                        client.logout();
-
-                        manager.completeWorkItem(workItem.getId(),
-                                                 null);
+                    InputStream input;
+                    if (filePath != null) {
+                        input = new FileInputStream(filePath);
                     } else {
-                        logger.warn("Could not logon to FTP server, status returned {}",
-                                    client.getStatus());
+                        input = new FileInputStream(file);
                     }
+
+                    client.setFileType(FTP.BINARY_FILE_TYPE);
+                    this.setResult(client.storeFile(filePath,
+                                                    input));
+                    client.logout();
+
+                    manager.completeWorkItem(workItem.getId(),
+                                             null);
                 } else {
-                    logger.warn("Could not connect to FTP server, status returned {}",
+                    logger.warn("Could not logon to FTP server, status returned {}",
                                 client.getStatus());
                 }
+            } else {
+                logger.warn("Could not connect to FTP server, status returned {}",
+                            client.getStatus());
             }
         } catch (Exception ex) {
             handleException(ex);
-            abortWorkItem(workItem,
-                          manager);
         }
     }
 
     public void abortWorkItem(WorkItem workItem,
                               WorkItemManager manager) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public boolean isResult() {

@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
@@ -121,6 +122,22 @@ public class DropboxWorkitemHandlerTest extends AbstractBaseTest {
         assertTrue(manager.getResults().containsKey(workItem.getId()));
     }
 
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testUploadFileInvalidParams() throws Exception {
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        UploadFileWorkitemHandler handler = new UploadFileWorkitemHandler("testClientID",
+                                                                          "{}");
+        handler.setAuth(auth);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
+    }
+
     @Test
     public void testDownloadFile() throws Exception {
         TestWorkItemManager manager = new TestWorkItemManager();
@@ -147,5 +164,21 @@ public class DropboxWorkitemHandlerTest extends AbstractBaseTest {
                      downloadedDoc.getName());
         assertEquals("test doc content",
                      new String(downloadedDoc.getContent()));
+    }
+
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testDownloadFileInvalidParams() throws Exception {
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        DownloadFileWorkitemHandler handler = new DownloadFileWorkitemHandler("testClientID",
+                                                                              "{}");
+        handler.setAuth(auth);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
     }
 }

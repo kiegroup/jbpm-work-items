@@ -21,6 +21,7 @@ import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
 
 import org.drools.core.process.instance.impl.WorkItemImpl;
+import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 import org.jbpm.process.workitem.core.TestWorkItemManager;
 import org.junit.Before;
 import org.junit.Test;
@@ -78,5 +79,21 @@ public class IFTTTWorkitemHandlerTest {
         String testValueJSONString = "{\"value1\":\"testValue1\",\"value2\":\"testValue1\",\"value3\":\"testValue1\"}";
         assertEquals(testValueJSONString,
                      handler.getRequestBody());
+    }
+
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testSendTriggerRequestInvalidParams() throws Exception {
+        TestWorkItemManager manager = new TestWorkItemManager();
+
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        IFTTTWorkitemHandler handler = new IFTTTWorkitemHandler("testKey");
+        handler.setClient(client);
+        handler.executeWorkItem(workItem,
+                                manager);
+
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
     }
 }

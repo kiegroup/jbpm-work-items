@@ -19,6 +19,7 @@ package org.jbpm.process.workitem.parser;
 import java.util.Map;
 
 import org.drools.core.process.instance.impl.WorkItemImpl;
+import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 import org.jbpm.process.workitem.core.TestWorkItemManager;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,6 +62,19 @@ public class ParserWorkItemHandlerTest {
                      result.getAge());
         assertEquals(NAME,
                      result.getName());
+    }
+
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testXmlToObjectInvalidParams() {
+        WorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+        handler.executeWorkItem(workItem,
+                                manager);
+
+        Map<String, Object> results = ((TestWorkItemManager) manager).getResults(workItem.getId());
+        assertNotNull(results);
+        assertEquals(0,
+                     results);
     }
 
     @Test

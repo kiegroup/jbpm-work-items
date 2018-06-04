@@ -22,6 +22,7 @@ import java.util.Map;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -36,8 +37,8 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.sheets.ReadSheetValuesWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "SheetId"),
-                @WidParameter(name = "Range"),
+                @WidParameter(name = "SheetId", required = true),
+                @WidParameter(name = "Range", required = true),
         },
         results = {
                 @WidResult(name = "SheetValues")
@@ -70,6 +71,9 @@ public class ReadSheetValuesWorkitemHandler extends AbstractLogOrThrowWorkItemHa
 
         try {
 
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             Sheets service = auth.getSheetsService(appName,
                                                    clientSecret);
             ValueRange sheetResponse = service.spreadsheets().values()
@@ -81,12 +85,12 @@ public class ReadSheetValuesWorkitemHandler extends AbstractLogOrThrowWorkItemHa
 
             results.put(RESULTS_VALUES,
                         values);
+
+            workItemManager.completeWorkItem(workItem.getId(),
+                                             results);
         } catch (Exception e) {
             handleException(e);
         }
-
-        workItemManager.completeWorkItem(workItem.getId(),
-                                         results);
     }
 
     public void abortWorkItem(WorkItem wi,

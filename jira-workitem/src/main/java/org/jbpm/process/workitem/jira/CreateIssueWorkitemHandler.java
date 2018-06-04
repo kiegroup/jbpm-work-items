@@ -25,18 +25,15 @@ import com.atlassian.jira.rest.client.domain.Issue;
 import com.atlassian.jira.rest.client.domain.IssueType;
 import com.atlassian.jira.rest.client.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.domain.input.IssueInputBuilder;
-
 import org.apache.commons.lang3.StringUtils;
-
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
-
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +42,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.jira.CreateIssueWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "ProjectKey"),
+                @WidParameter(name = "ProjectKey", required = true),
                 @WidParameter(name = "IssueSummary"),
                 @WidParameter(name = "IssueDescription"),
                 @WidParameter(name = "IssueType"),
@@ -82,6 +79,9 @@ public class CreateIssueWorkitemHandler extends AbstractLogOrThrowWorkItemHandle
                                 WorkItemManager workItemManager) {
         try {
 
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             String projectKey = (String) workItem.getParameter("ProjectKey");
             String issueSummary = (String) workItem.getParameter("IssueSummary");
             String issueDescription = (String) workItem.getParameter("IssueDescription");
@@ -90,74 +90,68 @@ public class CreateIssueWorkitemHandler extends AbstractLogOrThrowWorkItemHandle
             String reporterName = (String) workItem.getParameter("ReporterName");
             String componentName = (String) workItem.getParameter("ComponentName");
 
-            if (StringUtils.isNotEmpty(projectKey)) {
-
-                if (auth == null) {
-                    auth = new JiraAuth(userName,
-                                        password,
-                                        repoURI);
-                }
-
-                Map<String, Object> results = new HashMap<String, Object>();
-
-                IssueType issueTypeObj = null;
-                IssueInputBuilder issueBuilder;
-
-                if (StringUtils.isEmpty(givenIssueType)) {
-                    givenIssueType = "Bug";
-                }
-
-                NullProgressMonitor progressMonitor = new NullProgressMonitor();
-                // get the issue type for whats given
-                Iterable<IssueType> allIssueTypes = auth.getMetaDataRestClient().getIssueTypes(progressMonitor);
-                for (IssueType myIssueType : allIssueTypes) {
-                    if (myIssueType.getName().equals(givenIssueType)) {
-                        issueTypeObj = myIssueType;
-                    }
-                }
-
-                if (issueTypeObj != null) {
-                    issueBuilder = new IssueInputBuilder(projectKey,
-                                                         issueTypeObj.getId(),
-                                                         issueSummary);
-                } else {
-                    issueBuilder = new IssueInputBuilder(projectKey,
-                                                         1L,
-                                                         issueSummary);
-                }
-
-                if (StringUtils.isNotEmpty(issueDescription)) {
-                    issueBuilder.setDescription(issueDescription);
-                }
-
-                if (StringUtils.isNotEmpty(assigneeName)) {
-                    issueBuilder.setAssigneeName(assigneeName);
-                }
-
-                if (StringUtils.isNotEmpty(reporterName)) {
-                    issueBuilder.setReporterName(reporterName);
-                }
-
-                if (StringUtils.isNotEmpty(componentName)) {
-                    issueBuilder.setComponentsNames(Arrays.asList(componentName));
-                }
-
-                IssueInput issueInput = issueBuilder.build();
-                BasicIssue toCreateIssue = auth.getIssueRestClient().createIssue(issueInput,
-                                                                                 progressMonitor);
-
-                Issue createdIssue = auth.getIssueRestClient().getIssue(toCreateIssue.getKey(),
-                                                                        progressMonitor);
-
-                results.put(RESULTS_VALUE,
-                            createdIssue.getKey());
-
-                workItemManager.completeWorkItem(workItem.getId(),
-                                                 results);
-            } else {
-                logger.error("Missing issue project key.");
-                throw new IllegalArgumentException("Missing issue project key.");
+            if (auth == null) {
+                auth = new JiraAuth(userName,
+                                    password,
+                                    repoURI);
             }
+
+            Map<String, Object> results = new HashMap<String, Object>();
+
+            IssueType issueTypeObj = null;
+            IssueInputBuilder issueBuilder;
+
+            if (StringUtils.isEmpty(givenIssueType)) {
+                givenIssueType = "Bug";
+            }
+
+            NullProgressMonitor progressMonitor = new NullProgressMonitor();
+            // get the issue type for whats given
+            Iterable<IssueType> allIssueTypes = auth.getMetaDataRestClient().getIssueTypes(progressMonitor);
+            for (IssueType myIssueType : allIssueTypes) {
+                if (myIssueType.getName().equals(givenIssueType)) {
+                    issueTypeObj = myIssueType;
+                }
+            }
+
+            if (issueTypeObj != null) {
+                issueBuilder = new IssueInputBuilder(projectKey,
+                                                     issueTypeObj.getId(),
+                                                     issueSummary);
+            } else {
+                issueBuilder = new IssueInputBuilder(projectKey,
+                                                     1L,
+                                                     issueSummary);
+            }
+
+            if (StringUtils.isNotEmpty(issueDescription)) {
+                issueBuilder.setDescription(issueDescription);
+            }
+
+            if (StringUtils.isNotEmpty(assigneeName)) {
+                issueBuilder.setAssigneeName(assigneeName);
+            }
+
+            if (StringUtils.isNotEmpty(reporterName)) {
+                issueBuilder.setReporterName(reporterName);
+            }
+
+            if (StringUtils.isNotEmpty(componentName)) {
+                issueBuilder.setComponentsNames(Arrays.asList(componentName));
+            }
+
+            IssueInput issueInput = issueBuilder.build();
+            BasicIssue toCreateIssue = auth.getIssueRestClient().createIssue(issueInput,
+                                                                             progressMonitor);
+
+            Issue createdIssue = auth.getIssueRestClient().getIssue(toCreateIssue.getKey(),
+                                                                    progressMonitor);
+
+            results.put(RESULTS_VALUE,
+                        createdIssue.getKey());
+
+            workItemManager.completeWorkItem(workItem.getId(),
+                                             results);
         } catch (Exception e) {
             logger.error("Error executing workitem: " + e.getMessage());
             handleException(e);

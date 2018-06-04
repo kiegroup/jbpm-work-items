@@ -18,18 +18,20 @@ package org.jbpm.process.workitem.exec;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 
 @Wid(widfile = "ExecDefinitions.wid", name = "Exec",
         displayName = "Exec",
         defaultHandler = "mvel: new org.jbpm.process.workitem.exec.ExecWorkItemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "Command")
+                @WidParameter(name = "Command", required = true)
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
@@ -38,11 +40,20 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager manager) {
-        String command = (String) workItem.getParameter("Command");
-        CommandLine commandLine = CommandLine.parse(command);
-        DefaultExecutor executor = new DefaultExecutor();
+
         try {
+
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
+            String command = (String) workItem.getParameter("Command");
+
+            CommandLine commandLine = CommandLine.parse(command);
+
+            DefaultExecutor executor = new DefaultExecutor();
+
             executor.execute(commandLine);
+
             manager.completeWorkItem(workItem.getId(),
                                      null);
         } catch (Throwable t) {

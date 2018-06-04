@@ -33,6 +33,7 @@ import com.ibm.watson.developer_cloud.visual_recognition.v3.model.FaceGender;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.FaceIdentity;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ImageWithFaces;
 import org.drools.core.process.instance.impl.WorkItemImpl;
+import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 import org.jbpm.document.service.impl.DocumentImpl;
 import org.jbpm.process.workitem.core.TestWorkItemManager;
 import org.jbpm.process.workitem.ibm.watson.result.FaceDetectionResult;
@@ -174,6 +175,27 @@ public class WatsonWorkitemHandlerTest {
                      result.getClassTypeHierarchy());
     }
 
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testClassifyImageInvalidParams() throws Exception {
+        when(auth.getService(anyString())).thenReturn(associationService);
+
+        TestWorkItemManager manager = new TestWorkItemManager();
+        DocumentImpl imageToClassify = new DocumentImpl();
+        imageToClassify.setName("testImageToClassify.png");
+        imageToClassify.setContent(new String("testImageContent").getBytes());
+
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        ClassifyImageWorkitemHandler handler = new ClassifyImageWorkitemHandler("{testApiKey}");
+        handler.setAuth(auth);
+        handler.executeWorkItem(workItem,
+                                manager);
+
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
+    }
+
     @Test
     public void testDetectFaces() throws Exception {
         when(auth.getService(anyString())).thenReturn(recognitionService);
@@ -211,5 +233,25 @@ public class WatsonWorkitemHandlerTest {
                      result.getGender());
         assertEquals("testPerson",
                      result.getIdentity());
+    }
+
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testDetectFacesInvalidParams() throws Exception {
+        when(auth.getService(anyString())).thenReturn(recognitionService);
+
+        TestWorkItemManager manager = new TestWorkItemManager();
+        DocumentImpl imagetoDetect = new DocumentImpl();
+        imagetoDetect.setName("testImageToDetect.png");
+        imagetoDetect.setContent(new String("testImageContent").getBytes());
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        DetectFacesWorkitemHandler handler = new DetectFacesWorkitemHandler("{testApiKey}");
+        handler.setAuth(auth);
+        handler.executeWorkItem(workItem,
+                                manager);
+
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
     }
 }

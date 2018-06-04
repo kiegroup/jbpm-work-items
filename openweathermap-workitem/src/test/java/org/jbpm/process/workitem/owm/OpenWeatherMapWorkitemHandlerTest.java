@@ -28,6 +28,7 @@ import net.aksingh.owmjapis.model.param.ForecastData;
 import net.aksingh.owmjapis.model.param.Main;
 import net.aksingh.owmjapis.model.param.Temp;
 import org.drools.core.process.instance.impl.WorkItemImpl;
+import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 import org.jbpm.process.workitem.core.TestWorkItemManager;
 import org.jbpm.process.workitem.owm.DailyForecastData.DailyForecastDay;
 import org.jbpm.test.AbstractBaseTest;
@@ -154,6 +155,22 @@ public class OpenWeatherMapWorkitemHandlerTest extends AbstractBaseTest {
                      currentWeatherData.getHumidity());
     }
 
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testCurrentWeatherInvalidParams() throws Exception {
+
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        CurrentWeatherWorkitemHandler handler = new CurrentWeatherWorkitemHandler("testAPIKey");
+        handler.setOWM(owm);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
+    }
+
     @Test
     public void testDailyForecast() throws Exception {
 
@@ -192,5 +209,21 @@ public class OpenWeatherMapWorkitemHandlerTest extends AbstractBaseTest {
                      dailyForecastDays.get(0).getCloud());
         assertEquals(Double.valueOf(4),
                      dailyForecastDays.get(0).getPressure());
+    }
+
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testDailyForecastInvalidParams() throws Exception {
+
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        DailyForecastWorkitemHandler handler = new DailyForecastWorkitemHandler("testAPIKey");
+        handler.setOWM(owm);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
     }
 }

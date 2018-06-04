@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -45,7 +46,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "Port"),
                 @WidParameter(name = "Service"),
                 @WidParameter(name = "Text"),
-                @WidParameter(name = "To")
+                @WidParameter(name = "To", required = true)
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
@@ -68,33 +69,34 @@ public class JabberWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager manager) {
 
-        this.user = (String) workItem.getParameter("User");
-        this.password = (String) workItem.getParameter("Password");
-        this.server = (String) workItem.getParameter("Server");
-        String portString = (String) workItem.getParameter("Port");
-        if (portString != null && !portString.equals("")) {
-            this.port = Integer.valueOf((String) workItem.getParameter("Port"));
-        }
-        this.service = (String) workItem.getParameter("Service");
-        this.text = (String) workItem.getParameter("Text");
-
-        String to = (String) workItem.getParameter("To");
-        if (to == null || to.trim().length() == 0) {
-            throw new RuntimeException("IM must have one or more to adresses");
-        }
-        for (String s : to.split(";")) {
-            if (s != null && !"".equals(s)) {
-                this.toUsers.add(s);
-            }
-        }
-
-        if (conf == null) {
-            conf = new ConnectionConfiguration(server,
-                                               port,
-                                               service);
-        }
-
         try {
+
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
+            this.user = (String) workItem.getParameter("User");
+            this.password = (String) workItem.getParameter("Password");
+            this.server = (String) workItem.getParameter("Server");
+            String portString = (String) workItem.getParameter("Port");
+            if (portString != null && !portString.equals("")) {
+                this.port = Integer.valueOf((String) workItem.getParameter("Port"));
+            }
+            this.service = (String) workItem.getParameter("Service");
+            this.text = (String) workItem.getParameter("Text");
+
+            String to = (String) workItem.getParameter("To");
+
+            for (String s : to.split(";")) {
+                if (s != null && !"".equals(s)) {
+                    this.toUsers.add(s);
+                }
+            }
+
+            if (conf == null) {
+                conf = new ConnectionConfiguration(server,
+                                                   port,
+                                                   service);
+            }
 
             if (server != null && !server.equals("") && port != 0) {
                 if (connection == null) {
@@ -143,7 +145,6 @@ public class JabberWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     public void abortWorkItem(WorkItem workItem,
                               WorkItemManager manager) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     // for testing

@@ -36,6 +36,7 @@ import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.Message;
 import org.jbpm.document.Document;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -81,6 +82,10 @@ public class SendMailWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
         Document paramAttachment = (Document) workItem.getParameter("Attachment");
 
         try {
+
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             Gmail gmailService = auth.getGmailService(appName,
                                                       clientSecret);
             Message outEmailMessage = sendMessage(gmailService,
@@ -89,12 +94,12 @@ public class SendMailWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
                                                   paramSubject,
                                                   paramBodyText,
                                                   paramAttachment);
+
+            workItemManager.completeWorkItem(workItem.getId(),
+                                             outEmailMessage);
         } catch (Exception e) {
             handleException(e);
         }
-
-        workItemManager.completeWorkItem(workItem.getId(),
-                                         null);
     }
 
     public void abortWorkItem(WorkItem wi,

@@ -27,6 +27,7 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -38,7 +39,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         defaultHandler = "mvel: new org.jbpm.process.workitem.archive.ArchiveWorkItemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "Archive"),
+                @WidParameter(name = "Archive", required = true),
                 @WidParameter(name = "Files")
         },
         mavenDepends = {
@@ -47,11 +48,14 @@ import org.kie.api.runtime.process.WorkItemManager;
 public class ArchiveWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     public void executeWorkItem(WorkItem workItem,
-                                WorkItemManager manager) {
+                                WorkItemManager     manager) {
         String archive = (String) workItem.getParameter("Archive");
         List<File> files = (List<File>) workItem.getParameter("Files");
 
         try {
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             OutputStream outputStream = new FileOutputStream(new File(archive));
             ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("tar",
                                                                                           outputStream);
@@ -73,8 +77,8 @@ public class ArchiveWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
             os.close();
             manager.completeWorkItem(workItem.getId(),
                                      null);
-        } catch (Throwable cause) {
-            handleException(cause);
+        } catch (Exception e) {
+            handleException(e);
             manager.abortWorkItem(workItem.getId());
         }
     }

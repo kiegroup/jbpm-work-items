@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.drools.core.process.instance.impl.WorkItemImpl;
-
 import org.eclipse.egit.github.core.Gist;
 import org.eclipse.egit.github.core.MergeStatus;
 import org.eclipse.egit.github.core.PullRequest;
@@ -28,22 +27,18 @@ import org.eclipse.egit.github.core.RepositoryId;
 import org.eclipse.egit.github.core.service.GistService;
 import org.eclipse.egit.github.core.service.PullRequestService;
 import org.eclipse.egit.github.core.service.RepositoryService;
-
+import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 import org.jbpm.document.service.impl.DocumentImpl;
 import org.jbpm.process.workitem.core.TestWorkItemManager;
 import org.jbpm.test.AbstractBaseTest;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
-
 import static org.mockito.Matchers.anyString;
-
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -140,6 +135,27 @@ public class GithubWorkitemHandlerTest extends AbstractBaseTest {
         assertNotNull(createdGistURL);
         assertEquals("testGistURL",
                      createdGistURL);
+    }
+
+    @Test(expected = WorkItemHandlerRuntimeException.class)
+    public void testCreateGistInvalidParams() throws Exception {
+
+        DocumentImpl testGistDoc = new org.jbpm.document.service.impl.DocumentImpl();
+        testGistDoc.setContent(new String("Test gist file content").getBytes());
+        testGistDoc.setName("testGistFile.txt");
+
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+
+        CreateGistWorkitemHandler handler = new CreateGistWorkitemHandler("testusername",
+                                                                          "testpassword");
+        handler.setAuth(auth);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
     }
 
     @Test

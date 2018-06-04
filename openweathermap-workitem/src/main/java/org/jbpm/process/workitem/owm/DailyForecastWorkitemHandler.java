@@ -33,6 +33,7 @@ import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 
 @Wid(widfile = "DailyForecastDefinitions.wid", name = "DailyForecast",
         displayName = "DailyForecast",
@@ -64,16 +65,15 @@ public class DailyForecastWorkitemHandler extends AbstractLogOrThrowWorkItemHand
                                 WorkItemManager workItemManager) {
 
         try {
+
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
+
             String cityName = (String) workItem.getParameter("CityName");
             String countryCode = (String) workItem.getParameter("CountryCode");
             Map<String, Object> results = new HashMap<String, Object>();
 
             DailyForecastData dfd = new DailyForecastData();
-
-            if (cityName == null) {
-                logger.error("Missing city name.");
-                throw new IllegalArgumentException("Missing city name.");
-            }
 
             if (owm == null) {
                 owm = new OWM(apiKey);
