@@ -24,6 +24,8 @@ import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
+import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidService;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.ConnectionConfiguration;
@@ -50,7 +52,11 @@ import org.slf4j.LoggerFactory;
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
-        })
+        },
+        serviceInfo = @WidService(category = "${name}", description = "${description}",
+                keywords = "jabber,im,xmpp,message,send",
+                action = @WidAction(title = "Send a message using Jabber")
+        ))
 public class JabberWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(JabberWorkItemHandler.class);

@@ -22,9 +22,10 @@ import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
+import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
-import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 
 @Wid(widfile = "ExecDefinitions.wid", name = "Exec",
         displayName = "Exec",
@@ -35,7 +36,11 @@ import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
-        })
+        },
+        serviceInfo = @WidService(category = "${name}", description = "${description}",
+                keywords = "execute,java,comand",
+                action = @WidAction(title = "Execute a Java command")
+        ))
 public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     public void executeWorkItem(WorkItem workItem,

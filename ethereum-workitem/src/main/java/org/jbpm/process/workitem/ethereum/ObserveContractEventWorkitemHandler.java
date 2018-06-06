@@ -23,6 +23,8 @@ import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
+import org.jbpm.process.workitem.core.util.service.WidService;
+import org.jbpm.process.workitem.core.util.service.WidTrigger;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -48,7 +50,11 @@ import org.web3j.protocol.http.HttpService;
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
-        })
+        },
+        serviceInfo = @WidService(category = "${name}", description = "${description}",
+                keywords = "Ethereum,blockchain,smart,contract,smartcontract,observe",
+                trigger = @WidTrigger(title = "Observe a smart contract deployed onto the blockchain")
+        ))
 public class ObserveContractEventWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     private Web3j web3j;

@@ -24,6 +24,8 @@ import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
+import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidService;
 
 @Wid(widfile = "CamelFileConnector.wid", name = "CamelFileConnector",
         displayName = "CamelFileConnector",
@@ -39,7 +41,11 @@ import org.jbpm.process.workitem.core.util.WidResult;
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
-        })
+        },
+        serviceInfo = @WidService(category = "${name}", description = "${description}",
+                keywords = "apache,camel,file,filysystem,read,write,payload,route,connector",
+                action = @WidAction(title = "Access file systems and process files")
+        ))
 public class FileCamelWorkitemHandler extends AbstractCamelWorkitemHandler {
 
     public FileCamelWorkitemHandler() {

@@ -33,6 +33,7 @@
             <include>**/*.st</include>
             <include>**/*.part</include>
             <include>**/*.html</include>
+            <include>**/*.js</include>
           </includes>
         </configuration>
       </plugin>

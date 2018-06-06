@@ -28,6 +28,8 @@ import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
+import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidService;
 import org.jbpm.process.workitem.owm.DailyForecastData.DailyForecastDay;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -48,7 +50,11 @@ import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
-        })
+        },
+        serviceInfo = @WidService(category = "${name}", description = "${description}",
+                keywords = "openweathermap,weather,daily,forecase",
+                action = @WidAction(title = "Get the weather daily forecast for a location")
+        ))
 public class DailyForecastWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(CurrentWeatherWorkitemHandler.class);
