@@ -347,11 +347,6 @@ public class EthereumUtils {
                                             List<TypeReference<?>> indexedParameters,
                                             List<TypeReference<?>> nonIndexedParameters,
                                             String eventReturnType,
-                                            KieSession kieSession,
-                                            String signalName,
-                                            boolean doAbortOnUpdate,
-                                            WorkItemManager workItemManager,
-                                            WorkItem workItem,
                                             rx.functions.Action1 action1) {
 
         Event event = new Event(contractEventName,
