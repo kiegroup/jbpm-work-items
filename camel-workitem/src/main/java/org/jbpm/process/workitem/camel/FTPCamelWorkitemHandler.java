@@ -22,6 +22,8 @@ import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
+import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidService;
 
 @Wid(widfile = "CamelFTPConnector.wid", name = "CamelFTPConnector",
         displayName = "CamelFTPConnector",
@@ -41,7 +43,11 @@ import org.jbpm.process.workitem.core.util.WidResult;
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
-        })
+        },
+        serviceInfo = @WidService(category = "${name}", description = "${description}",
+                keywords = "apache,camel,ftp,payload,route,connector",
+                action = @WidAction(title = "Access remote file system over FTP")
+        ))
 public class FTPCamelWorkitemHandler extends AbstractCamelWorkitemHandler {
 
     public FTPCamelWorkitemHandler() {

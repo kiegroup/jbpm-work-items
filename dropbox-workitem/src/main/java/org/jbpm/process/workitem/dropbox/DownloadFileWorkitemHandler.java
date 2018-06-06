@@ -32,6 +32,8 @@ import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
+import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.slf4j.Logger;
@@ -49,7 +51,11 @@ import org.slf4j.LoggerFactory;
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
-        })
+        },
+        serviceInfo = @WidService(category = "${name}", description = "${description}",
+                keywords = "DropBox,file,files,download,document,documents",
+                action = @WidAction(title = "Upload a file to DropBox")
+        ))
 public class DownloadFileWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(DownloadFileWorkitemHandler.class);

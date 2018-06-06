@@ -2,5 +2,52 @@
 </table>
 </div>
 
+<script>
+    var options = {
+        shouldSort: true,
+        tokenize: true,
+        matchAllTokens: true,
+        findAllMatches: true,
+        threshold: 0.1,
+        location: 0,
+        distance: 50,
+        maxPatternLength: 32,
+        minMatchCharLength: 1,
+        keys: [
+            "keywords"
+        ]
+    };
+    var fuse = new Fuse(serviceinfo, options);
+
+    $(document).ready(function() {
+        $('#repoFuncSearchButton').click(function() {
+            var keywordsearchresult = fuse.search($('#repoFuncSearch').val());
+
+            $("#repoTable tr").each(function (i, row) {
+                var found = false;
+                for(var i = 0; i < keywordsearchresult.length; i++) {
+                    if(row.innerText.toLowerCase().indexOf(keywordsearchresult[i].description.toLowerCase()) > -1) {
+                        found = true;
+                    }
+                }
+                if(!found) {
+                    $(this).toggle(false);
+                }
+            });
+        });
+
+        $("#repoFuncSearch").focus(function() {
+            $("#repoFuncSearch").val("");
+        });
+
+        $('#repoFuncSearchClearButton').click(function() {
+            $("#repoTable tr").each(function (i, row) {
+                $(this).toggle(true);
+            });
+        });
+    });
+
+</script>
+
 </body>
 </html>

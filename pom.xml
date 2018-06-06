@@ -712,7 +712,7 @@
           <compilerArgs>
             <arg>-AwidName=${project.artifactId}</arg>
             <arg>-AgenerateTemplates=true</arg>
-            <arg>-AtemplateResources=${project.artifactId}.wid:widtemplate.st,${project.artifactId}.json:jsontemplate.st,kie-deployment-descriptor.xml:kie-ddtemplate.st,index.html:indextemplate.st</arg>
+            <arg>-AtemplateResources=${project.artifactId}.wid:widtemplate.st,${project.artifactId}.json:jsontemplate.st,kie-deployment-descriptor.xml:kie-ddtemplate.st,index.html:indextemplate.st,serviceinfo.json:serviceinfo.st</arg>
           </compilerArgs>
         </configuration>
       </plugin>

@@ -34,6 +34,8 @@ import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
+import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidService;
 import org.jbpm.process.workitem.ibm.watson.result.ImageClassificationResult;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -52,7 +54,11 @@ import org.slf4j.LoggerFactory;
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
-        })
+        },
+        serviceInfo = @WidService(category = "${name}", description = "${description}",
+                keywords = "ibm,watson,image,classify",
+                action = @WidAction(title = "Classify an image using IBM Watson")
+        ))
 public class ClassifyImageWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(ClassifyImageWorkitemHandler.class);

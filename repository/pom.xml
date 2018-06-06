@@ -83,6 +83,22 @@
               <goal>run</goal>
             </goals>
           </execution>
+          <execution>
+            <id>create wid service info</id>
+            <phase>package</phase>
+            <configuration>
+              <target>
+                <concat fixlastline="yes" destfile="${project.build.directory}/${project.artifactId}-${project.version}/serviceinfo.js">
+                  <fileset file="${project.build.directory}/classes/serviceinfoheader.js" />
+                  <fileset dir="${project.build.directory}/${project.artifactId}-${project.version}" includes="**/serviceinfo.json"/>
+                  <fileset file="${project.build.directory}/classes/serviceinfofooter.js" />
+                </concat>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
         </executions>
       </plugin>
     </plugins>

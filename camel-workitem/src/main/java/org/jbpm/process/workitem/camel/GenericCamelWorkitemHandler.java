@@ -24,6 +24,8 @@ import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
+import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidService;
 
 @Wid(widfile = "CamelGenericConnector.wid", name = "CamelGenericConnector",
         displayName = "CamelGenericConnector",
@@ -38,7 +40,11 @@ import org.jbpm.process.workitem.core.util.WidResult;
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
-        })
+        },
+        serviceInfo = @WidService(category = "${name}", description = "${description}",
+                keywords = "apache,camel,payload,route,connector",
+                action = @WidAction(title = "Send payload to a Camel endpoint")
+        ))
 public class GenericCamelWorkitemHandler extends AbstractCamelWorkitemHandler {
 
     public GenericCamelWorkitemHandler(String schema) {
