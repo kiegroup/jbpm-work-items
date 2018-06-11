@@ -39,6 +39,7 @@
     <module>ethereum-workitem</module>
     <module>camel-workitem</module>
     <module>openweathermap-workitem</module>
+    <module>mavenembedder-workitem</module>
     <module>repository</module>
     <module>repository-springboot</module>
   </modules>
@@ -86,6 +87,7 @@
     <version.rxjava>1.2.4</version.rxjava>
     <version.owm>2.5.2.2</version.owm>
     <version.commons.net>3.6</version.commons.net>
+    <version.maven.embedder>3.3.3</version.maven.embedder>
 
     <!-- Failsafe plugin-related properties -->
     <failsafe.arg.line>
@@ -380,11 +382,40 @@
         <artifactId>owm-japis</artifactId>
         <version>${version.owm}</version>
       </dependency>
-
       <dependency>
         <groupId>commons-net</groupId>
         <artifactId>commons-net</artifactId>
         <version>${version.commons.net}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-embedder</artifactId>
+        <version>${version.maven.embedder}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.aether</groupId>
+        <artifactId>aether-connector-basic</artifactId>
+        <version>${version.org.eclipse.aether}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.aether</groupId>
+        <artifactId>aether-transport-wagon</artifactId>
+        <version>${version.org.eclipse.aether}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-http</artifactId>
+        <version>${version.org.apache.maven.wagon}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-provider-api</artifactId>
+        <version>${version.org.apache.maven.wagon}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-http-lightweight</artifactId>
+        <version>${version.org.apache.maven.wagon}</version>
       </dependency>
 
       <!-- module dependencies -->
@@ -511,6 +542,11 @@
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
         <artifactId>openweathermap-workitem</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>mavenembedder-workitem</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -667,6 +703,12 @@
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
         <artifactId>openweathermap-workitem</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>mavenembedder-workitem</artifactId>
         <version>${project.version}</version>
         <type>zip</type>
       </dependency>

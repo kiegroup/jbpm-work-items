@@ -152,6 +152,8 @@
                       <ignoreClass>javax.xml.stream.*</ignoreClass>
                       <ignoreClass>javax.xml.namespace.*</ignoreClass>
                       <ignoreClass>javax.ws.rs.*</ignoreClass>
+                      <ignoreClass>javax.el.*</ignoreClass>
+                      <ignoreClass>org.aopalliance.*</ignoreClass>
                     </ignoreClasses>
                   </banDuplicateClasses>
                 </rules>
