@@ -4,23 +4,30 @@
     <title>jBPM WorkItem Repository - ${project.version}</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
     <script src="http://fusejs.io/assets/js/fuse.min.js"></script>
     <script src="serviceinfo.js"></script>
+    <style>
+        .hiddenRow {
+            padding: 0 !important;
+        }
+    </style>
 </head>
 <body>
 
 <div class="container">
 
-    <div class="page-header">
+    <div class="pb-2 mt-4 mb-2 border-bottom">
         <h1>jBPM WorkItem Repository <small>version ${project.version}</small></h1>
     </div>
 
-    <div class="panel panel-info">
-        <div class="panel-heading">Search workitems by functionality (e.g download, jira, translate, detect, message, etc):</div>
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-header">Search workitems by functionality (e.g download, jira, translate, detect, message, etc):</div>
+        <div class="card-body">
             <form class="form-inline">
 
                 <div id="search" class="form-group">
@@ -35,14 +42,17 @@
             </form>
         </div>
     </div>
-    <table class="table table-hover">
-        <thead>
-        <tr>
-            <th>Icon</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Download</th>
-            <th>Contibuted by</th>
-        </tr>
-        </thead>
-        <tbody id="repoTable">
+    <p/>
+    <div class="card">
+        <div class="card-header">Select row to expand/collapse Handler info</div>
+        <div class="card-body">
+            <table class="table" style="border-collapse:collapse;">
+                <thead>
+                <tr>
+                    <th>Workitem</th>
+                    <th>Handlers</th>
+                    <th>Description</th>
+                    <th>Download</th>
+                </tr>
+                </thead>
+                <tbody id="repoTable">

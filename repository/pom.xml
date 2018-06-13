@@ -60,7 +60,7 @@
                 </concat>
                 <concat fixlastline="yes" destfile="${project.build.directory}/${project.artifactId}-${project.version}/index.html">
                   <fileset file="${project.build.directory}/classes/repoheader.html" />
-                  <fileset dir="${project.build.directory}/${project.artifactId}-${project.version}" includes="**/repoindex.part"/>
+                  <fileset dir="${project.build.directory}/${project.artifactId}-${project.version}" includes="**/repoindex.html"/>
                   <fileset file="${project.build.directory}/classes/repofooter.html" />
                 </concat>
               </target>
