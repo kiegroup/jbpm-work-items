@@ -1,7 +1,52 @@
-<tr>
-    <td><img src="${artifactId}/icon.png" width="40" height="40"></td>
-    <td><a href="${artifactId}/index.html">${project.name}</a></td>
-    <td>${project.description}</td>
-    <td><a href="${artifactId}/${artifactId}.wid">wid</a>&nbsp;&nbsp;<a href="${artifactId}/${artifactId}.json">json</a>&nbsp;&nbsp;<a href="${artifactId}/kie-deployment-descriptor.xml">kie-dd</a>&nbsp;&nbsp;<a href="${artifactId}/${artifactId}-${version}.jar">jar</a></td>
-    <td>${organization.name}</td>
+<tr data-toggle="collapse" data-target="#\$$openbracket$artifactId$closebracket$-expdiv" class="accordion-toggle" id="\$$openbracket$artifactId$closebracket$-maintr">
+    <td><img src="\$$openbracket$artifactId$closebracket$/icon.png" width="40" height="40">&nbsp;<b>\$$openbracket$project.name$closebracket$</b></td>
+    <td><button type="button" class="btn btn-primary"><span class="badge">$length(widInfo)$</span></button></td>
+    <td>\$$openbracket$project.description$closebracket$</td>
+    <td>
+    <div class="dropdown">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton-\$$openbracket$artifactId$closebracket$" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="fa fa-download">&nbsp;Select</span>
+      </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton-\$$openbracket$artifactId$closebracket$">
+        <a class="dropdown-item" href="\$$openbracket$artifactId$closebracket$/\$$openbracket$artifactId$closebracket$.wid"><span class="fa fa-file">&nbsp;Workitem Definition MVEL</span></a>
+        <a class="dropdown-item" href="\$$openbracket$artifactId$closebracket$/\$$openbracket$artifactId$closebracket$.json"><span class="fa fa-file">&nbsp;Workitem Definition JSON</span></a>
+        <a class="dropdown-item" href="\$$openbracket$artifactId$closebracket$/kie-deployment-descriptor.xml"><span class="fa fa-file">&nbsp;Kie Deployment Descriptor</span></a>
+        <a class="dropdown-item" href="\$$openbracket$artifactId$closebracket$/\$$openbracket$artifactId$closebracket$-\$$openbracket$version$closebracket$.jar"><span class="fa fa-file">&nbsp;Workitem Jar</span></a>
+        </div>
+    </div>
+        </td>
+</tr>
+<tr id="\$$openbracket$artifactId$closebracket$-exptr">
+    <td colspan="12" class="hiddenRow"><div id="\$$openbracket$artifactId$closebracket$-expdiv" class="accordian-body collapse">
+       <table class="table table-sm">
+       <tbody>
+       <tr><td>
+
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Handler</th>
+                  <th scope="col">Docs</th>
+                </tr>
+              </thead>
+              <tbody>
+
+           $widInfo:{k|
+
+                <tr>
+                      <th scope="row">$i$</th>
+                      <td>$widInfo.(k).name$</td>
+                      <td>$widInfo.(k).defaultHandler$</td>
+                      <td><a href="\$$openbracket$artifactId$closebracket$/index.html#$widInfo.(k).name$" class="btn btn-secondary btn-sm" role="button" aria-disabled="true"><span class="fa fa-eye">&nbsp;View</span></a></td>
+                    </tr>
+               }$
+               </tbody>
+               </table>
+
+       </td></tr>
+        </tbody>
+       </table></div>
+    </td>
 </tr>

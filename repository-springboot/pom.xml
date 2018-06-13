@@ -105,6 +105,7 @@
                     <include>**/*.conf</include>
                     <include>**/*.xml</include>
                     <include>**/*.jar</include>
+                    <include>**/*.png</include>
                   </includes>
                   <filtering>false</filtering>
                 </resource>

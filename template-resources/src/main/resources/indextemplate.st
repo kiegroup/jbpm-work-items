@@ -1,14 +1,20 @@
 <html>
     <head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
     </head>
     <body>
     <div class="container">
     $widInfo:{k|
-    <div class="well">
-    <h2>$i$. Workitem Info - $widInfo.(k).name$</h2>
+
+    <a name="$widInfo.(k).name$"></a><div class="card">
+            <div class="card-header"><b>$i$. $widInfo.(k).name$ Workitem Handler</b></div>
+            <div class="card-body">
     <table class="table table-hover">
         <thead>
         <tr>
@@ -31,7 +37,7 @@
     </table>
     <br/>
     $if(widInfo.(k).parameters)$
-    <h2>Parameters</h2>
+    <b>Parameters</b>
     <table class="table table-hover">
         <thead>
         <tr>
@@ -53,7 +59,7 @@
     <br/>
     $endif$
     $if(widInfo.(k).parameterValues)$
-    <h2>Parameter Values</h2>
+    <b>Parameter Values</b>
     <table class="table table-hover">
         <thead>
         <tr>
@@ -73,7 +79,7 @@
     <br/>
     $endif$
     $if(widInfo.(k).results)$
-    <h2>Results</h2>
+    <b>Results</b>
     <table class="table table-hover">
         <thead>
         <tr>
@@ -93,7 +99,7 @@
     <br/>
     $endif$
     $if(widInfo.(k).mavenDepends)$
-    <h2>Maven Dependencies</h2>
+    <b>Maven Dependencies</b>
     <table class="table table-hover">
         <thead>
         <tr>
@@ -114,7 +120,7 @@
     </table>
     <br/>
     $endif$
-    </div>
+    </div></div><p/>
     }$
     </div>
     </body>

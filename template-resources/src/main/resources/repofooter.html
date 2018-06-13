@@ -1,6 +1,8 @@
 </tbody>
 </table>
 </div>
+</div>
+</div>
 
 <script>
     var options = {
@@ -23,7 +25,7 @@
         $('#repoFuncSearchButton').click(function() {
             var keywordsearchresult = fuse.search($('#repoFuncSearch').val());
 
-            $("#repoTable tr").each(function (i, row) {
+            $("#repoTable > tr").each(function (i, row) {
                 var found = false;
                 for(var i = 0; i < keywordsearchresult.length; i++) {
                     if(row.innerText.toLowerCase().indexOf(keywordsearchresult[i].description.toLowerCase()) > -1) {
@@ -31,7 +33,9 @@
                     }
                 }
                 if(!found) {
-                    $(this).toggle(false);
+                    if(row.getAttribute("id") == null || !row.getAttribute("id").endsWith("-exptr")) {
+                        $(this).toggle(false);
+                    }
                 }
             });
         });
@@ -45,6 +49,13 @@
                 $(this).toggle(true);
             });
         });
+
+        $(function(){
+            $("[data-load]").each(function(){
+                $(this).load($(this).data("load"), function(){
+                });
+            });
+        })
     });
 
 </script>
