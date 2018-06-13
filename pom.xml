@@ -42,6 +42,7 @@
     <module>mavenembedder-workitem</module>
     <module>repository</module>
     <module>repository-springboot</module>
+    <module>repository-wildfly</module>
   </modules>
 
   <properties>
@@ -88,6 +89,8 @@
     <version.owm>2.5.2.2</version.owm>
     <version.commons.net>3.6</version.commons.net>
     <version.maven.embedder>3.3.3</version.maven.embedder>
+    <version.wildfly.maven.plugin>1.2.1.Final</version.wildfly.maven.plugin>
+    <version.war.plugin>3.2.2</version.war.plugin>
 
     <!-- Failsafe plugin-related properties -->
     <failsafe.arg.line>

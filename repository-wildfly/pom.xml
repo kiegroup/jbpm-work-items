@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.jbpm.contrib</groupId>
@@ -9,29 +9,17 @@
     <version>7.8.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>repository-springboot</artifactId>
-  <name>Repository SpringBoot</name>
-  <description>Workitems SpringBoot Repository</description>
+  <artifactId>repository-wildfly</artifactId>
+  <packaging>war</packaging>
+  <name>Repository WildFly</name>
+  <description>Workitems WildFly Repository</description>
   <organization>
     <name>jBPM dev team</name>
   </organization>
-  
-  <properties>
-    <version.org.springboot>1.5.10.RELEASE</version.org.springboot>
-  </properties>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <!-- Import dependency management from Spring Boot -->
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>${version.org.springboot}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+  <properties>
+    <version.org.wildfly>11.0.0.Final</version.org.wildfly>
+  </properties>
 
   <dependencies>
 
@@ -39,44 +27,6 @@
     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>repository</artifactId>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>    
-    
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-autoconfigure</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
     </dependency>
 
   </dependencies>
@@ -111,25 +61,72 @@
                   <filtering>false</filtering>
                 </resource>
               </resources>
-              <outputDirectory>target/classes/static</outputDirectory>
+              <outputDirectory>target/repository</outputDirectory>
             </configuration>
           </execution>
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <version>${version.org.springboot}</version>
+        <groupId>org.wildfly.plugins</groupId>
+        <artifactId>wildfly-maven-plugin</artifactId>
+        <version>${version.wildfly.maven.plugin}</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>${version.war.plugin}</version>
         <configuration>
-          <mainClass>org.jbpm.process.workitem.repositoryspringboot.RepositorySpringBootApplication</mainClass>
+          <packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
+          <failOnMissingWebXml>false</failOnMissingWebXml>
+          <webResources>
+            <resource>
+              <directory>target/repository</directory>
+              <filtering>false</filtering>
+            </resource>
+          </webResources>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
+            <id>unpack</id>
+            <phase>process-test-classes</phase>
             <goals>
-              <goal>repackage</goal>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.wildfly</groupId>
+                  <artifactId>wildfly-dist</artifactId>
+                  <version>${version.org.wildfly}</version>
+                  <type>zip</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>target</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <finalName>repository-server-${project.version}</finalName>
+          <descriptors>
+            <descriptor>src/main/assembly/assembly-server-dist.xml</descriptor>
+          </descriptors>
+        </configuration>
       </plugin>
     </plugins>
     <pluginManagement>
