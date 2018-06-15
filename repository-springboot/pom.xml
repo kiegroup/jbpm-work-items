@@ -75,8 +75,29 @@
 
     <dependency>
       <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-hateoas</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.hateoas</groupId>
+      <artifactId>spring-hateoas</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
     </dependency>
 
   </dependencies>
@@ -112,6 +133,26 @@
                 </resource>
               </resources>
               <outputDirectory>target/classes/static</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-indexconf-resources</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <encoding>UTF-8</encoding>
+              <resources>
+                <resource>
+                  <directory>../repository/target/repository-${project.version}</directory>
+                  <includes>
+                    <include>serviceinfo.js</include>
+                  </includes>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>
+              <outputDirectory>target/classes</outputDirectory>
             </configuration>
           </execution>
         </executions>
