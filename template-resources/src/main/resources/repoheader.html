@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
     <script src="http://fusejs.io/assets/js/fuse.min.js"></script>
@@ -20,6 +20,11 @@
 <body>
 
 <div class="container">
+
+    <div class="alert alert-success" role="alert" id="repoinfo">
+        <p><strong><span class="fa fa-check">&nbsp;Repository health check completed successfully</span></strong></p>
+        <p><strong><span class="fa fa-check" id="widcountp"></span></strong></p>
+    </div>
 
     <div class="pb-2 mt-4 mb-2 border-bottom">
         <h1>jBPM WorkItem Repository <small>version ${project.version}</small></h1>

@@ -91,6 +91,7 @@
     <version.maven.embedder>3.3.3</version.maven.embedder>
     <version.wildfly.maven.plugin>1.2.1.Final</version.wildfly.maven.plugin>
     <version.war.plugin>3.2.2</version.war.plugin>
+    <version.apache.commons.io>2.5</version.apache.commons.io>
 
     <!-- Failsafe plugin-related properties -->
     <failsafe.arg.line>

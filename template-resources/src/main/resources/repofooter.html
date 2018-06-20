@@ -22,6 +22,10 @@
     var fuse = new Fuse(serviceinfo, options);
 
     $(document).ready(function() {
+        $(function(){
+            $('#repoinfo').hide();
+        });
+
         $('#repoFuncSearchButton').click(function() {
             var keywordsearchresult = fuse.search($('#repoFuncSearch').val());
 
@@ -55,7 +59,17 @@
                 $(this).load($(this).data("load"), function(){
                 });
             });
-        })
+        });
+
+        $.ajax({
+            url: 'rest/services/count',
+            timeout:2000
+        }).done(function(data){
+            $('#widcountp').text( " " + data + " workitems found in repository");
+            $('#repoinfo').show();
+        }).fail(function(jqXHR, textStatus){
+            // repo is running on file only mode. do nothing
+        });
     });
 
 </script>

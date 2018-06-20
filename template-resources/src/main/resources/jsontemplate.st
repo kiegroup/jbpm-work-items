@@ -15,7 +15,7 @@
                    "type" : "$widInfo.(k).parameters.(k1).type$"
                $closebracket$
             }; separator=","$
-        ],"
+        ],
         $endif$
         $if(widInfo.(k).parameterValues)$
         "parameterValues" : [
