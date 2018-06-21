@@ -21,9 +21,14 @@
 
 <div class="container">
 
-    <div class="alert alert-success" role="alert" id="repoinfo">
-        <p><strong><span class="fa fa-check">&nbsp;Repository health check completed successfully</span></strong></p>
-        <p><strong><span class="fa fa-check" id="widcountp"></span></strong></p>
+    <div class="card border-success mb-3" id="repoinfo">
+        <div class="card-body text-success">
+            <button type="button" class="close" data-target="#repoinfo" data-dismiss="alert"> <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+
+            </button>
+            <p class="card-text"><span class="fa fa-check"></span>&nbsp;Repository health check completed successfully</p>
+            <p class="card-text"><span class="fa fa-check"></span><label id="widcountp"></label></p>
+        </div>
     </div>
 
     <div class="pb-2 mt-4 mb-2 border-bottom">
