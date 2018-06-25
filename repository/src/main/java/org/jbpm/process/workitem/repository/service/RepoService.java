@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.Collections;
 
 public class RepoService {
 
@@ -59,6 +60,9 @@ public class RepoService {
             services = mapper.readValue(jsonInput,
                                         new TypeReference<List<RepoData>>() {
                                         });
+            // remove all nulls from list if any (can happen due to trailing commas in json)
+            services.removeAll(Collections.singleton(null));
+
         } catch (Exception e) {
             logger.error("Unable to load service info: " + e.getMessage());
         }
