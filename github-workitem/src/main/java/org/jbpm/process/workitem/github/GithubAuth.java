@@ -19,6 +19,7 @@ import java.io.IOException;
 
 import org.eclipse.egit.github.core.client.GitHubClient;
 import org.eclipse.egit.github.core.service.GistService;
+import org.eclipse.egit.github.core.service.IssueService;
 import org.eclipse.egit.github.core.service.PullRequestService;
 import org.eclipse.egit.github.core.service.RepositoryService;
 
@@ -49,5 +50,11 @@ public class GithubAuth {
                                                     String password) throws IOException {
         return new PullRequestService(getGitHubClient(username,
                                                       password));
+    }
+
+    public IssueService getIssueService(String username,
+                                        String password) throws IOException {
+        return new IssueService(getGitHubClient(username,
+                                                password));
     }
 }

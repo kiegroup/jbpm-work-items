@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
-                keywords = "google,github,repo,repository,fork",
+                keywords = "github,repo,repository,fork",
                 action = @WidAction(title = "Fork a GitHub repository")
         ))
 public class ForkRepositoryWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {

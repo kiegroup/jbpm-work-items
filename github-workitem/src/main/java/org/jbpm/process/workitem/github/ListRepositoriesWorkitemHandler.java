@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
-                keywords = "google,github,repo,repository,list",
+                keywords = "github,repo,repository,list",
                 action = @WidAction(title = "List all GitHub repositories")
         ))
 public class ListRepositoriesWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
