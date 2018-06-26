@@ -15,12 +15,13 @@
  */
 package org.jbpm.process.workitem.github;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.eclipse.egit.github.core.MergeStatus;
-import org.eclipse.egit.github.core.RepositoryId;
-import org.eclipse.egit.github.core.service.PullRequestService;
+import org.eclipse.egit.github.core.Issue;
+import org.eclipse.egit.github.core.service.IssueService;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
 import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
@@ -34,77 +35,72 @@ import org.kie.api.runtime.process.WorkItemManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Wid(widfile = "GithubMergePullRequest.wid", name = "GithubMergePullRequest",
-        displayName = "GithubMergePullRequest",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.github.MergePullRequestWorkitemHandler()",
+@Wid(widfile = "GithubFetchIssues.wid", name = "GithubFetchIssues",
+        displayName = "GithubFetchIssues",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.github.FetchIssuesWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "RepoOwner", required = true),
+                @WidParameter(name = "User", required = true),
                 @WidParameter(name = "RepoName", required = true),
-                @WidParameter(name = "PullRequestNum", required = true),
-                @WidParameter(name = "CommitMessage")
+                @WidParameter(name = "IssuesState")
         },
         results = {
-                @WidResult(name = "IsMerged")
+                @WidResult(name = "IssuesList")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
-                keywords = "github,repo,repository,merge,pull,request,pullrequest,pr",
-                action = @WidAction(title = "Merget a pull request on GitHub")
+                keywords = "github,repo,repository,fetch,issues",
+                action = @WidAction(title = "Fetch issues for a project from GitHub")
         ))
-public class MergePullRequestWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
+public class FetchIssuesWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     private String userName;
     private String password;
     private GithubAuth auth = new GithubAuth();
 
-    private static final Logger logger = LoggerFactory.getLogger(MergePullRequestWorkitemHandler.class);
-    private static final String RESULTS_VALUE = "IsMerged";
+    private static final Logger logger = LoggerFactory.getLogger(FetchIssuesWorkitemHandler.class);
+    private static final String RESULTS_VALUE = "IssuesList";
 
-    public MergePullRequestWorkitemHandler(String userName,
-                                           String password) {
+    public FetchIssuesWorkitemHandler(String userName,
+                                      String password) {
         this.userName = userName;
         this.password = password;
     }
 
+    @Override
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager workItemManager) {
         try {
-
             RequiredParameterValidator.validate(this.getClass(),
                                                 workItem);
 
             Map<String, Object> results = new HashMap<String, Object>();
 
-            String repoOwner = (String) workItem.getParameter("RepoOwner");
+            String user = (String) workItem.getParameter("User");
             String repoName = (String) workItem.getParameter("RepoName");
-            String pullRequestNum = (String) workItem.getParameter("PullRequestNum");
-            String commitMessage = (String) workItem.getParameter("CommitMessage");
+            String issuesState = (String) workItem.getParameter("IssuesState");
 
-            MergeStatus mergeStatus;
+            IssueService issueService = auth.getIssueService(this.userName,
+                                                             this.password);
 
-            PullRequestService pullRequestService = auth.getPullRequestService(this.userName,
-                                                                               this.password);
+            // default to open
+            if (issuesState == null || (!issuesState.equalsIgnoreCase("open") || !issuesState.equalsIgnoreCase("closed"))) {
+                issuesState = IssueService.STATE_OPEN;
+            }
 
-            RepositoryId repositoryId = new RepositoryId(repoOwner,
-                                                         repoName);
-            if (pullRequestService.getPullRequest(repositoryId,
-                                                  Integer.parseInt(pullRequestNum)).isMergeable()) {
-                mergeStatus = pullRequestService.merge(repositoryId,
-                                                       Integer.parseInt(pullRequestNum),
-                                                       commitMessage);
+            List<Issue> issues = issueService.getIssues(user,
+                                                        repoName,
+                                                        Collections.singletonMap(IssueService.FILTER_STATE,
+                                                                                 issuesState.toLowerCase()));
 
-                if(mergeStatus != null && mergeStatus.isMerged()) {
-                    results.put(RESULTS_VALUE,
-                                mergeStatus.isMerged());
-                } else {
-                    throw new IllegalArgumentException("Unable to merget pull request: " + mergeStatus.getMessage());
-                }
-
+            // no issues is acceptable
+            if (issues != null) {
+                results.put(RESULTS_VALUE,
+                            issues);
             } else {
-                throw new IllegalArgumentException("Pull request " + pullRequestNum + " is not mergeable");
+                throw new IllegalArgumentException("Could not retrieve valid issues");
             }
 
             workItemManager.completeWorkItem(workItem.getId(),
@@ -114,6 +110,7 @@ public class MergePullRequestWorkitemHandler extends AbstractLogOrThrowWorkItemH
         }
     }
 
+    @Override
     public void abortWorkItem(WorkItem wi,
                               WorkItemManager wim) {
     }

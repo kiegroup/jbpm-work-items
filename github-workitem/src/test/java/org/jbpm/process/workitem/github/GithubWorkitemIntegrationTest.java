@@ -36,12 +36,13 @@ public class GithubWorkitemIntegrationTest {
                                                                                                   null,
                                                                                                   System.getProperty("artifactId"));
         assertNotNull(repoResults);
-        assertEquals(4,
+        assertEquals(5,
                      repoResults.size());
 
         assertTrue(repoResults.containsKey("GithubCreateGist"));
         assertTrue(repoResults.containsKey("GithubForkRepository"));
         assertTrue(repoResults.containsKey("GithubListRepositories"));
         assertTrue(repoResults.containsKey("GithubMergePullRequest"));
+        assertTrue(repoResults.containsKey("GithubFetchIssues"));
     }
 }

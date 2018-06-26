@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
-                keywords = "google,gist,github,create",
+                keywords = "gist,github,create",
                 action = @WidAction(title = "Create a new Gist")
         ))
 public class CreateGistWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
