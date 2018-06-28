@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.jbpm.contrib</groupId>
@@ -15,9 +15,10 @@
   <organization>
     <name>jBPM dev team</name>
   </organization>
-  
+
   <properties>
     <version.org.springboot>1.5.10.RELEASE</version.org.springboot>
+    <heroku.appName>${artifactId}</heroku.appName>
   </properties>
 
   <dependencyManagement>
@@ -40,7 +41,7 @@
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>repository</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
@@ -61,8 +62,8 @@
           <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>    
-    
+    </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-autoconfigure</artifactId>
@@ -171,6 +172,22 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.heroku.sdk</groupId>
+        <artifactId>heroku-maven-plugin</artifactId>
+        <version>2.0.3</version>
+        <configuration>
+          <appName>${heroku.appName}</appName>
+          <includeTarget>false</includeTarget>
+          <includes>
+            <include>${project.build.directory}/${project.build.finalName}.jar</include>
+          </includes>
+          <jdkVersion>${java.version}</jdkVersion>
+          <processTypes>
+            <web>java $JAVA_OPTS -jar target/${project.build.finalName}.jar</web>
+          </processTypes>
+        </configuration>
       </plugin>
     </plugins>
     <pluginManagement>
