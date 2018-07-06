@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -22,6 +23,9 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerList;
@@ -124,7 +128,7 @@ public class HostedRepositoryIntegrationTest {
         }
     }
 
-    private static void setConfigSystemPropertiesForDebugging() {
+    private static void setConfigSystemPropertiesForDebugging() throws Exception {
         System.setProperty("groupId",
                            "org.jbpm.contrib");
         System.setProperty("builddir",
@@ -132,6 +136,12 @@ public class HostedRepositoryIntegrationTest {
         System.setProperty("artifactId",
                            "repository");
         System.setProperty("version",
-                           "7.9.0-SNAPSHOT");
+                           getProjectVersion());
+    }
+
+    private static String getProjectVersion() throws IOException, XmlPullParserException {
+        MavenXpp3Reader reader = new MavenXpp3Reader();
+        Model model = reader.read(new FileReader("pom.xml"));
+        return model.getParent().getVersion();
     }
 }
