@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.process.workitem.repositoryspringboot;
+package org.jbpm.process.workitem.repositoryspringboot.config;
 
 import org.jbpm.process.workitem.repository.service.RepoService;
 import org.springframework.context.annotation.Bean;

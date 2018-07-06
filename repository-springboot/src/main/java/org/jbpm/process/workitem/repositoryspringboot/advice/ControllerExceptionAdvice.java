@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.process.workitem.repositoryspringboot;
+package org.jbpm.process.workitem.repositoryspringboot.advice;
 
 import java.util.Optional;
 
