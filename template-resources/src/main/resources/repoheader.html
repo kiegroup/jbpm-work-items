@@ -7,6 +7,7 @@
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.7/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
     <script src="http://fusejs.io/assets/js/fuse.min.js"></script>
@@ -54,15 +55,16 @@
     </div>
     <p/>
     <div class="card">
-        <div class="card-header">Select row to expand/collapse Handler info</div>
+        <div class="card-header">Click on Workitem icon/name to expand Handler info</div>
         <div class="card-body">
-            <table class="table" style="border-collapse:collapse;">
+            <table class="table" style="border-collapse:collapse;" id="repoworkitemstable">
                 <thead>
                 <tr>
                     <th>Workitem</th>
                     <th>Handlers</th>
                     <th>Description</th>
                     <th>Download</th>
+                    <th>Install</th>
                 </tr>
                 </thead>
                 <tbody id="repoTable">
