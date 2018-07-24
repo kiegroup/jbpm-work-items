@@ -40,6 +40,7 @@
     <module>camel-workitem</module>
     <module>openweathermap-workitem</module>
     <module>mavenembedder-workitem</module>
+    <module>slack-workitem</module>
     <module>repository</module>
     <module>repository-springboot</module>
     <module>repository-wildfly</module>
@@ -93,6 +94,7 @@
     <version.war.plugin>3.2.2</version.war.plugin>
     <version.apache.commons.io>2.5</version.apache.commons.io>
     <version.maven.model>3.3.9</version.maven.model>
+    <version.jslack>1.1.4</version.jslack>
 
     <!-- Failsafe plugin-related properties -->
     <failsafe.arg.line>
@@ -310,6 +312,11 @@
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-sql</artifactId>
         <version>${version.org.apache.camel}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.seratch</groupId>
+        <artifactId>jslack</artifactId>
+        <version>${version.jslack}</version>
       </dependency>
 
       <!-- test depends -->
@@ -561,6 +568,11 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
+        <artifactId>slack-workitem</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
         <artifactId>repository</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -719,6 +731,12 @@
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
         <artifactId>mavenembedder-workitem</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>slack-workitem</artifactId>
         <version>${project.version}</version>
         <type>zip</type>
       </dependency>
