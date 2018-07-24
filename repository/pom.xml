@@ -297,6 +297,11 @@
       <type>zip</type>
     </dependency>
     <dependency>
+      <groupId>org.jbpm.contrib</groupId>
+      <artifactId>slack-workitem</artifactId>
+      <type>zip</type>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>template-resources</artifactId>
       <scope>provided</scope>
