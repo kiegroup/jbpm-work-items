@@ -15,10 +15,11 @@
  */
 package org.jbpm.process.workitem.mavenembedder;
 
-import org.apache.maven.cli.MavenCli;
+import org.apache.maven.cli.KieMavenCli;
 import org.kie.api.executor.Command;
 import org.kie.api.executor.CommandContext;
 import org.kie.api.executor.ExecutionResults;
+import org.kie.api.runtime.process.WorkItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,18 +31,18 @@ public class MavenEmbedderCommand implements Command {
     @Override
     public ExecutionResults execute(CommandContext ctx) throws Exception {
         try {
-            String goals = (String) ctx.getData("Goals");
-            String commandLineOptions = (String) ctx.getData("CLOptions");
-            String workDir = (String) ctx.getData("WorkDirectory");
-            String projectRoot = (String) ctx.getData("ProjectRoot");
+            String goals = (String) getData(ctx, "Goals");
+            String commandLineOptions = (String) getData(ctx, "CLOptions");
+            String workDir = (String) getData(ctx, "WorkDirectory");
+            String projectRoot = (String) getData(ctx, "ProjectRoot");
 
             if (goals == null || workDir == null || projectRoot == null) {
                 throw new IllegalArgumentException("Invalid command inputs.");
             }
 
             ExecutionResults results = new ExecutionResults();
-
-            results.setData(MavenEmbedderUtils.executeMavenGoals(new MavenCli(),
+            logger.debug("About to execute maven {} with options {} with working directory {}", goals, commandLineOptions, workDir);
+            results.setData(MavenEmbedderUtils.executeMavenGoals(new KieMavenCli(projectRoot),
                                                                  RESULTS_VALUES,
                                                                  projectRoot,
                                                                  commandLineOptions,
@@ -51,5 +52,20 @@ public class MavenEmbedderCommand implements Command {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
+    }
+    
+    
+    protected Object getData(CommandContext ctx, String name) {
+    	WorkItem workItem = (WorkItem) ctx.getData("workItem");
+    	Object data = null;
+    	if (workItem != null) {
+    		data = workItem.getParameter(name);
+    	} 
+    	
+    	if (data == null){
+    		data = ctx.getData(name);
+    	}
+    	
+    	return data;
     }
 }

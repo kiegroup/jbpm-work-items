@@ -94,7 +94,6 @@ public class MavenEmbedderWorkitemHandlerTest extends AbstractBaseTest {
         // make sure the build ran - check the build dirs
         assertTrue(new File("src/test/resources/simple/target").exists());
         assertTrue(new File("src/test/resources/simple/target/classes").exists());
-        assertTrue(new File("src/test/resources/simple/target/test-classes").exists());
 
         // execute workitem handler with "clean" goal to clean the test project and check
         workItem.setParameter("Goals",
@@ -111,7 +110,6 @@ public class MavenEmbedderWorkitemHandlerTest extends AbstractBaseTest {
         // make sure the sample maven project was cleaned
         assertFalse(new File("src/test/resources/simple/target").exists());
         assertFalse(new File("src/test/resources/simple/target/classes").exists());
-        assertFalse(new File("src/test/resources/simple/target/test-classes").exists());
     }
 
     @Test
@@ -139,7 +137,6 @@ public class MavenEmbedderWorkitemHandlerTest extends AbstractBaseTest {
         // make sure the build ran - check the build dirs
         assertTrue(new File("src/test/resources/simple/target").exists());
         assertTrue(new File("src/test/resources/simple/target/classes").exists());
-        assertTrue(new File("src/test/resources/simple/target/test-classes").exists());
 
         // execute workitem handler with "clean" goal to clean the test project and check
         workItem.setParameter("Goals",
@@ -152,8 +149,7 @@ public class MavenEmbedderWorkitemHandlerTest extends AbstractBaseTest {
 
         // make sure the sample maven project was cleaned
         assertFalse(new File("src/test/resources/simple/target").exists());
-        assertFalse(new File("src/test/resources/simple/target/classes").exists());
-        assertFalse(new File("src/test/resources/simple/target/test-classes").exists());
+        assertFalse(new File("src/test/resources/simple/target/classes").exists());        
     }
 
     @Test
@@ -192,7 +188,6 @@ public class MavenEmbedderWorkitemHandlerTest extends AbstractBaseTest {
         // make sure the build ran - check the build dirs
         assertTrue(new File("src/test/resources/simple/target").exists());
         assertTrue(new File("src/test/resources/simple/target/classes").exists());
-        assertTrue(new File("src/test/resources/simple/target/test-classes").exists());
 
         // execute workitem handler with "clean" command to clean the test project and check
         workItem.setParameter("Goals",
@@ -209,7 +204,6 @@ public class MavenEmbedderWorkitemHandlerTest extends AbstractBaseTest {
         // make sure the sample maven project was cleaned
         assertFalse(new File("src/test/resources/simple/target").exists());
         assertFalse(new File("src/test/resources/simple/target/classes").exists());
-        assertFalse(new File("src/test/resources/simple/target/test-classes").exists());
     }
 
     @Test
@@ -239,7 +233,6 @@ public class MavenEmbedderWorkitemHandlerTest extends AbstractBaseTest {
         // make sure the build ran - check the build dirs
         assertTrue(new File("src/test/resources/simple/target").exists());
         assertTrue(new File("src/test/resources/simple/target/classes").exists());
-        assertTrue(new File("src/test/resources/simple/target/test-classes").exists());
 
         // execute workitem handler with "clean" command to clean the test project and check
         workItem.setParameter("Goals",
@@ -253,7 +246,6 @@ public class MavenEmbedderWorkitemHandlerTest extends AbstractBaseTest {
         // make sure the sample maven project was cleaned
         assertFalse(new File("src/test/resources/simple/target").exists());
         assertFalse(new File("src/test/resources/simple/target/classes").exists());
-        assertFalse(new File("src/test/resources/simple/target/test-classes").exists());
     }
 
     @Test(expected = WorkItemHandlerRuntimeException.class)
