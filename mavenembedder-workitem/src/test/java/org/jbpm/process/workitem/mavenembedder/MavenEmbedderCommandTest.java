@@ -18,8 +18,10 @@ package org.jbpm.process.workitem.mavenembedder;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.jbpm.process.workitem.core.TestWorkItemManager;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.kie.api.executor.CommandContext;
 import org.kie.api.executor.ExecutionResults;
@@ -58,7 +60,6 @@ public class MavenEmbedderCommandTest {
         // make sure the build ran - check the build dirs
         assertTrue(new File("src/test/resources/simple/target").exists());
         assertTrue(new File("src/test/resources/simple/target/classes").exists());
-        assertTrue(new File("src/test/resources/simple/target/test-classes").exists());
 
         // execute command with "clean" goals to clean the test project and check
         commandContextData.put("Goals",
@@ -72,7 +73,6 @@ public class MavenEmbedderCommandTest {
         // make sure the sample maven project was cleaned
         assertFalse(new File("src/test/resources/simple/target").exists());
         assertFalse(new File("src/test/resources/simple/target/classes").exists());
-        assertFalse(new File("src/test/resources/simple/target/test-classes").exists());
     }
 
     @Test
@@ -109,7 +109,6 @@ public class MavenEmbedderCommandTest {
         // make sure the build ran - check the build dirs
         assertTrue(new File("src/test/resources/simple/target").exists());
         assertTrue(new File("src/test/resources/simple/target/classes").exists());
-        assertTrue(new File("src/test/resources/simple/target/test-classes").exists());
 
         // execute command with "clean" goals to clean the test project and check
         commandContextData.put("Goals",
@@ -123,6 +122,84 @@ public class MavenEmbedderCommandTest {
         // make sure the sample maven project was cleaned
         assertFalse(new File("src/test/resources/simple/target").exists());
         assertFalse(new File("src/test/resources/simple/target/classes").exists());
-        assertFalse(new File("src/test/resources/simple/target/test-classes").exists());
+    }        
+    
+    @Ignore("Ignored for now until the maven archetypes are included")
+    @Test
+    public void testArchetypeGenerateCommandMultiThread() throws Exception {
+        TestWorkItemManager manager = new TestWorkItemManager();
+        File simpleTestProjectDir = new File("target" + File.separator + UUID.randomUUID().toString());        
+    	simpleTestProjectDir.mkdir();
+        
+
+        Map<String, Object> commandContextData = new HashMap<>();
+        commandContextData.put("Goals",
+                               "archetype:generate");
+        commandContextData.put("CLOptions",
+                               "-B -DarchetypeGroupId=org.kie -DarchetypeArtifactId=kie-service-spring-boot-archetype -DarchetypeVersion=7.10.0-SNAPSHOT -DgroupId=com.company -DartifactId=service -Dversion=1.0-SNAPSHOT -Dpackage=com.company.service -DappType=bpm");
+        commandContextData.put("WorkDirectory",
+                               simpleTestProjectDir.getAbsolutePath());
+        commandContextData.put("ProjectRoot",
+                               "");
+
+        CommandContext commandContext = new CommandContext(commandContextData);
+        
+        Map<String, Object> commandContextData2 = new HashMap<>();
+        commandContextData2.put("Goals",
+                               "archetype:generate");
+        commandContextData2.put("CLOptions",
+                               "-B -DarchetypeGroupId=org.kie -DarchetypeArtifactId=kie-kjar-archetype -DarchetypeVersion=7.10.0-SNAPSHOT -DgroupId=com.company -DartifactId=kjar -Dversion=1.0-SNAPSHOT -Dpackage=com.company");
+        commandContextData2.put("WorkDirectory",
+                               simpleTestProjectDir.getAbsolutePath());
+        commandContextData2.put("ProjectRoot",
+                               "");
+
+        CommandContext commandContext2 = new CommandContext(commandContextData2);
+
+        
+        Thread t1 = buildThread(commandContext);
+        Thread t2 = buildThread(commandContext2);
+        
+        t1.start();
+        t2.start();
+        
+        t1.join();
+        t2.join();
+
+        // make sure the sample maven project was cleaned
+        assertTrue(simpleTestProjectDir.exists());
+        assertTrue(new File(simpleTestProjectDir, "service").exists());
+        assertTrue(new File(simpleTestProjectDir, "service" + File.separator + "pom.xml").exists());
+        assertFalse(new File(simpleTestProjectDir, "service" + File.separator + "global").exists());
+        
+        
+        assertTrue(new File(simpleTestProjectDir, "kjar").exists());
+        assertTrue(new File(simpleTestProjectDir, "kjar" + File.separator + "pom.xml").exists());
+        assertTrue(new File(simpleTestProjectDir, "kjar" + File.separator + "global").exists());
+    }
+    
+    
+    protected Thread buildThread(CommandContext commandContext) {
+        return new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				MavenEmbedderCommand command = new MavenEmbedderCommand();
+				try {
+			        ExecutionResults commandResults = command.execute(commandContext);
+	
+			        assertNotNull(commandResults);
+			        assertTrue(commandResults.getData("MavenResults") instanceof Map);
+	
+			        Map<String, String> mavenResults = (Map<String, String>) commandResults.getData("MavenResults");
+			        assertNotNull(mavenResults);
+			        assertEquals("",
+			                     mavenResults.get("stderr"));
+				} catch (Exception e) {
+					fail("Thread execution of maven command failed " + e.getMessage());
+				}
+				
+			}
+		});
     }
 }

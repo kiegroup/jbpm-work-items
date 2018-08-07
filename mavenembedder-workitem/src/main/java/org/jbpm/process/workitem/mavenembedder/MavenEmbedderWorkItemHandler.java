@@ -17,7 +17,7 @@ package org.jbpm.process.workitem.mavenembedder;
 
 import java.util.Map;
 
-import org.apache.maven.cli.MavenCli;
+import org.apache.maven.cli.KieMavenCli;
 import org.drools.core.process.instance.impl.WorkItemImpl;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
 import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
@@ -76,11 +76,12 @@ public class MavenEmbedderWorkItemHandler extends AbstractLogOrThrowWorkItemHand
             String projectRoot = (String) workItem.getParameter("ProjectRoot");
             String modeStr = (String) workItem.getParameter("Mode");
             MavenEmbedderUtils.MavenEmbedderMode mode = MavenEmbedderUtils.MavenEmbedderMode.valueOf(modeStr == null ? "SYNC" : modeStr.toUpperCase());
-
+            
+            logger.debug("About to execute maven {} with options {} with working directory {}", goals, commandLineOptions, workDir);
             switch (mode) {
                 case SYNC:
 
-                    Map<String, Object> results = MavenEmbedderUtils.executeMavenGoals(new MavenCli(),
+                    Map<String, Object> results = MavenEmbedderUtils.executeMavenGoals(new KieMavenCli(projectRoot),
                                                                                        RESULTS_VALUES,
                                                                                        projectRoot,
                                                                                        commandLineOptions,
@@ -99,7 +100,7 @@ public class MavenEmbedderWorkItemHandler extends AbstractLogOrThrowWorkItemHand
                         public void run() {
                             try {
 
-                                Map<String, Object> results = MavenEmbedderUtils.executeMavenGoals(new MavenCli(),
+                                Map<String, Object> results = MavenEmbedderUtils.executeMavenGoals(new KieMavenCli(projectRoot),
                                                                                                    RESULTS_VALUES,
                                                                                                    projectRoot,
                                                                                                    commandLineOptions,

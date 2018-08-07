@@ -47,10 +47,6 @@ public class MavenEmbedderUtils {
         PrintStream cliErr = new PrintStream(baosErr,
                                              true);
 
-        String origMultiModuleProjectRoot = System.getProperty("maven.multiModuleProjectDirectory");
-        System.setProperty("maven.multiModuleProjectDirectory",
-                           projectRoot);
-
         String[] allCommandLineOptions = new String[0];
         if (commandLineOptions != null && commandLineOptions.length() > 0) {
             allCommandLineOptions = commandLineOptions.split("\\s+");
@@ -60,10 +56,14 @@ public class MavenEmbedderUtils {
 
         String[] allOptions = ArrayUtils.addAll(allGoals,
                                                 allCommandLineOptions);
-        cli.doMain(allOptions,
+        int result = cli.doMain(allOptions,
                    workDir,
                    cliOut,
                    cliErr);
+        
+        if (result != 0) {
+        	throw new RuntimeException("Maven build finished with unexpected result = " + result);
+        }
 
         String stdout = baosOut.toString("UTF-8");
         String stderr = baosErr.toString("UTF-8");
@@ -72,11 +72,6 @@ public class MavenEmbedderUtils {
                          stdout);
         mavenResults.put("stderr",
                          stderr);
-
-        if (origMultiModuleProjectRoot != null) {
-            System.setProperty("maven.multiModuleProjectDirectory",
-                               origMultiModuleProjectRoot);
-        }
 
         results.put(resultsKey,
                     mavenResults);
