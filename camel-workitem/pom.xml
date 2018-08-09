@@ -10,6 +10,7 @@
   </parent>
 
   <artifactId>camel-workitem</artifactId>
+  <packaging>bundle</packaging>
   <name>Camel</name>
   <description>Use Apache Camel connectors in your processes</description>
   <organization>
@@ -263,6 +264,17 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Export-Package>
+              org.jbpm.process.workitem.camel.*
+            </Export-Package>
+          </instructions>
+        </configuration>
       </plugin>
     </plugins>
   </build>
