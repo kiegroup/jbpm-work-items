@@ -13,39 +13,6 @@
   <packaging>pom</packaging>
   <name>jBPM Workitems</name>
 
-  <modules>
-    <module>template-resources</module>
-    <module>archive-workitem</module>
-    <module>exec-workitem</module>
-    <module>ftp-workitem</module>
-    <module>jabber-workitem</module>
-    <module>java-workitem</module>
-    <module>jpa-workitem</module>
-    <module>parser-workitem</module>
-    <module>rss-workitem</module>
-    <module>transform-workitem</module>
-    <module>google-calendar-workitem</module>
-    <module>google-mail-workitem</module>
-    <module>google-sheets-workitem</module>
-    <module>google-tasks-workitem</module>
-    <module>google-drive-workitem</module>
-    <module>google-translate-workitem</module>
-    <module>ibm-watson-workitem</module>
-    <module>dropbox-workitem</module>
-    <module>ifttt-workitem</module>
-    <module>twitter-workitem</module>
-    <module>github-workitem</module>
-    <module>jira-workitem</module>
-    <module>ethereum-workitem</module>
-    <module>camel-workitem</module>
-    <module>openweathermap-workitem</module>
-    <module>mavenembedder-workitem</module>
-    <module>slack-workitem</module>
-    <module>repository</module>
-    <module>repository-springboot</module>
-    <module>repository-wildfly</module>
-  </modules>
-
   <properties>
     <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
     <checkstyle.logViolationsToConsole>true</checkstyle.logViolationsToConsole>
@@ -906,4 +873,60 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
+
+  <profiles>
+    <profile>
+      <id>all</id>
+      <activation>
+        <property>
+          <name>!productized</name>
+        </property>
+      </activation>
+      <modules>
+        <module>template-resources</module>
+        <module>archive-workitem</module>
+        <module>exec-workitem</module>
+        <module>ftp-workitem</module>
+        <module>jabber-workitem</module>
+        <module>java-workitem</module>
+        <module>jpa-workitem</module>
+        <module>parser-workitem</module>
+        <module>rss-workitem</module>
+        <module>transform-workitem</module>
+        <module>google-calendar-workitem</module>
+        <module>google-mail-workitem</module>
+        <module>google-sheets-workitem</module>
+        <module>google-tasks-workitem</module>
+        <module>google-drive-workitem</module>
+        <module>google-translate-workitem</module>
+        <module>ibm-watson-workitem</module>
+        <module>dropbox-workitem</module>
+        <module>ifttt-workitem</module>
+        <module>twitter-workitem</module>
+        <module>github-workitem</module>
+        <module>jira-workitem</module>
+        <module>ethereum-workitem</module>
+        <module>camel-workitem</module>
+        <module>openweathermap-workitem</module>
+        <module>mavenembedder-workitem</module>
+        <module>slack-workitem</module>
+        <module>repository</module>
+        <module>repository-springboot</module>
+        <module>repository-wildfly</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>productized</id>
+      <activation>
+        <property>
+          <name>productized</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <modules>
+        <module>template-resources</module>
+        <module>camel-workitem</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>
