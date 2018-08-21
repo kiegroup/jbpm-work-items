@@ -63,6 +63,11 @@
     <version.maven.model>3.3.9</version.maven.model>
     <version.jslack>1.1.4</version.jslack>
 
+    <!-- OSGI tests properties -->
+    <version.org.apache.karaf>4.2.0</version.org.apache.karaf>
+    <version.org.ops4j.pax.exam>4.11.0</version.org.ops4j.pax.exam>
+    <version.org.apache.servicemix.bundles.javax-inject>1_2</version.org.apache.servicemix.bundles.javax-inject>
+
     <!-- Failsafe plugin-related properties -->
     <failsafe.arg.line>
       -Dfile.encoding=${project.build.sourceEncoding}
@@ -913,6 +918,7 @@
         <module>repository</module>
         <module>repository-springboot</module>
         <module>repository-wildfly</module>
+        <module>karaf-itests</module>
       </modules>
     </profile>
     <profile>
@@ -926,6 +932,7 @@
       <modules>
         <module>template-resources</module>
         <module>camel-workitem</module>
+        <module>karaf-itests</module>
       </modules>
     </profile>
   </profiles>
