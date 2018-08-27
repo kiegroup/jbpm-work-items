@@ -1,0 +1,14 @@
+import org.drools.core.process.core.datatype.impl.type.StringDataType;
+[
+  [
+    "name" : "CamelFile",
+    "parameters" : [
+      "path" : new StringDataType(),
+      "fileName" : new StringDataType(),
+      "payload" : new StringDataType()
+    ],
+    "category" : "Camel",
+    "displayName" : "File",
+    "customEditor" : "org.drools.eclipse.flow.common.editor.editpart.work.SampleCustomEditor"
+  ]
+]
