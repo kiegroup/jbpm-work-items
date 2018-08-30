@@ -232,6 +232,11 @@
   <dependencies>
     
     <dependency>
+      <groupId>org.jbpm.contrib</groupId>
+      <artifactId>rest-service-workitem</artifactId>
+      <type>zip</type>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>template-resources</artifactId>
       <scope>provided</scope>
