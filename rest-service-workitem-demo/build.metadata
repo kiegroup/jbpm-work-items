@@ -1,0 +1,12 @@
+# Created by buildmetadata-maven-plugin 1.7.0 ( SHA: 6f444cae ) 
+build.artifactId=rest-service-workitem-demo
+build.groupId=org.jbpm.contrib
+build.java.compiler=HotSpot 64-Bit Tiered Compilers
+build.java.runtime.name=OpenJDK Runtime Environment
+build.java.runtime.version=1.8.0_172-b11
+build.java.vendor=Oracle Corporation
+build.java.vm=OpenJDK 64-Bit Server VM
+build.maven.execution.cmdline=clean install -Denforcer.skip\=true -Dcheckstyle.skip
+build.maven.version=3.5.0
+build.version=7.9.0.Final
+build.version.full=7.9.0.Final
