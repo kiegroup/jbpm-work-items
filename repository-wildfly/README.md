@@ -19,11 +19,11 @@ Go to the repository-wildfly module
 cd repository-wildfly
 ```
 
-Unzip the repository-server-7.11.0-SNAPSHOT zip file into a directory
+Unzip the repository-server-7.11.1-SNAPSHOT zip file into a directory
 of your choice:
 
 ```
-unzip jbpm-work-items/repository-wildfly/target/repository-server-7.11.0-SNAPSHOT.zip
+unzip jbpm-work-items/repository-wildfly/target/repository-server-7.11.1-SNAPSHOT.zip
 ```
 
 Go to the wildfly server bin directory:
