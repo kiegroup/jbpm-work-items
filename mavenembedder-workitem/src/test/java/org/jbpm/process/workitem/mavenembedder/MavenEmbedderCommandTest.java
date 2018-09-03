@@ -136,7 +136,7 @@ public class MavenEmbedderCommandTest {
         commandContextData.put("Goals",
                                "archetype:generate");
         commandContextData.put("CLOptions",
-                               "-B -DarchetypeGroupId=org.kie -DarchetypeArtifactId=kie-service-spring-boot-archetype -DarchetypeVersion=7.11.0-SNAPSHOT -DgroupId=com.company -DartifactId=service -Dversion=1.0-SNAPSHOT -Dpackage=com.company.service -DappType=bpm");
+                               "-B -DarchetypeGroupId=org.kie -DarchetypeArtifactId=kie-service-spring-boot-archetype -DarchetypeVersion=7.12.0-SNAPSHOT -DgroupId=com.company -DartifactId=service -Dversion=1.0-SNAPSHOT -Dpackage=com.company.service -DappType=bpm");
         commandContextData.put("WorkDirectory",
                                simpleTestProjectDir.getAbsolutePath());
         commandContextData.put("ProjectRoot",
@@ -148,7 +148,7 @@ public class MavenEmbedderCommandTest {
         commandContextData2.put("Goals",
                                "archetype:generate");
         commandContextData2.put("CLOptions",
-                               "-B -DarchetypeGroupId=org.kie -DarchetypeArtifactId=kie-kjar-archetype -DarchetypeVersion=7.11.0-SNAPSHOT -DgroupId=com.company -DartifactId=kjar -Dversion=1.0-SNAPSHOT -Dpackage=com.company");
+                               "-B -DarchetypeGroupId=org.kie -DarchetypeArtifactId=kie-kjar-archetype -DarchetypeVersion=7.12.0-SNAPSHOT -DgroupId=com.company -DartifactId=kjar -Dversion=1.0-SNAPSHOT -Dpackage=com.company");
         commandContextData2.put("WorkDirectory",
                                simpleTestProjectDir.getAbsolutePath());
         commandContextData2.put("ProjectRoot",
