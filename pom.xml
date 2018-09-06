@@ -65,6 +65,7 @@
     <version.org.xhtmlrenderer>9.1.15</version.org.xhtmlrenderer>
     <version.bouncycastle>1.60</version.bouncycastle>
     <version.xmlsec>1.5.1</version.xmlsec>
+    <version.google.guava>14.0.1</version.google.guava>
 
     <!-- OSGI tests properties -->
     <version.org.apache.karaf>4.2.0</version.org.apache.karaf>
@@ -201,6 +202,11 @@
         <groupId>com.google.api-client</groupId>
         <artifactId>google-api-client</artifactId>
         <version>${version.google.http.client}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${version.google.guava}</version>
       </dependency>
       <dependency>
         <groupId>com.ibm.watson.developer_cloud</groupId>
