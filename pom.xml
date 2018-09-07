@@ -62,6 +62,9 @@
     <version.apache.commons.io>2.5</version.apache.commons.io>
     <version.maven.model>3.3.9</version.maven.model>
     <version.jslack>1.1.4</version.jslack>
+    <version.org.xhtmlrenderer>9.1.15</version.org.xhtmlrenderer>
+    <version.bouncycastle>1.60</version.bouncycastle>
+    <version.xmlsec>1.5.1</version.xmlsec>
 
     <!-- OSGI tests properties -->
     <version.org.apache.karaf>4.2.0</version.org.apache.karaf>
@@ -289,6 +292,32 @@
         <groupId>com.github.seratch</groupId>
         <artifactId>jslack</artifactId>
         <version>${version.jslack}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.xhtmlrenderer</groupId>
+        <artifactId>flying-saucer-core</artifactId>
+        <version>${version.org.xhtmlrenderer}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.xhtmlrenderer</groupId>
+        <artifactId>flying-saucer-pdf-itext5</artifactId>
+        <version>${version.org.xhtmlrenderer}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-jdk15on</artifactId>
+        <version>${version.bouncycastle}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcpkix-jdk15on</artifactId>
+        <version>${version.bouncycastle}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.santuario</groupId>
+        <artifactId>xmlsec</artifactId>
+        <version>${version.xmlsec}</version>
       </dependency>
 
       <!-- test depends -->
@@ -545,6 +574,11 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
+        <artifactId>pdf-workitem</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
         <artifactId>repository</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -709,6 +743,12 @@
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
         <artifactId>slack-workitem</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>pdf-workitem</artifactId>
         <version>${project.version}</version>
         <type>zip</type>
       </dependency>
@@ -915,6 +955,7 @@
         <module>openweathermap-workitem</module>
         <module>mavenembedder-workitem</module>
         <module>slack-workitem</module>
+        <module>pdf-workitem</module>
         <module>repository</module>
         <module>repository-springboot</module>
         <module>repository-wildfly</module>
