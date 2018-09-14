@@ -585,6 +585,11 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
+        <artifactId>execute-sql-workitem</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
         <artifactId>repository</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -755,6 +760,12 @@
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
         <artifactId>pdf-workitem</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>execute-sql-workitem</artifactId>
         <version>${project.version}</version>
         <type>zip</type>
       </dependency>
@@ -962,6 +973,7 @@
         <module>mavenembedder-workitem</module>
         <module>slack-workitem</module>
         <module>pdf-workitem</module>
+        <module>execute-sql-workitem</module>
         <module>repository</module>
         <module>repository-springboot</module>
         <module>repository-wildfly</module>
