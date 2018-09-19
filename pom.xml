@@ -66,6 +66,7 @@
     <version.bouncycastle>1.60</version.bouncycastle>
     <version.xmlsec>1.5.1</version.xmlsec>
     <version.google.guava>14.0.1</version.google.guava>
+    <version.riot.api>4.1.0</version.riot.api>
 
     <!-- OSGI tests properties -->
     <version.org.apache.karaf>4.2.0</version.org.apache.karaf>
@@ -441,6 +442,11 @@
         <artifactId>maven-model</artifactId>
         <version>${version.maven.model}</version>
       </dependency>
+      <dependency>
+        <groupId>com.github.taycaldwell</groupId>
+        <artifactId>riot-api-java</artifactId>
+        <version>${version.riot.api}</version>
+      </dependency>
 
       <!-- module dependencies -->
       <dependency>
@@ -586,6 +592,11 @@
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
         <artifactId>execute-sql-workitem</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>riot-workitem</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -769,6 +780,12 @@
         <version>${project.version}</version>
         <type>zip</type>
       </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>riot-workitem</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -910,6 +927,21 @@
         <updatePolicy>daily</updatePolicy>
       </snapshots>
     </repository>
+
+    <repository>
+      <id>jitpack.io</id>
+      <name>JitPack Repository</name>
+      <url>https://jitpack.io</url>
+      <layout>default</layout>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+      </snapshots>
+    </repository>
   </repositories>
 
   <scm>
@@ -974,6 +1006,7 @@
         <module>slack-workitem</module>
         <module>pdf-workitem</module>
         <module>execute-sql-workitem</module>
+        <module>riot-workitem</module>
         <module>repository</module>
         <module>repository-springboot</module>
         <module>repository-wildfly</module>
