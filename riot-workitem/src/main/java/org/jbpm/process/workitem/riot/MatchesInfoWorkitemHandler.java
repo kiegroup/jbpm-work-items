@@ -38,10 +38,11 @@ import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.concurrent.TimeUnit;
 
 @Wid(widfile = "RiotMatchInfo.wid", name = "RiotMatchInfo",
         displayName = "RiotMatchInfo",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.riot.MatchInfoWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.riot.MatchesInfoWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "SummonerName", required = true),
@@ -107,7 +108,11 @@ public class MatchesInfoWorkitemHandler extends AbstractLogOrThrowWorkItemHandle
                 MatchList matchList = riotApi.getMatchListByAccountId(platform,
                                                                       summoner.getAccountId());
 
-                for (MatchReference matchReference : matchList.getMatches()) {
+
+                List<MatchReference> matchReferenceList = RiotUtils.geNumberOfPlayedMatches(matchList.getMatches(), numOfMatches);
+
+                for (MatchReference matchReference : matchReferenceList) {
+
                     matchesList.add(riotApi.getMatch(platform,
                                                      matchReference.getGameId()));
                 }
