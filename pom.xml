@@ -692,6 +692,11 @@
         <artifactId>rest-service-workitem</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>rest-service-workitem-demo</artifactId>
+        <version>${project.version}</version>
+      </dependency>
 
       <!-- zip module dependencies -->
       <dependency>

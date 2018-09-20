@@ -15,6 +15,7 @@
  */
 package org.jbpm.contrib;
 
+import org.jbpm.contrib.restservice.ProcessVariableResolver;
 import org.junit.Assert;
 import org.junit.Test;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
@@ -32,7 +33,7 @@ public class ProcessVariableResolverTest {
         Mockito.when(processInstance.getVariable(Mockito.eq("simple"))).thenReturn("as that");
         Mockito.when(processInstance.getVariable(Mockito.eq("resultA"))).thenReturn("{\"name\":\"Matej\"}");
         Mockito.when(processInstance.getVariable(Mockito.eq("resultB"))).thenReturn("{\"complex\":{\"name\":\"Matej\"}}");
-        ProcessVariableResolver processVariableResolver = new ProcessVariableResolver(processInstance);
+        org.jbpm.contrib.restservice.ProcessVariableResolver processVariableResolver = new ProcessVariableResolver(processInstance);
 
         Assert.assertEquals("as that", processVariableResolver.get("proc.simple"));
         Assert.assertEquals("Matej", processVariableResolver.get("proc.resultA.name"));

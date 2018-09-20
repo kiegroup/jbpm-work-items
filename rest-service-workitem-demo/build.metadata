@@ -8,5 +8,8 @@ build.java.vendor=Oracle Corporation
 build.java.vm=OpenJDK 64-Bit Server VM
 build.maven.execution.cmdline=clean install -Denforcer.skip\=true -Dcheckstyle.skip
 build.maven.version=3.5.0
+build.scmRevision.date=30.08.2018
+build.scmRevision.id=69fd539f91fb6f36af4e8522cef036cc22604865
+build.scmRevision.url=scm\:git\:git@github.com\:wildfly/wildfly.git/rest-service-workitem-demo
 build.version=7.9.0.Final
-build.version.full=7.9.0.Final
+build.version.full=7.9.0.Finalr69fd539f91fb6f36af4e8522cef036cc22604865
