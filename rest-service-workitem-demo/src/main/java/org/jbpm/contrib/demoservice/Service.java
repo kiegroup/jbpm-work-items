@@ -15,19 +15,25 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
@@ -39,6 +45,18 @@ public class Service {
 
     ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     ObjectMapper objectMapper = new ObjectMapper();
+
+    private static final Map<Integer, RunningJob> runningJobs = new ConcurrentHashMap<>();
+    private static final AtomicInteger sequence = new AtomicInteger();
+
+    @GET
+    @Path("/")
+    public Response test() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("time", new Date());
+
+        return Response.status(200).entity(response).build();
+    }
 
     @POST
     @Path("/A")
@@ -53,9 +71,13 @@ public class Service {
         Map<String, Object> result = new HashMap<>();
         result.put("person", person);
 
-        scheduleCallback(callbackUrl, 10, result);
+        int jobId = scheduleCallback(callbackUrl, 5, result);
 
-        return Response.status(200).entity(null).build();
+        String cancelUrl = "http://localhost:8080/demo-service/service/cancel/" + jobId;
+        Map<String, Object> response = new HashMap<>();
+        response.put("cancelUrl", cancelUrl);
+
+        return Response.status(200).entity(response).build();
     }
 
     @POST
@@ -69,13 +91,46 @@ public class Service {
         Map<String, Object> result = new HashMap<>();
         result.put("fullName", request.getNameFromA() + " " + request.getSurname());
 
-        scheduleCallback(callbackUrl, 10, result);
+        int jobId = scheduleCallback(callbackUrl, 5, result);
+
+        String cancelUrl = "http://localhost:8080/demo-service/service/cancel/" + jobId;
+        Map<String, Object> response = new HashMap<>();
+        response.put("cancelUrl", cancelUrl);
+
+        return Response.status(200).entity(response).build();
+    }
+
+    @POST
+    @Path("/cancel/{id}")
+    public Response cancelAction(@PathParam("id") int jobId) throws JsonProcessingException {
+        System.out.println(">>> Action Cancel requested for job:" + jobId);
+
+        RunningJob runningJob = runningJobs.get(jobId);
+        runningJob.future.cancel(true);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("canceled", "true");
+
+        scheduleCallback(runningJob.callbackUrl, 1, result);
 
         return Response.status(200).entity(null).build();
     }
 
-    private void scheduleCallback(String callbackUrl, int delay, Map<String, Object> result) {
-        executorService.schedule(() -> executeCallback(callbackUrl, result), delay, TimeUnit.SECONDS);
+    private int scheduleCallback(String callbackUrl, int delay, Map<String, Object> result) {
+        ScheduledFuture<?> future = executorService.schedule(() -> executeCallback(callbackUrl, result), delay, TimeUnit.SECONDS);
+        int id = sequence.getAndIncrement();
+        runningJobs.put(id, new RunningJob(future, callbackUrl));
+        return id;
+    }
+
+    private class RunningJob {
+        ScheduledFuture future;
+        String callbackUrl;
+
+        public RunningJob(ScheduledFuture future, String callbackUrl) {
+            this.future = future;
+            this.callbackUrl = callbackUrl;
+        }
     }
 
     private void executeCallback(String callbackUrl, Map<String, Object> result) {
