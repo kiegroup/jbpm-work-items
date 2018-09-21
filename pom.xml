@@ -927,21 +927,6 @@
         <updatePolicy>daily</updatePolicy>
       </snapshots>
     </repository>
-
-    <repository>
-      <id>jitpack.io</id>
-      <name>JitPack Repository</name>
-      <url>https://jitpack.io</url>
-      <layout>default</layout>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>daily</updatePolicy>
-      </snapshots>
-    </repository>
   </repositories>
 
   <scm>
