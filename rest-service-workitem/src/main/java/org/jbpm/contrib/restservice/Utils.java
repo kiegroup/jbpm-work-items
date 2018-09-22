@@ -11,6 +11,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.manager.RuntimeEngine;
 import org.kie.api.runtime.manager.RuntimeManager;
+import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
@@ -18,34 +19,33 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
  */
 public class Utils {
 
-    static final String TIMEOUT_TASK_ID_VARIABLE = "taskId";
+    static final String TIMEOUT_NODE_INSTANCE_ID_VARIABLE = "nodeInstanceId"; //TODO update value
 
     /**
      * When true the task is canceled internally without trying to cancel remote operation.
      */
     static final String FORCE_CANCEL_VARIABLE = "forceCancel";
 
+    public final static String CANCEL_SIGNAL_TYPE = "cancel-all";
+
     private static Logger logger = LoggerFactory.getLogger(Utils.class);
     static final ObjectMapper objectMapper = new ObjectMapper();
 
-    static final String TIMEOUT_PROCESS_NAME = "timeout";
-    static final String TIMEOUT_TIMER_TASK_NAME = "taskTimeout";
-    static final String TIMEOUT_PIID_VARIABLE = "timeoutProcessInstanceId";;
-    static final String CANCEL_TIMEOUT_VARIABLE = "";
+    static final String TIMEOUT_PROCESS_NAME = "timeout-handler-process";
+    static final String CANCEL_TIMEOUT_VARIABLE = "cancelTimeout";
     static final String CANCEL_URL_VARIABLE = "cancelUrl";;
+    static final String MAIN_PROCESS_INSTANCE_ID_VARIABLE = "mainProcessInstanceId";
 
-    public static String getCancelUrlVariableName(String taskName) {
-        return taskName + "-" + CANCEL_URL_VARIABLE;
-    }
-
-    static String getTimeoutPIIDVariableName(String taskName) {
-        return taskName + "-" + TIMEOUT_PIID_VARIABLE;
+    public static String getCancelUrlVariableName(String nodeInstanceName) {
+        return nodeInstanceName + "-" + CANCEL_URL_VARIABLE;
     }
 
     static WorkflowProcessInstance getProcessInstance(RuntimeManager runtimeManager, long processInstanceId) {
@@ -126,5 +126,24 @@ public class Utils {
         } else {
             return Boolean.parseBoolean((String) variable);
         }
+    }
+
+    public static long startTaskTimeoutProcess(
+            KieSession kieSession,
+            long mainProcessInstanceId,
+            long nodeInstanceId,
+            long timeoutSeconds,
+            boolean forceCancel) {
+        Map<String, Object> data = new HashMap<>();
+        logger.info("Staring timeout process for nodeInstanceId: {} belonging to processInstanceId: {}. Force cancel: {}.", nodeInstanceId, mainProcessInstanceId, forceCancel);
+        data.put("timeout", "PT" + timeoutSeconds + "S"); //ISO8601 date format for duration
+        data.put(TIMEOUT_NODE_INSTANCE_ID_VARIABLE, nodeInstanceId);
+        data.put(FORCE_CANCEL_VARIABLE, forceCancel);
+        data.put(MAIN_PROCESS_INSTANCE_ID_VARIABLE, mainProcessInstanceId);
+        ProcessInstance timeoutProcessInstance = kieSession.startProcess(TIMEOUT_PROCESS_NAME, data);
+        long timeoutProcessInstanceId = timeoutProcessInstance.getId();
+        logger.debug("Started timeout process instance.id: {} for nodeInstanceId: {} belonging to processInstanceId: {}. Force cancel: {}.",
+                timeoutProcessInstanceId, nodeInstanceId, mainProcessInstanceId, forceCancel);
+        return timeoutProcessInstanceId;
     }
 }

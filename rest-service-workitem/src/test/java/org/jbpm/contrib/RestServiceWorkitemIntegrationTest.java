@@ -22,6 +22,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.jbpm.contrib.demoservice.Service;
 import org.jbpm.contrib.mockserver.JBPMServer;
 import org.jbpm.contrib.mockserver.WorkItems;
+import org.jbpm.contrib.restservice.Utils;
 import org.jbpm.process.workitem.WorkDefinitionImpl;
 import org.jbpm.process.workitem.WorkItemRepository;
 import org.junit.AfterClass;
@@ -79,8 +80,6 @@ public class RestServiceWorkitemIntegrationTest {
         servletHolder.setInitOrder(0);
         // Tells the Jersey Servlet which REST service/class to load.
         servletHolder.setInitParameter("jersey.config.server.provider.classnames", Service.class.getCanonicalName());
-        //        servletHolder.setInitParameter("jersey.config.server.provider.packages", Service.class.getPackage().getName() + ",org.glassfish.jersey.moxy");
-        //        servletHolder.setInitParameter("jersey.config.server.tracing", "ALL");
 
         ServletContextHandler jbpmMock = new ServletContextHandler(contexts, "/kie-server/services/rest", ServletContextHandler.SESSIONS);
         ServletHolder jbpmMockServlet = jbpmMock.addServlet(org.glassfish.jersey.servlet.ServletContainer.class, "/*");
@@ -94,29 +93,33 @@ public class RestServiceWorkitemIntegrationTest {
         JBPMServer jbpmServer = JBPMServer.getInstance();
         KieSession kieSession = jbpmServer.getRuntimeEngine().getKieSession();
 
+        Semaphore nodeACompleted = new Semaphore(0);
         final Map<String, String> processVariables = new HashMap<>();
-        final Semaphore waitForProcessVariables = new Semaphore(-4);//5 variables set
 
         ProcessEventListener processEventListener = new DefaultProcessEventListener() {
             public void afterVariableChanged(ProcessVariableChangedEvent event) {
-                logger.info("Variable changed {} = {}.", event.getVariableId(), event.getNewValue());
+                logger.info("Variable changed {}: oldVal: {}, newVal: {}.", event.getVariableId(), event.getOldValue(), event.getNewValue());
                 processVariables.put(event.getVariableId(), event.getNewValue().toString());
-                waitForProcessVariables.release();
+                if (event.getVariableId().equals("resultA")) {
+                    nodeACompleted.release();
+                }
             }
         };
         kieSession.addEventListener(processEventListener);
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("containerId", "mock");
-        ProcessInstance processInstance = (ProcessInstance)kieSession.startProcess("service-orchestration", parameters);
+        ProcessInstance processInstance = (ProcessInstance)kieSession.startProcess("service-orchestration-test", parameters);
 
-        waitForProcessVariables.acquire();
+        nodeACompleted.tryAcquire(30, TimeUnit.SECONDS);
 
         kieSession.removeEventListener(processEventListener);
 
         processVariables.forEach((k,v) -> logger.info("Process variable {} : {}", k, v));
-        Assert.assertEquals(5, processVariables.size());
-        Assert.assertEquals("http://localhost:8080/demo-service/service/cancel/0", processVariables.get("serviceA-cancelUrl"));
+        String expectedCancelUrl = "http://localhost:8080/demo-service/service/cancel/";
+        String cancelUrl = processVariables.get("serviceA-cancelUrl");
+        Assert.assertTrue("Cancel url is expected to start with: " + expectedCancelUrl + ". Actual value: " + cancelUrl,
+                cancelUrl.startsWith(expectedCancelUrl));
         Assert.assertEquals("{person={name=Matej}}", processVariables.get("resultA"));
     }
 
@@ -145,7 +148,7 @@ public class RestServiceWorkitemIntegrationTest {
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("containerId", "mock");
-        ProcessInstance processInstance = (ProcessInstance) kieSession.startProcess("service-orchestration", parameters);
+        ProcessInstance processInstance = (ProcessInstance) kieSession.startProcess("service-orchestration-test", parameters);
 
         //wait for nodeA active
         nodeAActive.acquire();
@@ -153,7 +156,7 @@ public class RestServiceWorkitemIntegrationTest {
         final String pid = Long.toString(processInstance.getId());
         executor.execute(() -> {
             logger.info("Signaling cancel for pid: {}.", pid);
-            kieSession.signalEvent("cancel", pid);
+            kieSession.signalEvent(Utils.CANCEL_SIGNAL_TYPE, pid);
         });
         nodeACompleted.tryAcquire(8, TimeUnit.SECONDS);
         kieSession.removeEventListener(processEventListener);
@@ -161,6 +164,98 @@ public class RestServiceWorkitemIntegrationTest {
         Assert.assertEquals("{canceled=true}", resultA.get());
     }
 
+    @Test
+    public void testTimeoutServiceDoesNotRespondCancelSucess() throws InterruptedException {
+        JBPMServer jbpmServer = JBPMServer.getInstance();
+        KieSession kieSession = jbpmServer.getRuntimeEngine().getKieSession();
+
+        final Semaphore nodeACompleted = new Semaphore(0);
+        final AtomicReference<String> resultA = new AtomicReference<>();
+
+        ProcessEventListener processEventListener = new DefaultProcessEventListener() {
+            public void afterVariableChanged(ProcessVariableChangedEvent event) {
+                if (event.getVariableId().equals("resultA")) {
+                    resultA.set(event.getNewValue().toString());
+                    nodeACompleted.release();
+                }
+            }
+        };
+        kieSession.addEventListener(processEventListener);
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+
+        parameters.put("containerId", "mock");
+        ProcessInstance processInstance = (ProcessInstance) kieSession.startProcess("timeout-test", parameters);
+
+        boolean completed = nodeACompleted.tryAcquire(10, TimeUnit.SECONDS);
+        if (!completed) {
+            Assert.fail("Failed to complete the process.");
+        }
+        kieSession.removeEventListener(processEventListener);
+        Assert.assertEquals("{canceled=true}", resultA.get());
+    }
+
+    @Test
+    public void testTimeoutServiceDoesNotRespondCancelTimeouts() throws InterruptedException {
+        JBPMServer jbpmServer = JBPMServer.getInstance();
+        KieSession kieSession = jbpmServer.getRuntimeEngine().getKieSession();
+
+        final Semaphore nodeACompleted = new Semaphore(0);
+        final AtomicReference<String> resultA = new AtomicReference<>();
+
+        ProcessEventListener processEventListener = new DefaultProcessEventListener() {
+            public void afterVariableChanged(ProcessVariableChangedEvent event) {
+                if (event.getVariableId().equals("resultA")) {
+                    resultA.set(event.getNewValue().toString());
+                    nodeACompleted.release();
+                }
+            }
+        };
+        kieSession.addEventListener(processEventListener);
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+
+        parameters.put("containerId", "mock");
+        ProcessInstance processInstance = (ProcessInstance) kieSession.startProcess("timeout-test-cancel-timeouts", parameters);
+
+        boolean completed = nodeACompleted.tryAcquire(15, TimeUnit.SECONDS);
+        if (!completed) {
+            Assert.fail("Failed to complete the process.");
+        }
+        kieSession.removeEventListener(processEventListener);
+        Assert.assertEquals("{remote-cancel-failed=true}", resultA.get());
+    }
+
+    @Test
+    public void testInvalidServiceUrl() throws InterruptedException {
+        JBPMServer jbpmServer = JBPMServer.getInstance();
+        KieSession kieSession = jbpmServer.getRuntimeEngine().getKieSession();
+
+        final Semaphore nodeACompleted = new Semaphore(0);
+        final AtomicReference<String> resultA = new AtomicReference<>();
+
+        ProcessEventListener processEventListener = new DefaultProcessEventListener() {
+            public void afterVariableChanged(ProcessVariableChangedEvent event) {
+                if (event.getVariableId().equals("resultA")) {
+                    resultA.set(event.getNewValue().toString());
+                    nodeACompleted.release();
+                }
+            }
+        };
+        kieSession.addEventListener(processEventListener);
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+
+        parameters.put("containerId", "mock");
+        ProcessInstance processInstance = (ProcessInstance) kieSession.startProcess("invalid-service-url-test", parameters);
+
+        boolean completed = nodeACompleted.tryAcquire(15, TimeUnit.SECONDS);
+        if (!completed) {
+            Assert.fail("Failed to complete the process.");
+        }
+        kieSession.removeEventListener(processEventListener);
+        Assert.assertEquals("{remote-cancel-failed=true}", resultA.get());
+    }
 
     @Test @Ignore
     public void testWorkitemValidity() {

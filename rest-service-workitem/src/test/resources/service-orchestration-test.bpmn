@@ -3,21 +3,17 @@
   <bpmn2:itemDefinition id="_resultAItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_resultBItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_containerIdItem" structureRef="String"/>
-  <bpmn2:signal id="_10aec353-53f9-3409-aa71-c38654c3d402" name="cancel"/>
-  <bpmn2:itemDefinition id="_parentProcessIdItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__BC80770A-0937-4C36-9B5A-7B6A39684954_TaskNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__BC80770A-0937-4C36-9B5A-7B6A39684954_requestBodyInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__BC80770A-0937-4C36-9B5A-7B6A39684954_requestUrlInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__BC80770A-0937-4C36-9B5A-7B6A39684954_taskNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__BC80770A-0937-4C36-9B5A-7B6A39684954_cancelUrlJsonPointerInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__BC80770A-0937-4C36-9B5A-7B6A39684954_contentOutputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__9D878413-C0DF-421E-9B49-43A9E200A7DC_TaskNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__9D878413-C0DF-421E-9B49-43A9E200A7DC_requestBodyInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__9D878413-C0DF-421E-9B49-43A9E200A7DC_requestUrlInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__9D878413-C0DF-421E-9B49-43A9E200A7DC_taskNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__9D878413-C0DF-421E-9B49-43A9E200A7DC_cancelUrlJsonPointerInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__9D878413-C0DF-421E-9B49-43A9E200A7DC_contentOutputXItem" structureRef="String"/>
-  <bpmn2:process id="service-orchestration" drools:packageName="com.myspace.test" drools:version="1.0" name="proccancel" isExecutable="true">
+  <bpmn2:process id="service-orchestration-test" drools:packageName="org.jbpm.contrib" drools:version="1.0" name="Service Orchestration Test" isExecutable="true">
     <bpmn2:property id="resultA" itemSubjectRef="_resultAItem"/>
     <bpmn2:property id="resultB" itemSubjectRef="_resultBItem"/>
     <bpmn2:property id="containerId" itemSubjectRef="_containerIdItem"/>
@@ -43,14 +39,15 @@
         <bpmn2:dataInput id="_BC80770A-0937-4C36-9B5A-7B6A39684954_TaskNameInputX" drools:dtype="String" itemSubjectRef="__BC80770A-0937-4C36-9B5A-7B6A39684954_TaskNameInputXItem" name="TaskName"/>
         <bpmn2:dataInput id="_BC80770A-0937-4C36-9B5A-7B6A39684954_requestBodyInputX" drools:dtype="String" itemSubjectRef="__BC80770A-0937-4C36-9B5A-7B6A39684954_requestBodyInputXItem" name="requestBody"/>
         <bpmn2:dataInput id="_BC80770A-0937-4C36-9B5A-7B6A39684954_requestUrlInputX" drools:dtype="String" itemSubjectRef="__BC80770A-0937-4C36-9B5A-7B6A39684954_requestUrlInputXItem" name="requestUrl"/>
-        <bpmn2:dataInput id="_BC80770A-0937-4C36-9B5A-7B6A39684954_taskNameInputX" drools:dtype="String" itemSubjectRef="__BC80770A-0937-4C36-9B5A-7B6A39684954_taskNameInputXItem" name="taskName"/>
         <bpmn2:dataInput id="_BC80770A-0937-4C36-9B5A-7B6A39684954_cancelUrlJsonPointerInputX" drools:dtype="String" itemSubjectRef="__BC80770A-0937-4C36-9B5A-7B6A39684954_cancelUrlJsonPointerInputXItem" name="cancelUrlJsonPointer"/>
+        <bpmn2:dataInput id="_BC80770A-0937-4C36-9B5A-7B6A39684954_taskTimeoutInputX" drools:dtype="String" itemSubjectRef="__BC80770A-0937-4C36-9B5A-7B6A39684954_taskTimeoutInputXItem" name="taskTimeout"/>
+        <bpmn2:dataInput id="_BC80770A-0937-4C36-9B5A-7B6A39684954_cancelTimeoutInputX" drools:dtype="String" itemSubjectRef="__BC80770A-0937-4C36-9B5A-7B6A39684954_cancelTimeoutInputXItem" name="cancelTimeout"/>
         <bpmn2:dataOutput id="_BC80770A-0937-4C36-9B5A-7B6A39684954_contentOutputX" drools:dtype="String" itemSubjectRef="__BC80770A-0937-4C36-9B5A-7B6A39684954_contentOutputXItem" name="content"/>
         <bpmn2:inputSet id="_15KpkLskEei4yqY9aR8cWA">
           <bpmn2:dataInputRefs>_BC80770A-0937-4C36-9B5A-7B6A39684954_requestBodyInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_BC80770A-0937-4C36-9B5A-7B6A39684954_requestUrlInputX</bpmn2:dataInputRefs>
-          <bpmn2:dataInputRefs>_BC80770A-0937-4C36-9B5A-7B6A39684954_taskNameInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_BC80770A-0937-4C36-9B5A-7B6A39684954_cancelUrlJsonPointerInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_BC80770A-0937-4C36-9B5A-7B6A39684954_taskTimeoutInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_BC80770A-0937-4C36-9B5A-7B6A39684954_TaskNameInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet id="_15KpkbskEei4yqY9aR8cWA">
@@ -78,13 +75,6 @@
           <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_LKYBn7seEeiipc6XK8swTA">_BC80770A-0937-4C36-9B5A-7B6A39684954_requestUrlInputX</bpmn2:to>
         </bpmn2:assignment>
       </bpmn2:dataInputAssociation>
-      <bpmn2:dataInputAssociation id="_LKYBoLseEeiipc6XK8swTA">
-        <bpmn2:targetRef>_BC80770A-0937-4C36-9B5A-7B6A39684954_taskNameInputX</bpmn2:targetRef>
-        <bpmn2:assignment id="_LKYBobseEeiipc6XK8swTA">
-          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_LKYBorseEeiipc6XK8swTA"><![CDATA[serviceA]]></bpmn2:from>
-          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_LKYBo7seEeiipc6XK8swTA">_BC80770A-0937-4C36-9B5A-7B6A39684954_taskNameInputX</bpmn2:to>
-        </bpmn2:assignment>
-      </bpmn2:dataInputAssociation>
       <bpmn2:dataInputAssociation id="serviceAJsonPointer">
         <bpmn2:targetRef>_BC80770A-0937-4C36-9B5A-7B6A39684954_cancelUrlJsonPointerInputX</bpmn2:targetRef>
         <bpmn2:assignment id="serviceAJsonPointer-ass">
@@ -92,11 +82,24 @@
           <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="serviceAJsonPointer-to">_BC80770A-0937-4C36-9B5A-7B6A39684954_cancelUrlJsonPointerInputX</bpmn2:to>
         </bpmn2:assignment>
       </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation id="serviceATaskTimeout">
+        <bpmn2:targetRef>_BC80770A-0937-4C36-9B5A-7B6A39684954_taskTimeoutInputX</bpmn2:targetRef>
+        <bpmn2:assignment id="serviceAtaskTimeout-ass">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="serviceAtaskTimeout-from"><![CDATA[10]]></bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="serviceAtaskTimeout-to">_BC80770A-0937-4C36-9B5A-7B6A39684954_taskTimeoutInputX</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation id="serviceACancelTimeout">
+        <bpmn2:targetRef>_BC80770A-0937-4C36-9B5A-7B6A39684954_cancelTimeoutInputX</bpmn2:targetRef>
+        <bpmn2:assignment id="serviceACancelTimeout-ass">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="serviceACancelTimeout-from"><![CDATA[3]]></bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="serviceACancelTimeout-to">_BC80770A-0937-4C36-9B5A-7B6A39684954_cancelTimeoutInputX</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation id="_15KplrskEei4yqY9aR8cWA">
         <bpmn2:sourceRef>_BC80770A-0937-4C36-9B5A-7B6A39684954_contentOutputX</bpmn2:sourceRef>
         <bpmn2:targetRef>resultA</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
-
     </bpmn2:task>
 
     <bpmn2:task id="_9D878413-C0DF-421E-9B49-43A9E200A7DC" drools:taskName="RestServiceWorkItemHandler" name="serviceB">
@@ -111,13 +114,11 @@
         <bpmn2:dataInput id="_9D878413-C0DF-421E-9B49-43A9E200A7DC_TaskNameInputX" drools:dtype="String" itemSubjectRef="__9D878413-C0DF-421E-9B49-43A9E200A7DC_TaskNameInputXItem" name="TaskName"/>
         <bpmn2:dataInput id="_9D878413-C0DF-421E-9B49-43A9E200A7DC_requestBodyInputX" drools:dtype="String" itemSubjectRef="__9D878413-C0DF-421E-9B49-43A9E200A7DC_requestBodyInputXItem" name="requestBody"/>
         <bpmn2:dataInput id="_9D878413-C0DF-421E-9B49-43A9E200A7DC_requestUrlInputX" drools:dtype="String" itemSubjectRef="__9D878413-C0DF-421E-9B49-43A9E200A7DC_requestUrlInputXItem" name="requestUrl"/>
-        <bpmn2:dataInput id="_9D878413-C0DF-421E-9B49-43A9E200A7DC_taskNameInputX" drools:dtype="String" itemSubjectRef="__9D878413-C0DF-421E-9B49-43A9E200A7DC_taskNameInputXItem" name="taskName"/>
         <bpmn2:dataInput id="_9D878413-C0DF-421E-9B49-43A9E200A7DC_cancelUrlJsonPointerInputX" drools:dtype="String" itemSubjectRef="__9D878413-C0DF-421E-9B49-43A9E200A7DC_cancelUrlJsonPointerInputXItem" name="cancelUrlJsonPointer"/>
         <bpmn2:dataOutput id="_9D878413-C0DF-421E-9B49-43A9E200A7DC_contentOutputX" drools:dtype="String" itemSubjectRef="__9D878413-C0DF-421E-9B49-43A9E200A7DC_contentOutputXItem" name="content"/>
         <bpmn2:inputSet id="_15KpmLskEei4yqY9aR8cWA">
           <bpmn2:dataInputRefs>_9D878413-C0DF-421E-9B49-43A9E200A7DC_requestBodyInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_9D878413-C0DF-421E-9B49-43A9E200A7DC_requestUrlInputX</bpmn2:dataInputRefs>
-          <bpmn2:dataInputRefs>_9D878413-C0DF-421E-9B49-43A9E200A7DC_taskNameInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_9D878413-C0DF-421E-9B49-43A9E200A7DC_cancelUrlJsonPointerInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_9D878413-C0DF-421E-9B49-43A9E200A7DC_TaskNameInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
@@ -147,13 +148,6 @@
           <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="serviceBRequestUrl-to">_9D878413-C0DF-421E-9B49-43A9E200A7DC_requestUrlInputX</bpmn2:to>
         </bpmn2:assignment>
       </bpmn2:dataInputAssociation>
-      <bpmn2:dataInputAssociation id="serviceBTaskName">
-        <bpmn2:targetRef>_9D878413-C0DF-421E-9B49-43A9E200A7DC_taskNameInputX</bpmn2:targetRef>
-        <bpmn2:assignment id="serviceBTaskName-ass">
-          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="serviceBTaskName-from"><![CDATA[serviceB]]></bpmn2:from>
-          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="serviceBTaskName-to">_9D878413-C0DF-421E-9B49-43A9E200A7DC_taskNameInputX</bpmn2:to>
-        </bpmn2:assignment>
-      </bpmn2:dataInputAssociation>
       <bpmn2:dataInputAssociation id="serviceBJsonPointer">
         <bpmn2:targetRef>_9D878413-C0DF-421E-9B49-43A9E200A7DC_cancelUrlJsonPointerInputX</bpmn2:targetRef>
         <bpmn2:assignment id="serviceBJsonPointer-ass">
@@ -172,73 +166,13 @@
     <bpmn2:endEvent id="_5BFD6314-DDBE-4552-A841-BE549B843A99" name="">
       <bpmn2:extensionElements>
         <drools:metaData name="elementname">
-          <drools:metaValue><![CDATA[]]></drools:metaValue>
+          <drools:metaValue><![CDATA[Main end]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
       <bpmn2:incoming>_8ACA3E88-1298-47C4-86FB-FA08B855C113</bpmn2:incoming>
+      <bpmn2:terminateEventDefinition id="_mainEnd"/>
     </bpmn2:endEvent>
-    <bpmn2:subProcess id="_81F0A925-EE27-43C7-AC8C-2E4BDCF70F28" name="cancel" triggeredByEvent="true">
-      <bpmn2:extensionElements>
-        <drools:metaData name="elementname">
-          <drools:metaValue><![CDATA[cancel]]></drools:metaValue>
-        </drools:metaData>
-      </bpmn2:extensionElements>
-      <bpmn2:ioSpecification id="_15Kpn7skEei4yqY9aR8cWA">
-        <bpmn2:inputSet id="_15KpoLskEei4yqY9aR8cWA"/>
-        <bpmn2:outputSet id="_15KpobskEei4yqY9aR8cWA"/>
-      </bpmn2:ioSpecification>
-      <bpmn2:property id="parentProcessId" itemSubjectRef="_parentProcessIdItem"/>
-      <bpmn2:startEvent id="_BAB112A1-62BB-4AE8-AEB1-0BBDB9A6937C" name="cancel">
-        <bpmn2:extensionElements>
-          <drools:metaData name="elementname">
-            <drools:metaValue><![CDATA[cancel]]></drools:metaValue>
-          </drools:metaData>
-        </bpmn2:extensionElements>
-        <bpmn2:outgoing>_6AEDA881-58A8-4CD2-B387-30FB32284B6F</bpmn2:outgoing>
-        <bpmn2:dataOutput id="_BAB112A1-62BB-4AE8-AEB1-0BBDB9A6937C_parentProcessId" drools:dtype="String" name="parentProcessId"/>
-        <bpmn2:dataOutputAssociation id="_5VAsVbtOEei866LV-ta2xA">
-          <bpmn2:sourceRef>_BAB112A1-62BB-4AE8-AEB1-0BBDB9A6937C_parentProcessId</bpmn2:sourceRef>
-          <bpmn2:targetRef>parentProcessId</bpmn2:targetRef>
-        </bpmn2:dataOutputAssociation>
-        <bpmn2:outputSet id="_5VAsVLtOEei866LV-ta2xA">
-          <bpmn2:dataOutputRefs>_BAB112A1-62BB-4AE8-AEB1-0BBDB9A6937C_parentProcessId</bpmn2:dataOutputRefs>
-        </bpmn2:outputSet>
-        <bpmn2:signalEventDefinition id="_15KporskEei4yqY9aR8cWA" signalRef="_10aec353-53f9-3409-aa71-c38654c3d402"/>
-      </bpmn2:startEvent>
-      <bpmn2:task id="_E2134BC2-C083-46DA-B810-61CD918B36FD" drools:taskName="CancelAllActiveTasksWorkitemHandler" name="Cancel All">
-        <bpmn2:extensionElements>
-          <drools:metaData name="elementname">
-            <drools:metaValue><![CDATA[Cancel All]]></drools:metaValue>
-          </drools:metaData>
-        </bpmn2:extensionElements>
-        <bpmn2:incoming>_6AEDA881-58A8-4CD2-B387-30FB32284B6F</bpmn2:incoming>
-        <bpmn2:outgoing>_A29F5A8F-1CE4-4A72-A456-ABF4F2BFF6BF</bpmn2:outgoing>
-        <bpmn2:ioSpecification id="_15Kpo7skEei4yqY9aR8cWA">
-          <bpmn2:dataInput id="_E2134BC2-C083-46DA-B810-61CD918B36FD_TaskNameInputX" drools:dtype="String" name="TaskName"/>
-          <bpmn2:inputSet id="_15KppLskEei4yqY9aR8cWA">
-            <bpmn2:dataInputRefs>_E2134BC2-C083-46DA-B810-61CD918B36FD_TaskNameInputX</bpmn2:dataInputRefs>
-          </bpmn2:inputSet>
-          <bpmn2:outputSet id="_15KppbskEei4yqY9aR8cWA"/>
-        </bpmn2:ioSpecification>
-        <bpmn2:dataInputAssociation id="_15KpprskEei4yqY9aR8cWA">
-          <bpmn2:targetRef>_E2134BC2-C083-46DA-B810-61CD918B36FD_TaskNameInputX</bpmn2:targetRef>
-          <bpmn2:assignment id="_15Kpp7skEei4yqY9aR8cWA">
-            <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_15KpqLskEei4yqY9aR8cWA">CancelAllActiveTasksWorkitemHandler</bpmn2:from>
-            <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_15KpqbskEei4yqY9aR8cWA">_E2134BC2-C083-46DA-B810-61CD918B36FD_TaskNameInputX</bpmn2:to>
-          </bpmn2:assignment>
-        </bpmn2:dataInputAssociation>
-      </bpmn2:task>
-      <bpmn2:endEvent id="_0AFEFF32-4459-4B99-A519-5B113004C53A" name="">
-        <bpmn2:extensionElements>
-          <drools:metaData name="elementname">
-            <drools:metaValue><![CDATA[]]></drools:metaValue>
-          </drools:metaData>
-        </bpmn2:extensionElements>
-        <bpmn2:incoming>_A29F5A8F-1CE4-4A72-A456-ABF4F2BFF6BF</bpmn2:incoming>
-      </bpmn2:endEvent>
-      <bpmn2:sequenceFlow id="_6AEDA881-58A8-4CD2-B387-30FB32284B6F" sourceRef="_BAB112A1-62BB-4AE8-AEB1-0BBDB9A6937C" targetRef="_E2134BC2-C083-46DA-B810-61CD918B36FD"/>
-      <bpmn2:sequenceFlow id="_A29F5A8F-1CE4-4A72-A456-ABF4F2BFF6BF" sourceRef="_E2134BC2-C083-46DA-B810-61CD918B36FD" targetRef="_0AFEFF32-4459-4B99-A519-5B113004C53A"/>
-    </bpmn2:subProcess>
+
     <bpmn2:sequenceFlow id="_C538FECE-8315-46A3-9156-5F932B00E162" sourceRef="_BC80770A-0937-4C36-9B5A-7B6A39684954" targetRef="_9D878413-C0DF-421E-9B49-43A9E200A7DC"/>
     <bpmn2:sequenceFlow id="_8ACA3E88-1298-47C4-86FB-FA08B855C113" sourceRef="_9D878413-C0DF-421E-9B49-43A9E200A7DC" targetRef="_5BFD6314-DDBE-4552-A841-BE549B843A99"/>
     <bpmn2:sequenceFlow id="_88CED6B9-1D6B-4C2D-BDE7-12EDA6002384" sourceRef="_3C12B539-DB53-4419-A29D-D5679E72183D" targetRef="_BC80770A-0937-4C36-9B5A-7B6A39684954"/>
