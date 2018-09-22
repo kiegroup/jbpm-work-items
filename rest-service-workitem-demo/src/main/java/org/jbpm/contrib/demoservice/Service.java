@@ -15,11 +15,13 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
@@ -60,7 +62,11 @@ public class Service {
 
     @POST
     @Path("/A")
-    public Response actionA(RequestA request) throws JsonProcessingException {
+    public Response actionA(
+            RequestA request,
+            @QueryParam("callbackDelay") @DefaultValue("3") int callbackDelay,
+            @QueryParam("cancelDelay") @DefaultValue("1") String cancelDelay)
+            throws JsonProcessingException {
         System.out.println(">>> Action A requested.");
         System.out.println(">>> request object: " + objectMapper.writeValueAsString(request));
         String callbackUrl = request.getCallbackUrl();
@@ -71,9 +77,10 @@ public class Service {
         Map<String, Object> result = new HashMap<>();
         result.put("person", person);
 
-        int jobId = scheduleCallback(callbackUrl, 5, result);
+        int jobId = scheduleCallback(callbackUrl, callbackDelay, result);
 
         String cancelUrl = "http://localhost:8080/demo-service/service/cancel/" + jobId;
+        cancelUrl += "?delay=" + cancelDelay;
         Map<String, Object> response = new HashMap<>();
         response.put("cancelUrl", cancelUrl);
 
@@ -102,7 +109,8 @@ public class Service {
 
     @POST
     @Path("/cancel/{id}")
-    public Response cancelAction(@PathParam("id") int jobId) throws JsonProcessingException {
+    public Response cancelAction(@PathParam("id") int jobId, @QueryParam("delay") @DefaultValue("1") int delay)
+            throws JsonProcessingException {
         System.out.println(">>> Action Cancel requested for job:" + jobId);
 
         RunningJob runningJob = runningJobs.get(jobId);
@@ -111,7 +119,7 @@ public class Service {
         Map<String, Object> result = new HashMap<>();
         result.put("canceled", "true");
 
-        scheduleCallback(runningJob.callbackUrl, 1, result);
+        scheduleCallback(runningJob.callbackUrl, delay, result);
 
         return Response.status(200).entity(null).build();
     }

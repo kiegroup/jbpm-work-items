@@ -17,6 +17,7 @@ import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.runtime.manager.context.EmptyContext;
 
+import java.io.File;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -38,8 +39,14 @@ public class JBPMServer {
     private RuntimeManager manager;
 
     public JBPMServer() {
-        manager = getInMemmoryRuntimeManager("service-orchestration.bpmn");
-//        manager = getPersistentRuntimeManager("service-orchestration.bpmn");
+//        manager = getInMemmoryRuntimeManager("service-orchestration.bpmn", "timeout.bpmn");
+        manager = getPersistentRuntimeManager(
+                "timeout-handler-process.bpmn",
+                "cancel-all-handler-process.bpmn",
+                "service-orchestration-test.bpmn",
+                "timeout-test.bpmn",
+                "timeout-test-cancel-timeouts.bpmn",
+                "invalid-service-url-test.bpmn");
 
         RuntimeEngine runtime = getRuntimeEngine();
         KieSession ksession = runtime.getKieSession();
@@ -50,13 +57,14 @@ public class JBPMServer {
         workItemManager.registerWorkItemHandler("TaskTimeoutWorkitemHandler", new TaskTimeoutWorkitemHandler(manager));
     }
 
-    private static RuntimeManager getInMemmoryRuntimeManager(String processId) {
+    private static RuntimeManager getInMemmoryRuntimeManager(String processId, String timeoutProcessId) {
         RuntimeEnvironment environment = RuntimeEnvironmentBuilder.Factory.get()
-                //                .newDefaultInMemoryBuilder()
+                //.newDefaultInMemoryBuilder()
                 .newEmptyBuilder()
-                //                .knowledgeBase(KieServices.Factory.get().getKieClasspathContainer().getKieBase("my-knowledge-base"))
+                //.knowledgeBase(KieServices.Factory.get().getKieClasspathContainer().getKieBase("my-knowledge-base"))
                 .persistence(false)
                 .addAsset(ResourceFactory.newClassPathResource(processId), ResourceType.BPMN2)
+                .addAsset(ResourceFactory.newClassPathResource(timeoutProcessId), ResourceType.BPMN2)
                 .addConfiguration("drools.processSignalManagerFactory", DefaultSignalManagerFactory.class.getName())
                 .addConfiguration("drools.processInstanceManagerFactory", DefaultProcessInstanceManagerFactory.class.getName())
                 .get();
@@ -74,21 +82,23 @@ public class JBPMServer {
     /**
      * Required to work with taskService.
      */
-    private static RuntimeManager getPersistentRuntimeManager(String processId) {
+    private static RuntimeManager getPersistentRuntimeManager(String... processes) {
         // load up the knowledge base
         JBPMHelper.startH2Server();
         JBPMHelper.setupDataSource();
 
-        RuntimeEnvironment environment = RuntimeEnvironmentBuilder.Factory.get().newDefaultBuilder()
-                  .addAsset(ResourceFactory.newClassPathResource(processId), ResourceType.BPMN2)
-//                .addAsset(KieServices.Factory.get().getResources().newClassPathResource(process), ResourceType.BPMN2)
-                .get();
+        RuntimeEnvironmentBuilder runtimeEnvironmentBuilder = RuntimeEnvironmentBuilder.Factory.get().newDefaultBuilder();
+
+        for (String processId : processes) {
+            runtimeEnvironmentBuilder.addAsset(ResourceFactory.newClassPathResource(processId), ResourceType.BPMN2);
+        }
+        RuntimeEnvironment environment = runtimeEnvironmentBuilder.get();
         return RuntimeManagerFactory.Factory.get().newSingletonRuntimeManager(environment);
     }
 
     public static void cleanUp() {
-//        String home = System.getProperty("user.home");
-//        new File(home + "/jbpm-db.h2.db").delete();
-//        new File(home + "/jbpm-db.lock.db").delete();
+        String home = System.getProperty("user.home");
+        new File(home + "/jbpm-db.h2.db").delete();
+        new File(home + "/jbpm-db.lock.db").delete();
     }
 }

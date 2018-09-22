@@ -17,6 +17,7 @@ package org.jbpm.contrib.restservice;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.http.HttpResponse;
+import org.drools.core.process.instance.impl.WorkItemImpl;
 import org.jboss.util.StringPropertyReplacer;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
 import org.kie.api.event.process.DefaultProcessEventListener;
@@ -24,7 +25,9 @@ import org.kie.api.event.process.ProcessEventListener;
 import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.manager.RuntimeManager;
+import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessContext;
+import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
@@ -39,8 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import static org.jbpm.contrib.restservice.Utils.FORCE_CANCEL_VARIABLE;
-import static org.jbpm.contrib.restservice.Utils.TIMEOUT_PROCESS_NAME;
+import static org.jbpm.contrib.restservice.Utils.CANCEL_SIGNAL_TYPE;
 import static org.jbpm.contrib.restservice.Utils.getCancelUrlVariableName;
 
 /**
@@ -65,21 +67,26 @@ import static org.jbpm.contrib.restservice.Utils.getCancelUrlVariableName;
  *
  *
  */
-//@Wid(widfile="RestServiceDefinitions.wid", name="RestServiceDefinitions",
-//        displayName="RestServiceDefinitions", icon="",
-//        defaultHandler="mvel: new org.jbpm.contrib.RestServiceWorkItemHandler()",
-//        documentation = "",
-////        parameters={
-////            @WidParameter(name="SampleParam", required = true),
-////            @WidParameter(name="ResultParamName", required = true)
-////        },
+/*
+@Wid(widfile="RestServiceDefinitions.wid", name="RestServiceDefinitions",
+        displayName="RestServiceDefinitions", icon="",
+        defaultHandler="mvel: new org.jbpm.contrib.RestServiceWorkItemHandler(runtimeManager)",
+        documentation = "",
+        parameters={
+            @WidParameter(name="requestUrl", required = true),
+            @WidParameter(name="requestMethod", required = true),
+            @WidParameter(name="requestBody", required = true),
+            @WidParameter(name="taskTimeout", required = true),
+            @WidParameter(name="cancelUrlJsonPointer", required = true),
+            @WidParameter(name="cancelTimeout", required = true)
+        },
 //        results={
 //            @WidResult(name="as defined by ResultParamName")
 //        },
-//        mavenDepends={
-//            @WidMavenDepends(group="org.jbpm.contrib", artifact="rest-service-workitem", version="7.9.0.Final")
-//        })
-//TODO q: the fastest way to redeploy WorkItemHandler
+        mavenDepends={
+            @WidMavenDepends(group="org.jbpm.contrib", artifact="rest-service-workitem", version="7.9.0.Final")
+        })
+*/
 public class RestServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     public static final String TASK_NAME = "taskName";
@@ -94,21 +101,27 @@ public class RestServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHandle
 
     public RestServiceWorkItemHandler(RuntimeManager runtimeManager) {
         this.runtimeManager = runtimeManager;
-        System.out.println(">>> Constructing with runtimeManager ...");
+        logger.info(">>> Constructing with runtimeManager ...");
     }
 
     public RestServiceWorkItemHandler() {
-        System.out.println(">>> Constructing with no parameters...");
+        logger.info(">>> Constructing with no parameters...");
     }
 
-    public void executeWorkItem(WorkItem workItem,
+    public void executeWorkItem(WorkItem _workItem,
                                 WorkItemManager manager) {
         try {
-            //            RequiredParameterValidator.validate(this.getClass(), workItem); //TODO enable
+            //TODO enable
+            //RequiredParameterValidator.validate(this.getClass(), workItem);
 
-            long taskId = workItem.getId();
-            String taskName = Utils.getStringParameter(workItem, TASK_NAME);
-            logger.info("Started task {} with id {}.", taskName, taskId);
+            WorkItemImpl workItem = (WorkItemImpl) _workItem; //TODO use public api
+            WorkflowProcessInstance processInstance = Utils.getProcessInstance(runtimeManager, workItem.getProcessInstanceId());
+
+            long nodeInstanceId = workItem.getNodeInstanceId();
+            NodeInstance nodeInstance = processInstance.getNodeInstance(nodeInstanceId);
+            String nodeInstanceName = nodeInstance.getNodeName();
+
+            logger.info("Started nodeInstance.name {}, nodeInstance.id {}.", nodeInstanceName, nodeInstanceId);
 
             String cancelUrlJsonPointer = Utils.getStringParameter(workItem, CANCEL_URL_JSON_POINTER_VARIABLE);
 
@@ -125,55 +138,73 @@ public class RestServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHandle
                 mustRunAfter = Arrays.asList(mustRunAfterStr.split(","));
             }
 
-            WorkflowProcessInstance processInstance = Utils.getProcessInstance(runtimeManager, workItem.getProcessInstanceId());
-            //TODO q: get without parameters
+            //TODO get without parameters
             String containerId = (String) processInstance.getVariable("containerId");
 
             boolean cancelRequested = Utils.getBooleanVariable(processInstance, "cancelRequested");
 
             //should this service run
             if (!cancelRequested || alwaysRun || checkRunAfter(mustRunAfter, workItem.getProcessInstanceId())) { //TODO
-                ProcessEventListener onProcessEvent = new DefaultProcessEventListener() {
-                    @Override
-                    public void beforeNodeLeft(ProcessNodeLeftEvent event) {
-                        Utils.getKsession(runtimeManager, workItem.getProcessInstanceId()).removeEventListener(this);
-                    }
+                final KieSession ksession = Utils.getKsession(runtimeManager, workItem.getProcessInstanceId());
 
-                    @Override
-                    public void afterNodeLeft(ProcessNodeLeftEvent event) {
-//TODO
-//                        long timeoutProcessId = (long) processInstance.getVariable(getTimeoutPIIDVariableName(taskName));
-//                        Utils.getKsession(runtimeManager, timeoutProcessId).abortProcessInstance(timeoutProcessId);
-                    }
-                };
-                KieSession ksession = Utils.getKsession(runtimeManager, workItem.getProcessInstanceId());
-                ksession.addEventListener(onProcessEvent);
-
+                final long timoutProcessInstanceId;
+                long processInstanceId = processInstance.getId();
                 if (taskTimeout > 0) {
-//                    long timeoutProcessId = startTaskTimeoutProcess(ksession, taskId, taskTimeout);
-//                    processInstance.setVariable(getTimeoutPIIDVariableName(taskName), timeoutProcessId);
-
-//                    startTaskTimeoutProcess(ksession, taskId, taskTimeout);
+                    timoutProcessInstanceId = Utils.startTaskTimeoutProcess(
+                            ksession,
+                            processInstanceId,
+                            nodeInstanceId,
+                            taskTimeout,
+                            false);
+                } else {
+                    timoutProcessInstanceId = -1;
                 }
 
-                handleTask(manager, workItem, requestUrl, requestMethod, requestBody, taskName, containerId, cancelUrlJsonPointer); //TODO
+                ProcessEventListener onProcessEvent = new DefaultProcessEventListener() {
+                    @Override
+                    public void afterNodeLeft(ProcessNodeLeftEvent event) {
+                        ksession.removeEventListener(this);
+                        //stop timeout process
+                        long completedNodeInstanceId = event.getNodeInstance().getId();
+                        logger.debug("Completed nodeInstanceId {}, registering nodeInstanceId {} belonging to processInstance.id: {}. TimeoutProcessInstance.id: {}.",
+                                completedNodeInstanceId, nodeInstanceId, processInstanceId, timoutProcessInstanceId);
+                        if (completedNodeInstanceId == nodeInstanceId && timoutProcessInstanceId > -1) {
+                            ProcessInstance timeoutProcessInstance = ksession.getProcessInstance(timoutProcessInstanceId);
+                            if (timeoutProcessInstance != null) {
+                                logger.info("Aborting timeout process instance for nodeInstanceId: {}. TimeoutProcessInstance.id: {}.", nodeInstanceId, timoutProcessInstanceId);
+                                ksession.abortProcessInstance(timoutProcessInstanceId);
+                            } else {
+                                logger.debug("Not Found timeout process instance for nodeInstanceId: {}. TimeoutProcessInstance.id: {}.", nodeInstanceId, timoutProcessInstanceId);
+                            }
+                        }
+                    }
+                };
+                ksession.addEventListener(onProcessEvent);
+
+                try {
+                    boolean invoked = handleTask(manager,
+                            workItem,
+                            requestUrl,
+                            requestMethod,
+                            requestBody,
+                            nodeInstanceName,
+                            containerId,
+                            cancelUrlJsonPointer);
+                    if (!invoked) {
+                        logger.warn("Invalid remote service response.");
+                        processInstance.signalEvent(CANCEL_SIGNAL_TYPE, processInstanceId);
+                    }
+                } catch (Exception e) {
+                    logger.warn("Failed to invoke remote service.", e);
+                    processInstance.signalEvent(CANCEL_SIGNAL_TYPE, processInstanceId);
+                }
             } else {
                 logger.info("Skipping task execution ...");
-                manager.completeWorkItem(taskId, null);
+                manager.completeWorkItem(workItem.getId(), null);
             }
         } catch(Throwable cause) {
             handleException(cause);
         }
-    }
-
-    public static void startTaskTimeoutProcess(KieSession kieSession, long taskId, long timeout) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("timeoutMillis", timeout);
-        data.put(Utils.TIMEOUT_TASK_ID_VARIABLE, taskId);
-        data.put(FORCE_CANCEL_VARIABLE, false);
-//        ProcessInstance processInstance = kieSession.startProcess(TIMEOUT_PROCESS_NAME, data);
-        kieSession.signalEvent(TIMEOUT_PROCESS_NAME, data);
-//        return processInstance.getParentProcessInstanceId();
     }
 
     private boolean checkRunAfter(List<String> runAfterTasks, long processInstanceId) {
@@ -208,13 +239,13 @@ public class RestServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHandle
         };
     }
 
-    private void handleTask(
+    private boolean handleTask(
             WorkItemManager manager,
             WorkItem workItem,
             String requestUrl,
             String requestMethod,
             String requestBody,
-            String taskName,
+            String nodeInstanceName,
             String containerId,
             String cancelUrlJsonPointer) throws IOException {
 
@@ -234,6 +265,14 @@ public class RestServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHandle
                 5000,
                 5000);
 
+        int statusCode = httpResponse.getStatusLine().getStatusCode();
+        logger.info("Remote endpoint returned status: {}.", statusCode);
+
+        if (statusCode < 200 || statusCode >= 300 ) {
+            logger.debug("Remote service responded with status: {}", statusCode);
+            return false;
+        }
+
         String cancelUrl = "";
         try {
             JsonNode root = Utils.objectMapper.readTree(httpResponse.getEntity().getContent());
@@ -244,9 +283,8 @@ public class RestServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHandle
         } catch (Exception e) {
             logger.warn("Cannot read cancel url.", e);
         }
-
-        //TODO might require wrapping in transaction https://developer.jboss.org/thread/199180
-        processInstance.setVariable(getCancelUrlVariableName(taskName), cancelUrl);
+        processInstance.setVariable(getCancelUrlVariableName(nodeInstanceName), cancelUrl);
+        return true;
     }
 
     /**
@@ -267,9 +305,7 @@ public class RestServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHandle
     @Override
     public void abortWorkItem(WorkItem workItem, WorkItemManager manager) {
         String taskName = Utils.getStringParameter(workItem, "taskName");
-        completeWorkItem(manager, workItem, taskName, "{\"cancelled\":\"true\"}"); //TODO result
+        completeWorkItem(manager, workItem, taskName, "{\"aborted\":\"true\"}");
     }
 
 }
-
-

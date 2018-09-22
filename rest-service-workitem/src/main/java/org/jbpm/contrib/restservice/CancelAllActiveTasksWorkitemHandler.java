@@ -15,6 +15,8 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.jbpm.contrib.restservice.Utils.MAIN_PROCESS_INSTANCE_ID_VARIABLE;
+
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
  */
@@ -33,16 +35,16 @@ public class CancelAllActiveTasksWorkitemHandler extends AbstractLogOrThrowWorkI
 
     @Override
     public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
-        long mainProcessInstanceId = Long.parseLong((String) workItem.getParameter("parentProcessId"));
+        long mainProcessInstanceId = Long.parseLong((String) workItem.getParameter(MAIN_PROCESS_INSTANCE_ID_VARIABLE));
 
         RuleFlowProcessInstance processInstance = (RuleFlowProcessInstance) Utils.getProcessInstance(runtimeManager, mainProcessInstanceId);
         processInstance.setVariable("cancelRequested", true);
 
         Set<NodeInstance> activeTasks = getActiveTasks(processInstance);
-        logger.info("There are {} active tasks to be canceled in the pid {}.", activeTasks.size(), mainProcessInstanceId);
+        logger.info("There are {} active tasks to be canceled in the mainProcessInstance.id {}.", activeTasks.size(), mainProcessInstanceId);
         CancelTaskOperation cancelTaskOperation = new CancelTaskOperation(runtimeManager);
         for (NodeInstance activeTask : activeTasks) {
-            cancelTaskOperation.cancelTask(activeTask, processInstance);
+            cancelTaskOperation.cancelTask(activeTask, processInstance, false);
         }
         manager.completeWorkItem(workItem.getId(), Collections.EMPTY_MAP);
     }
