@@ -36,15 +36,25 @@ public class TaskTimeoutWorkitemHandler extends AbstractLogOrThrowWorkItemHandle
     public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
         logger.debug("Executing timeout handler ...");
         WorkflowProcessInstance timeoutProcessInstance = Utils.getProcessInstance(runtimeManager, workItem.getProcessInstanceId());
-        long nodeInstanceId = (long) timeoutProcessInstance.getVariable(TIMEOUT_NODE_INSTANCE_ID_VARIABLE);
+        if (timeoutProcessInstance == null) {
+            logger.debug("Cannot find Timeout Process instance for main process instance id {}", workItem.getProcessInstanceId());
+        }
+        Object _nodeInstanceId = timeoutProcessInstance.getVariable(TIMEOUT_NODE_INSTANCE_ID_VARIABLE);
+        if (_nodeInstanceId == null) {
+            logger.warn("Missing node instance id in Timeout Process Instance id {}.",workItem.getProcessInstanceId() );
+        }
+        long nodeInstanceId = (long) _nodeInstanceId;
 
         long mainProcessInstanceId = (long) timeoutProcessInstance.getVariable(MAIN_PROCESS_INSTANCE_ID_VARIABLE);
         WorkflowProcessInstance mainProcessInstance = Utils.getProcessInstance(runtimeManager, mainProcessInstanceId);
+        if (mainProcessInstance == null) {
+            logger.warn("Cannot find main process instance with id {} from Timeout Process instance id {}.", mainProcessInstanceId, timeoutProcessInstance.getId());
+        }
         boolean forceCancel = (boolean) timeoutProcessInstance.getVariable(FORCE_CANCEL_VARIABLE);
-        logger.debug("Running timeout procedure for task.id: {} belonging to processInstance.id {}. Force cancel: {}. TimeoutProcessInstance.id: {}.",
+        logger.debug("Running timeout procedure for node instance id: {} in process instance id {}. Force cancel: {}. Timeout Process Instance id: {}.",
                 nodeInstanceId, mainProcessInstanceId, forceCancel, timeoutProcessInstance.getId());
         NodeInstance taskToCancel = mainProcessInstance.getNodeInstance(nodeInstanceId);
-        logger.info("Running timeout procedure for task.name: {} belonging to processInstance.id {}. Force cancel: {}.", taskToCancel.getNodeName(), mainProcessInstanceId, forceCancel);
+        logger.info("Running timeout procedure for node name: {} in process instance id {}. Force cancel: {}.", taskToCancel.getNodeName(), mainProcessInstanceId, forceCancel);
 
         CancelTaskOperation cancelTaskOperation = new CancelTaskOperation(runtimeManager);
 

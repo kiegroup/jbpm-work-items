@@ -8,6 +8,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.drools.core.util.MVELSafeHelper;
+import org.jbpm.workflow.instance.impl.ProcessInstanceResolverFactory;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.manager.RuntimeEngine;
 import org.kie.api.runtime.manager.RuntimeManager;
@@ -19,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,16 +39,29 @@ public class Utils {
 
     public final static String CANCEL_SIGNAL_TYPE = "cancel-all";
 
+    static final String REMOTE_CANCEL_FAILED = "remote-cancel-failed";
+
     private static Logger logger = LoggerFactory.getLogger(Utils.class);
     static final ObjectMapper objectMapper = new ObjectMapper();
 
     static final String TIMEOUT_PROCESS_NAME = "timeout-handler-process";
     static final String CANCEL_TIMEOUT_VARIABLE = "cancelTimeout";
-    static final String CANCEL_URL_VARIABLE = "cancelUrl";;
     static final String MAIN_PROCESS_INSTANCE_ID_VARIABLE = "mainProcessInstanceId";
 
-    public static String getCancelUrlVariableName(String nodeInstanceName) {
-        return nodeInstanceName + "-" + CANCEL_URL_VARIABLE;
+    public static String getParameterNameCancelUrl(String nodeName) {
+        return nodeName + "-cancelUrl";
+    }
+
+    public static String getParameterNameTimeoutProcessInstanceId(String nodeName) {
+        return nodeName + "-timeoutProcessInstanceId";
+    }
+
+    public static String getParameterNameSuccessCondition(String nodeName) {
+        return nodeName + "-successCondition";
+    }
+
+    public static String getParameterNameSuccessCompletions(String nodeName) {
+        return nodeName + "-successCompletion";
     }
 
     static WorkflowProcessInstance getProcessInstance(RuntimeManager runtimeManager, long processInstanceId) {
@@ -128,22 +144,91 @@ public class Utils {
         }
     }
 
-    public static long startTaskTimeoutProcess(
+    public static void startTaskTimeoutProcess(
             KieSession kieSession,
             long mainProcessInstanceId,
             long nodeInstanceId,
+            String nodeName,
             long timeoutSeconds,
             boolean forceCancel) {
+
+        WorkflowProcessInstance mainProcessInstance = (WorkflowProcessInstance) kieSession.getProcessInstance(mainProcessInstanceId);
+        if (timeoutSeconds > 0) {
+            abortPossiblyRunningTimeoutProcess(
+                    kieSession,
+                    nodeName,
+                    mainProcessInstance);
+
+            Map<String, Object> data = new HashMap<>();
+            logger.info("Staring timeout process for node instance id: {} in process instance id: {}. Force cancel: {}.", nodeInstanceId, mainProcessInstanceId, forceCancel);
+            data.put("timeout", "PT" + timeoutSeconds + "S"); //ISO8601 date format for duration
+            data.put(TIMEOUT_NODE_INSTANCE_ID_VARIABLE, nodeInstanceId);
+            data.put(FORCE_CANCEL_VARIABLE, forceCancel);
+            data.put(MAIN_PROCESS_INSTANCE_ID_VARIABLE, mainProcessInstanceId);
+            ProcessInstance timeoutProcessInstance = kieSession.startProcess(TIMEOUT_PROCESS_NAME, data);
+            long timeoutProcessInstanceId = timeoutProcessInstance.getId();
+            logger.debug("Started timeout process instance id: {} for nodeInstanceId: {} in process instance id: {}. Force cancel: {}.",
+                    timeoutProcessInstanceId, nodeInstanceId, mainProcessInstanceId, forceCancel);
+            mainProcessInstance.setVariable(Utils.getParameterNameTimeoutProcessInstanceId(nodeName), timeoutProcessInstanceId);
+        } else {
+            mainProcessInstance.setVariable(Utils.getParameterNameTimeoutProcessInstanceId(nodeName), -1L);
+        }
+    }
+
+    public static long startCancelAllProcess(
+            KieSession kieSession,
+            long mainProcessInstanceId) {
         Map<String, Object> data = new HashMap<>();
-        logger.info("Staring timeout process for nodeInstanceId: {} belonging to processInstanceId: {}. Force cancel: {}.", nodeInstanceId, mainProcessInstanceId, forceCancel);
-        data.put("timeout", "PT" + timeoutSeconds + "S"); //ISO8601 date format for duration
-        data.put(TIMEOUT_NODE_INSTANCE_ID_VARIABLE, nodeInstanceId);
-        data.put(FORCE_CANCEL_VARIABLE, forceCancel);
-        data.put(MAIN_PROCESS_INSTANCE_ID_VARIABLE, mainProcessInstanceId);
-        ProcessInstance timeoutProcessInstance = kieSession.startProcess(TIMEOUT_PROCESS_NAME, data);
-        long timeoutProcessInstanceId = timeoutProcessInstance.getId();
-        logger.debug("Started timeout process instance.id: {} for nodeInstanceId: {} belonging to processInstanceId: {}. Force cancel: {}.",
-                timeoutProcessInstanceId, nodeInstanceId, mainProcessInstanceId, forceCancel);
-        return timeoutProcessInstanceId;
+        logger.info("Staring cancel all process for processInstanceId: {}.", mainProcessInstanceId);
+        data.put("cancel-all", mainProcessInstanceId);
+        ProcessInstance cancelProcessInstance = kieSession.startProcess("cancel-all-handler-process", data);
+        long cancelProcessInstanceId = cancelProcessInstance.getId();
+        logger.debug("Started cancel all process instance.id: {} for  mainProcessInstanceId: {}.",
+                cancelProcessInstanceId, mainProcessInstanceId);
+        return cancelProcessInstanceId;
+    }
+
+    public static boolean isEmpty(String string) {
+        if (string == null) {
+            return true;
+        } else {
+            return "".equals(string);
+        }
+    }
+
+    public static void cancelAll(WorkflowProcessInstance processInstance) {
+        //immediately mark as canceled as next node may check for flag before the cancel process sets it.
+        processInstance.setVariable("cancelRequested", true);
+        processInstance.signalEvent(CANCEL_SIGNAL_TYPE, processInstance.getId());
+//        Utils.startCancelAllProcess(getKsession(runtimeManager,processInstance.getId()), processInstance.getId());
+    }
+
+    public static boolean evaluateSuccessCondition(WorkflowProcessInstance processInstance, String successCondition) {
+        logger.debug("Evaluating successCondition: {}, for processInstance.id: {}.", successCondition, processInstance.getId());
+        try {
+            return MVELSafeHelper.getEvaluator().eval(
+                    successCondition,
+                    new ProcessInstanceResolverFactory(processInstance), Boolean.class);
+        } catch (Exception e) {
+            String msg = MessageFormat.format("Cannot evaluate success condition {0}.", successCondition);
+            logger.debug(msg, e);
+            return false;
+        }
+    }
+
+    private static void abortPossiblyRunningTimeoutProcess(
+            KieSession ksession,
+            String nodeName,
+            WorkflowProcessInstance mainProcessInstance) {
+        Object timeoutProcessInstanceIdObj = mainProcessInstance.getVariable(
+                getParameterNameTimeoutProcessInstanceId(nodeName));
+        if (timeoutProcessInstanceIdObj != null) {
+            long timeoutProcessInstanceId = (long) timeoutProcessInstanceIdObj;
+            logger.debug("Aborting Timeout Process instance id {}.", timeoutProcessInstanceId);
+            ksession.abortProcessInstance(timeoutProcessInstanceId);
+        } else {
+            logger.debug("Didn't find an existing timeout process instance for node instance name {} in main process instance id {}.",
+                    nodeName, mainProcessInstance.getId());
+        }
     }
 }

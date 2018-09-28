@@ -89,7 +89,10 @@ public class Service {
 
     @POST
     @Path("/B")
-    public Response actionB(RequestB request) throws JsonProcessingException {
+    public Response actionB(
+            RequestB request,
+            @QueryParam("callbackDelay") @DefaultValue("5") int callbackDelay)
+            throws JsonProcessingException {
         System.out.println(">>> Action B requested.");
         System.out.println(">>> request object: " + objectMapper.writeValueAsString(request));
 
@@ -98,7 +101,7 @@ public class Service {
         Map<String, Object> result = new HashMap<>();
         result.put("fullName", request.getNameFromA() + " " + request.getSurname());
 
-        int jobId = scheduleCallback(callbackUrl, 5, result);
+        int jobId = scheduleCallback(callbackUrl, callbackDelay, result);
 
         String cancelUrl = "http://localhost:8080/demo-service/service/cancel/" + jobId;
         Map<String, Object> response = new HashMap<>();
