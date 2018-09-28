@@ -35,6 +35,7 @@ import org.kie.api.event.process.ProcessEventListener;
 import org.kie.api.event.process.ProcessVariableChangedEvent;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -214,7 +215,6 @@ public class RestServiceWorkitemIntegrationTest {
         kieSession.addEventListener(processEventListener);
 
         Map<String, Object> parameters = new HashMap<String, Object>();
-
         parameters.put("containerId", "mock");
         ProcessInstance processInstance = (ProcessInstance) kieSession.startProcess("timeout-test-cancel-timeouts", parameters);
 
@@ -223,7 +223,7 @@ public class RestServiceWorkitemIntegrationTest {
             Assert.fail("Failed to complete the process.");
         }
         kieSession.removeEventListener(processEventListener);
-        Assert.assertEquals("{remote-cancel-failed=true}", resultA.get());
+        Assert.assertEquals("{\"remote-cancel-failed\":true}", resultA.get());
     }
 
     @Test
@@ -254,7 +254,144 @@ public class RestServiceWorkitemIntegrationTest {
             Assert.fail("Failed to complete the process.");
         }
         kieSession.removeEventListener(processEventListener);
-        Assert.assertEquals("{remote-cancel-failed=true}", resultA.get());
+        Assert.assertEquals("{\"remote-cancel-failed\":true}", resultA.get());
+    }
+
+    @Test
+    public void processFlowTest() throws InterruptedException {
+        JBPMServer jbpmServer = JBPMServer.getInstance();
+        KieSession kieSession = jbpmServer.getRuntimeEngine().getKieSession();
+
+        final Semaphore nodeACompleted = new Semaphore(0);
+        final AtomicReference<Boolean> serviceASuccessCompletion = new AtomicReference<>();
+        final Semaphore nodeBCompleted = new Semaphore(0);
+        final AtomicReference<String> resultB = new AtomicReference<>();
+
+        ProcessEventListener processEventListener = new DefaultProcessEventListener() {
+            public void afterVariableChanged(ProcessVariableChangedEvent event) {
+                logger.info("Process variable: {}, changed to: {}.", event.getVariableId(), event.getNewValue());
+                if (event.getVariableId().equals("serviceA-successCompletion")) {
+                    serviceASuccessCompletion.set((Boolean) event.getNewValue());
+                    nodeACompleted.release();
+                }
+                if (event.getVariableId().equals("resultB")) {
+                    resultB.set(event.getNewValue().toString());
+                }
+                if (event.getVariableId().equals("serviceB-successCompletion")) {
+                    nodeBCompleted.release();
+                }
+            }
+        };
+        kieSession.addEventListener(processEventListener);
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("containerId", "mock");
+        WorkflowProcessInstance processInstance = (WorkflowProcessInstance) kieSession.startProcess("org.jbpm.ServiceFlowTest", parameters);
+
+        boolean completed = nodeACompleted.tryAcquire(5, TimeUnit.SECONDS);
+        if (!completed) {
+            Assert.fail("Failed to complete the process.");
+        }
+        Assert.assertTrue(serviceASuccessCompletion.get());
+
+        nodeBCompleted.tryAcquire(5, TimeUnit.SECONDS);
+
+        Assert.assertEquals("{fullName=Matej Lazar}", resultB.get());
+
+        kieSession.removeEventListener(processEventListener);
+    }
+
+    @Test
+    public void processFlowCancelOnFailureTest() throws InterruptedException {
+        JBPMServer jbpmServer = JBPMServer.getInstance();
+        KieSession kieSession = jbpmServer.getRuntimeEngine().getKieSession();
+
+        final Semaphore nodeACompleted = new Semaphore(0);
+        final AtomicReference<Boolean> serviceASuccessCompletion = new AtomicReference<>();
+        final Semaphore nodeBCompleted = new Semaphore(0);
+        final AtomicReference<String> resultB = new AtomicReference<>();
+
+        ProcessEventListener processEventListener = new DefaultProcessEventListener() {
+            public void afterVariableChanged(ProcessVariableChangedEvent event) {
+                logger.info("Process variable: {}, changed to: {}.", event.getVariableId(), event.getNewValue());
+                if (event.getVariableId().equals("serviceA-successCompletion")) {
+                    serviceASuccessCompletion.set((Boolean) event.getNewValue());
+                    nodeACompleted.release();
+                }
+                if (event.getVariableId().equals("resultB")) {
+                    resultB.set(event.getNewValue().toString());
+                }
+                if (event.getVariableId().equals("serviceB-successCompletion")) {
+                    nodeBCompleted.release();
+                }
+            }
+        };
+        kieSession.addEventListener(processEventListener);
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("containerId", "mock");
+        WorkflowProcessInstance processInstance = (WorkflowProcessInstance) kieSession.startProcess("org.jbpm.ServiceFlowFailingServiceTest", parameters);
+
+        boolean completed = nodeACompleted.tryAcquire(5, TimeUnit.SECONDS);
+        if (!completed) {
+            Assert.fail("Failed to complete the process.");
+        }
+        Assert.assertFalse(serviceASuccessCompletion.get());
+
+        nodeBCompleted.tryAcquire(5, TimeUnit.SECONDS);
+
+        Assert.assertEquals(null, resultB.get());
+
+        kieSession.removeEventListener(processEventListener);
+    }
+
+    @Test
+    public void processFlowMustRunAfterTest() throws InterruptedException {
+        JBPMServer jbpmServer = JBPMServer.getInstance();
+        KieSession kieSession = jbpmServer.getRuntimeEngine().getKieSession();
+
+        final Semaphore nodeACompleted = new Semaphore(0);
+        final AtomicReference<Boolean> serviceASuccessCompletion = new AtomicReference<>();
+        final Semaphore nodeBCompleted = new Semaphore(0);
+        final AtomicReference<String> resultTimeout = new AtomicReference<>();
+        final AtomicReference<String> resultB = new AtomicReference<>();
+
+        ProcessEventListener processEventListener = new DefaultProcessEventListener() {
+            public void afterVariableChanged(ProcessVariableChangedEvent event) {
+                logger.info("Process variable: {}, changed to: {}.", event.getVariableId(), event.getNewValue());
+                if (event.getVariableId().equals("serviceA-successCompletion")) {
+                    serviceASuccessCompletion.set((Boolean) event.getNewValue());
+                    nodeACompleted.release();
+                }
+                if (event.getVariableId().equals("resultTimeout")) {
+                    resultTimeout.set((String) event.getNewValue());
+                }
+                if (event.getVariableId().equals("resultB")) {
+                    resultB.set(event.getNewValue().toString());
+                }
+                if (event.getVariableId().equals("serviceB-successCompletion")) {
+                    nodeBCompleted.release();
+                }
+            }
+        };
+        kieSession.addEventListener(processEventListener);
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("containerId", "mock");
+        WorkflowProcessInstance processInstance = (WorkflowProcessInstance) kieSession.startProcess("org.jbpm.ServiceFlowMustRunAfterFailingServiceTest", parameters);
+
+        boolean completed = nodeACompleted.tryAcquire(5, TimeUnit.SECONDS);
+        if (!completed) {
+            Assert.fail("Failed to complete the process.");
+        }
+        Assert.assertTrue(serviceASuccessCompletion.get());
+
+        nodeBCompleted.tryAcquire(5, TimeUnit.SECONDS);
+
+        Assert.assertEquals("{fullName=Matej Lazar}", resultB.get());
+        Assert.assertEquals("{\"remote-cancel-failed\":true}", resultTimeout.get());
+
+        kieSession.removeEventListener(processEventListener);
     }
 
     @Test @Ignore

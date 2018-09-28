@@ -20,14 +20,10 @@ import org.apache.http.HttpResponse;
 import org.drools.core.process.instance.impl.WorkItemImpl;
 import org.jboss.util.StringPropertyReplacer;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
-import org.kie.api.event.process.DefaultProcessEventListener;
-import org.kie.api.event.process.ProcessEventListener;
-import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.manager.RuntimeManager;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessContext;
-import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
@@ -35,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,8 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import static org.jbpm.contrib.restservice.Utils.CANCEL_SIGNAL_TYPE;
-import static org.jbpm.contrib.restservice.Utils.getCancelUrlVariableName;
+import static org.jbpm.contrib.restservice.Utils.getParameterNameCancelUrl;
+import static org.jbpm.contrib.restservice.Utils.getStringParameter;
 
 /**
  * *PROCESS FLOW*
@@ -76,9 +73,12 @@ import static org.jbpm.contrib.restservice.Utils.getCancelUrlVariableName;
             @WidParameter(name="requestUrl", required = true),
             @WidParameter(name="requestMethod", required = true),
             @WidParameter(name="requestBody", required = true),
-            @WidParameter(name="taskTimeout", required = true),
-            @WidParameter(name="cancelUrlJsonPointer", required = true),
-            @WidParameter(name="cancelTimeout", required = true)
+            @WidParameter(name="taskTimeout", required = false),
+            @WidParameter(name="cancelUrlJsonPointer", required = false),
+            @WidParameter(name="cancelTimeout", required = false),
+            @WidParameter(name="alwaysRun", required = false),
+            @WidParameter(name="mustRunAfter", required = false),
+            @WidParameter(name="successCondition", required = false)
         },
 //        results={
 //            @WidResult(name="as defined by ResultParamName")
@@ -93,11 +93,11 @@ public class RestServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHandle
 
     private static final String CANCEL_URL_JSON_POINTER_VARIABLE = "cancelUrlJsonPointer";
 
-    private static Logger logger = LoggerFactory.getLogger(RestServiceWorkItemHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(RestServiceWorkItemHandler.class);
 
     private ProcessContext kcontext;
 
-    private RuntimeManager runtimeManager;
+    private final RuntimeManager runtimeManager;
 
     public RestServiceWorkItemHandler(RuntimeManager runtimeManager) {
         this.runtimeManager = runtimeManager;
@@ -106,6 +106,7 @@ public class RestServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHandle
 
     public RestServiceWorkItemHandler() {
         logger.info(">>> Constructing with no parameters...");
+        runtimeManager = null;
     }
 
     public void executeWorkItem(WorkItem _workItem,
@@ -114,14 +115,14 @@ public class RestServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHandle
             //TODO enable
             //RequiredParameterValidator.validate(this.getClass(), workItem);
 
-            WorkItemImpl workItem = (WorkItemImpl) _workItem; //TODO use public api
+            WorkItemImpl workItem = (WorkItemImpl) _workItem; //TODO use api
             WorkflowProcessInstance processInstance = Utils.getProcessInstance(runtimeManager, workItem.getProcessInstanceId());
 
             long nodeInstanceId = workItem.getNodeInstanceId();
             NodeInstance nodeInstance = processInstance.getNodeInstance(nodeInstanceId);
-            String nodeInstanceName = nodeInstance.getNodeName();
+            String nodeName = nodeInstance.getNodeName();
 
-            logger.info("Started nodeInstance.name {}, nodeInstance.id {}.", nodeInstanceName, nodeInstanceId);
+            logger.info("Started nodeInstance.name {}, nodeInstance.id {}.", nodeName, nodeInstanceId);
 
             String cancelUrlJsonPointer = Utils.getStringParameter(workItem, CANCEL_URL_JSON_POINTER_VARIABLE);
 
@@ -132,7 +133,10 @@ public class RestServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHandle
             long taskTimeout = Utils.getLongParameter(workItem, "taskTimeout");
 
             boolean alwaysRun = Utils.getBooleanParameter(workItem, "alwaysRun");
-            String mustRunAfterStr = Utils.getStringParameter(workItem,"mustRunAfter"); //comma separated list of task names
+            //comma separated list of node names, after which this node will run if they completed successfully
+            String mustRunAfterStr = Utils.getStringParameter(workItem,"mustRunAfter");
+            String successCondition = getStringParameter(workItem, "successCondition");
+            processInstance.setVariable(Utils.getParameterNameSuccessCondition(nodeName), successCondition);
             List<String> mustRunAfter = Collections.EMPTY_LIST;
             if (mustRunAfterStr != null && !"".equals(mustRunAfterStr)) {
                 mustRunAfter = Arrays.asList(mustRunAfterStr.split(","));
@@ -144,59 +148,35 @@ public class RestServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHandle
             boolean cancelRequested = Utils.getBooleanVariable(processInstance, "cancelRequested");
 
             //should this service run
-            if (!cancelRequested || alwaysRun || checkRunAfter(mustRunAfter, workItem.getProcessInstanceId())) { //TODO
+            logger.debug("Should run ProcessInstance.id: {}, nodeName: {}, cancelRequested: {}, alwaysRun: {}, runAfter: {}.", processInstance.getId(), nodeName, cancelRequested, alwaysRun, mustRunAfterStr);
+            if (!cancelRequested || alwaysRun || checkRunAfter(mustRunAfter, workItem.getProcessInstanceId())) {
                 final KieSession ksession = Utils.getKsession(runtimeManager, workItem.getProcessInstanceId());
 
-                final long timoutProcessInstanceId;
                 long processInstanceId = processInstance.getId();
-                if (taskTimeout > 0) {
-                    timoutProcessInstanceId = Utils.startTaskTimeoutProcess(
-                            ksession,
-                            processInstanceId,
-                            nodeInstanceId,
-                            taskTimeout,
-                            false);
-                } else {
-                    timoutProcessInstanceId = -1;
-                }
-
-                ProcessEventListener onProcessEvent = new DefaultProcessEventListener() {
-                    @Override
-                    public void afterNodeLeft(ProcessNodeLeftEvent event) {
-                        ksession.removeEventListener(this);
-                        //stop timeout process
-                        long completedNodeInstanceId = event.getNodeInstance().getId();
-                        logger.debug("Completed nodeInstanceId {}, registering nodeInstanceId {} belonging to processInstance.id: {}. TimeoutProcessInstance.id: {}.",
-                                completedNodeInstanceId, nodeInstanceId, processInstanceId, timoutProcessInstanceId);
-                        if (completedNodeInstanceId == nodeInstanceId && timoutProcessInstanceId > -1) {
-                            ProcessInstance timeoutProcessInstance = ksession.getProcessInstance(timoutProcessInstanceId);
-                            if (timeoutProcessInstance != null) {
-                                logger.info("Aborting timeout process instance for nodeInstanceId: {}. TimeoutProcessInstance.id: {}.", nodeInstanceId, timoutProcessInstanceId);
-                                ksession.abortProcessInstance(timoutProcessInstanceId);
-                            } else {
-                                logger.debug("Not Found timeout process instance for nodeInstanceId: {}. TimeoutProcessInstance.id: {}.", nodeInstanceId, timoutProcessInstanceId);
-                            }
-                        }
-                    }
-                };
-                ksession.addEventListener(onProcessEvent);
-
+                Utils.startTaskTimeoutProcess(
+                        ksession,
+                        processInstanceId,
+                        nodeInstanceId,
+                        nodeInstance.getNodeName(),
+                        taskTimeout,
+                        false);
                 try {
                     boolean invoked = handleTask(manager,
                             workItem,
                             requestUrl,
                             requestMethod,
                             requestBody,
-                            nodeInstanceName,
+                            nodeName,
                             containerId,
                             cancelUrlJsonPointer);
                     if (!invoked) {
-                        logger.warn("Invalid remote service response.");
-                        processInstance.signalEvent(CANCEL_SIGNAL_TYPE, processInstanceId);
+                        logger.warn("Invalid remote service response. ProcessInstanceId {}.", processInstanceId);
+                        Utils.cancelAll(processInstance);
                     }
                 } catch (Exception e) {
-                    logger.warn("Failed to invoke remote service.", e);
-                    processInstance.signalEvent(CANCEL_SIGNAL_TYPE, processInstanceId);
+                    String message = MessageFormat.format("Failed to invoke remote service. ProcessInstanceId {0}.", processInstanceId);
+                    logger.warn(message, e);
+                    Utils.cancelAll(processInstance);
                 }
             } else {
                 logger.info("Skipping task execution ...");
@@ -209,16 +189,21 @@ public class RestServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHandle
 
     private boolean checkRunAfter(List<String> runAfterTasks, long processInstanceId) {
         for (String runAfterTask : runAfterTasks) {
-            if (checkTaskCompleted(runAfterTask, processInstanceId)) {
+            if (checkTaskCompletedSuccessfully(runAfterTask, processInstanceId)) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean checkTaskCompleted(String taskName, long processInstanceId) {
+    private boolean checkTaskCompletedSuccessfully(String nodeName, long processInstanceId) {
         WorkflowProcessInstance processInstance = Utils.getProcessInstance(runtimeManager, processInstanceId);
-        return processInstance.getVariable("task." + taskName + ".result") != null;
+        Object completedSuccessfully = processInstance.getVariable(Utils.getParameterNameSuccessCompletions(nodeName));
+        if (completedSuccessfully == null) {
+            return false;
+        } else {
+            return (Boolean) completedSuccessfully;
+        }
     }
 
     /**
@@ -283,7 +268,7 @@ public class RestServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHandle
         } catch (Exception e) {
             logger.warn("Cannot read cancel url.", e);
         }
-        processInstance.setVariable(getCancelUrlVariableName(nodeInstanceName), cancelUrl);
+        processInstance.setVariable(getParameterNameCancelUrl(nodeInstanceName), cancelUrl);
         return true;
     }
 

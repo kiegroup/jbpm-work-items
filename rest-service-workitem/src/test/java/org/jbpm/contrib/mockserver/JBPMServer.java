@@ -1,6 +1,7 @@
 package org.jbpm.contrib.mockserver;
 
 import org.jbpm.contrib.restservice.CancelAllActiveTasksWorkitemHandler;
+import org.jbpm.contrib.restservice.RestServiceProcessEventListener;
 import org.jbpm.contrib.restservice.RestServiceWorkItemHandler;
 import org.jbpm.contrib.restservice.TaskTimeoutWorkitemHandler;
 import org.jbpm.process.instance.event.DefaultSignalManagerFactory;
@@ -51,6 +52,8 @@ public class JBPMServer {
         RuntimeEngine runtime = getRuntimeEngine();
         KieSession ksession = runtime.getKieSession();
 
+        ksession.addEventListener(new RestServiceProcessEventListener());
+
         WorkItemManager workItemManager = ksession.getWorkItemManager();
         workItemManager.registerWorkItemHandler("RestServiceWorkItemHandler", new RestServiceWorkItemHandler(manager));
         workItemManager.registerWorkItemHandler("CancelAllActiveTasksWorkitemHandler", new CancelAllActiveTasksWorkitemHandler(manager));
@@ -92,6 +95,11 @@ public class JBPMServer {
         for (String processId : processes) {
             runtimeEnvironmentBuilder.addAsset(ResourceFactory.newClassPathResource(processId), ResourceType.BPMN2);
         }
+
+        runtimeEnvironmentBuilder.addAsset(ResourceFactory.newByteArrayResource(new ServiceFlowTestProcess(ServiceFlowTestProcess.Mode.PASS).getBytes()), ResourceType.BPMN2);
+        runtimeEnvironmentBuilder.addAsset(ResourceFactory.newByteArrayResource(new ServiceFlowTestProcess(ServiceFlowTestProcess.Mode.FAIL).getBytes()), ResourceType.BPMN2);
+        runtimeEnvironmentBuilder.addAsset(ResourceFactory.newByteArrayResource(new ServiceFlowMustRunTestProcess(ServiceFlowMustRunTestProcess.Mode.MUST_RUN).getBytes()), ResourceType.BPMN2);
+
         RuntimeEnvironment environment = runtimeEnvironmentBuilder.get();
         return RuntimeManagerFactory.Factory.get().newSingletonRuntimeManager(environment);
     }
