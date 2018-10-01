@@ -19,7 +19,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.jbpm.contrib.demoservice.Service;
+import org.jbpm.contrib.demoservices.Service;
 import org.jbpm.contrib.mockserver.JBPMServer;
 import org.jbpm.contrib.mockserver.WorkItems;
 import org.jbpm.contrib.restservice.Utils;
