@@ -1,4 +1,4 @@
-package org.jbpm.contrib.demoservice;
+package org.jbpm.contrib.demoservices;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>

@@ -1,4 +1,4 @@
-package org.jbpm.contrib.demoservice;
+package org.jbpm.contrib.demoservices;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;

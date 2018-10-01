@@ -1,4 +1,4 @@
-package org.jbpm.contrib.demoservice;
+package org.jbpm.contrib.demoservices;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
