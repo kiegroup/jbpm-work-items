@@ -5,7 +5,7 @@
 
 ???
 
-Visit [http://matejonnet.github.io/LINK!!] (http://matejonnet.github.io/LINK!!) to see slides in presentation mode.
+Visit [https://matejonnet.github.io/jbpm-rest-service-workitem/](https://matejonnet.github.io/jbpm-rest-service-workitem/) to see slides in presentation mode.
 
 ---
 Feature set
@@ -20,9 +20,9 @@ Feature set
 - Declarative conditional execution (failed/timeout/cancel) 
 
 ---
-[![Process definition](images/3_min.png)](images/3.png)
-[![Process definition](images/4_min.png)](images/4.png)
-[![Task definition](images/5_min.png)](images/5.png)
+[![Process definition](https://matejonnet.github.io/jbpm-rest-service-workitem/images/process_min.png)](https://matejonnet.github.io/jbpm-rest-service-workitem/images/process.png)
+[![Process definition](https://matejonnet.github.io/jbpm-rest-service-workitem/images/process_variables_min.png)](https://matejonnet.github.io/jbpm-rest-service-workitem/images/process_variables.png)
+[![Task definition](https://matejonnet.github.io/jbpm-rest-service-workitem/images/task_min.png)](https://matejonnet.github.io/jbpm-rest-service-workitem/images/task.png)
 ---
 
 Task Definition
@@ -102,5 +102,5 @@ Try it
 - download JBPM (7.9.0.Final)
 - build and deploy rest-service-handler
     - https://github.com/matejonnet/jbpm-work-items/tree/rest-service-handler/rest-service-workitem
----
+    - `mvn clean install -Denforcer.skip=true -Dcheckstyle.skip`
 
