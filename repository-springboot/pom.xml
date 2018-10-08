@@ -18,7 +18,7 @@
 
   <properties>
     <version.org.springboot>1.5.10.RELEASE</version.org.springboot>
-    <heroku.appName>${artifactId}</heroku.appName>
+    <heroku.appName>${project.artifactId}</heroku.appName>
   </properties>
 
   <dependencyManagement>
