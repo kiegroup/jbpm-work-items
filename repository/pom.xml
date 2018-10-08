@@ -76,11 +76,11 @@
             <id>delete repo resources</id>
             <phase>package</phase>
             <configuration>
-              <tasks>
+              <target>
                 <delete>
                   <fileset dir="${project.build.directory}/${project.artifactId}-${project.version}" includes="repo*.html" />
                 </delete>
-              </tasks>
+              </target>
             </configuration>
             <goals>
               <goal>run</goal>
