@@ -1,5 +1,6 @@
 package org.jbpm.contrib.restservice;
 
+import org.jbpm.contrib.restservice.util.Helper;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
@@ -15,7 +16,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.jbpm.contrib.restservice.Utils.MAIN_PROCESS_INSTANCE_ID_VARIABLE;
+import static org.jbpm.contrib.restservice.Constant.MAIN_PROCESS_INSTANCE_ID_VARIABLE;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
@@ -37,7 +38,7 @@ public class CancelAllActiveTasksWorkitemHandler extends AbstractLogOrThrowWorkI
     public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
         long mainProcessInstanceId = Long.parseLong((String) workItem.getParameter(MAIN_PROCESS_INSTANCE_ID_VARIABLE));
 
-        RuleFlowProcessInstance processInstance = (RuleFlowProcessInstance) Utils.getProcessInstance(runtimeManager, mainProcessInstanceId);
+        RuleFlowProcessInstance processInstance = (RuleFlowProcessInstance) Helper.getProcessInstance(runtimeManager, mainProcessInstanceId);
         processInstance.setVariable("cancelRequested", true);
 
         Set<NodeInstance> activeTasks = getActiveTasks(processInstance);
