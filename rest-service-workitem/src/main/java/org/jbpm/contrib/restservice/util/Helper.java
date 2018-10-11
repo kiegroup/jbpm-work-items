@@ -1,4 +1,4 @@
-package org.jbpm.contrib.restservice;
+package org.jbpm.contrib.restservice.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
@@ -9,6 +9,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.drools.core.util.MVELSafeHelper;
+import org.jbpm.contrib.restservice.Constant;
 import org.jbpm.workflow.instance.impl.ProcessInstanceResolverFactory;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.manager.RuntimeEngine;
@@ -28,25 +29,10 @@ import java.util.Map;
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
  */
-public class Utils {
+public class Helper {
 
-    static final String TIMEOUT_NODE_INSTANCE_ID_VARIABLE = "nodeInstanceId"; //TODO update value
-
-    /**
-     * When true the task is canceled internally without trying to cancel remote operation.
-     */
-    static final String FORCE_CANCEL_VARIABLE = "forceCancel";
-
-    public final static String CANCEL_SIGNAL_TYPE = "cancel-all";
-
-    static final String REMOTE_CANCEL_FAILED = "remote-cancel-failed";
-
-    private static Logger logger = LoggerFactory.getLogger(Utils.class);
-    static final ObjectMapper objectMapper = new ObjectMapper();
-
-    static final String TIMEOUT_PROCESS_NAME = "timeout-handler-process";
-    static final String CANCEL_TIMEOUT_VARIABLE = "cancelTimeout";
-    static final String MAIN_PROCESS_INSTANCE_ID_VARIABLE = "mainProcessInstanceId";
+    private static Logger logger = LoggerFactory.getLogger(Helper.class);
+    public static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static String getParameterNameCancelUrl(String nodeName) {
         return nodeName + "-cancelUrl";
@@ -64,11 +50,11 @@ public class Utils {
         return nodeName + "-successCompletion";
     }
 
-    static WorkflowProcessInstance getProcessInstance(RuntimeManager runtimeManager, long processInstanceId) {
+    public static WorkflowProcessInstance getProcessInstance(RuntimeManager runtimeManager, long processInstanceId) {
         return (WorkflowProcessInstance)getKsession(runtimeManager, processInstanceId).getProcessInstance(processInstanceId);
     }
 
-    static KieSession getKsession(RuntimeManager runtimeManager, Long processInstanceId) {
+    public static KieSession getKsession(RuntimeManager runtimeManager, Long processInstanceId) {
         if (runtimeManager != null) {
             RuntimeEngine engine = runtimeManager.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId));
             return engine.getKieSession();
@@ -76,7 +62,7 @@ public class Utils {
         return null; //TODO
     }
 
-    static HttpResponse httpRequest(
+    public static HttpResponse httpRequest(
             String url,
             String jsonContent,
             String loginToken,
@@ -108,7 +94,7 @@ public class Utils {
         return httpClient.execute(request);
     }
 
-    static long getLongParameter(WorkItem workItem, String parameterName) {
+    public static long getLongParameter(WorkItem workItem, String parameterName) {
         Object parameter = workItem.getParameter(parameterName);
         if (parameter != null) {
             return Long.parseLong((String) parameter);
@@ -117,7 +103,7 @@ public class Utils {
         }
     }
 
-    static boolean getBooleanParameter(WorkItem workItem, String parameterName) {
+    public static boolean getBooleanParameter(WorkItem workItem, String parameterName) {
         Object parameter = workItem.getParameter(parameterName);
         if (parameter != null) {
             return (boolean) parameter;
@@ -126,7 +112,7 @@ public class Utils {
         }
     }
 
-    static String getStringParameter(WorkItem workItem, String parameterName) {
+    public static String getStringParameter(WorkItem workItem, String parameterName) {
         Object parameter = workItem.getParameter(parameterName);
         if (parameter != null) {
             return (String) parameter;
@@ -162,16 +148,16 @@ public class Utils {
             Map<String, Object> data = new HashMap<>();
             logger.info("Staring timeout process for node instance id: {} in process instance id: {}. Force cancel: {}.", nodeInstanceId, mainProcessInstanceId, forceCancel);
             data.put("timeout", "PT" + timeoutSeconds + "S"); //ISO8601 date format for duration
-            data.put(TIMEOUT_NODE_INSTANCE_ID_VARIABLE, nodeInstanceId);
-            data.put(FORCE_CANCEL_VARIABLE, forceCancel);
-            data.put(MAIN_PROCESS_INSTANCE_ID_VARIABLE, mainProcessInstanceId);
-            ProcessInstance timeoutProcessInstance = kieSession.startProcess(TIMEOUT_PROCESS_NAME, data);
+            data.put(Constant.TIMEOUT_NODE_INSTANCE_ID_VARIABLE, nodeInstanceId);
+            data.put(Constant.FORCE_CANCEL_VARIABLE, forceCancel);
+            data.put(Constant.MAIN_PROCESS_INSTANCE_ID_VARIABLE, mainProcessInstanceId);
+            ProcessInstance timeoutProcessInstance = kieSession.startProcess(Constant.TIMEOUT_PROCESS_NAME, data);
             long timeoutProcessInstanceId = timeoutProcessInstance.getId();
             logger.debug("Started timeout process instance id: {} for nodeInstanceId: {} in process instance id: {}. Force cancel: {}.",
                     timeoutProcessInstanceId, nodeInstanceId, mainProcessInstanceId, forceCancel);
-            mainProcessInstance.setVariable(Utils.getParameterNameTimeoutProcessInstanceId(nodeName), timeoutProcessInstanceId);
+            mainProcessInstance.setVariable(Helper.getParameterNameTimeoutProcessInstanceId(nodeName), timeoutProcessInstanceId);
         } else {
-            mainProcessInstance.setVariable(Utils.getParameterNameTimeoutProcessInstanceId(nodeName), -1L);
+            mainProcessInstance.setVariable(Helper.getParameterNameTimeoutProcessInstanceId(nodeName), -1L);
         }
     }
 
@@ -199,7 +185,7 @@ public class Utils {
     public static void cancelAll(WorkflowProcessInstance processInstance) {
         //immediately mark as canceled as next node may check for flag before the cancel process sets it.
         processInstance.setVariable("cancelRequested", true);
-        processInstance.signalEvent(CANCEL_SIGNAL_TYPE, processInstance.getId());
+        processInstance.signalEvent(Constant.CANCEL_SIGNAL_TYPE, processInstance.getId());
 //        Utils.startCancelAllProcess(getKsession(runtimeManager,processInstance.getId()), processInstance.getId());
     }
 

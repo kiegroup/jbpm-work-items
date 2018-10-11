@@ -22,7 +22,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.jbpm.contrib.demoservices.Service;
 import org.jbpm.contrib.mockserver.JBPMServer;
 import org.jbpm.contrib.mockserver.WorkItems;
-import org.jbpm.contrib.restservice.Utils;
+import org.jbpm.contrib.restservice.Constant;
 import org.jbpm.process.workitem.WorkDefinitionImpl;
 import org.jbpm.process.workitem.WorkItemRepository;
 import org.junit.AfterClass;
@@ -157,7 +157,7 @@ public class RestServiceWorkitemIntegrationTest {
         final String pid = Long.toString(processInstance.getId());
         executor.execute(() -> {
             logger.info("Signaling cancel for pid: {}.", pid);
-            kieSession.signalEvent(Utils.CANCEL_SIGNAL_TYPE, pid);
+            kieSession.signalEvent(Constant.CANCEL_SIGNAL_TYPE, pid);
         });
         nodeACompleted.tryAcquire(8, TimeUnit.SECONDS);
         kieSession.removeEventListener(processEventListener);

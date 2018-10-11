@@ -11,7 +11,7 @@
 
   <artifactId>rest-service-workitem</artifactId>
   <version>7.9.0.Final</version>
-  <name>rest-service-workitem</name>
+  <name>REST Service</name>
   <description>Workitem Desciption</description>
   <organization>
     <name>organization</name>
@@ -32,16 +32,6 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-document</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss</groupId>
-      <artifactId>jboss-common-core</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.jboss.logging</groupId>
-          <artifactId>jboss-logging-spi</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
@@ -131,11 +121,6 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-servlets</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm.contrib</groupId>
-      <artifactId>rest-service-workitem-demo</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

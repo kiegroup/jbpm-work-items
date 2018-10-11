@@ -3,6 +3,7 @@ package org.jbpm.contrib.restservice;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.http.HttpResponse;
 import org.drools.core.process.instance.WorkItem;
+import org.jbpm.contrib.restservice.util.Helper;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.manager.RuntimeManager;
@@ -15,10 +16,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.jbpm.contrib.restservice.Utils.CANCEL_TIMEOUT_VARIABLE;
-import static org.jbpm.contrib.restservice.Utils.getLongParameter;
-import static org.jbpm.contrib.restservice.Utils.getParameterNameCancelUrl;
-import static org.jbpm.contrib.restservice.Utils.startTaskTimeoutProcess;
+import static org.jbpm.contrib.restservice.Constant.CANCEL_TIMEOUT_VARIABLE;
+import static org.jbpm.contrib.restservice.util.Helper.getLongParameter;
+import static org.jbpm.contrib.restservice.util.Helper.getParameterNameCancelUrl;
+import static org.jbpm.contrib.restservice.util.Helper.startTaskTimeoutProcess;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
@@ -47,7 +48,7 @@ public class CancelTaskOperation {
                 willCancel = remoteCancelRequest(cancelUrl);
             }
             if (willCancel) {
-                KieSession ksession = Utils.getKsession(runtimeManager, mainProcessInstanceId);
+                KieSession ksession = Helper.getKsession(runtimeManager, mainProcessInstanceId);
                 startCancelTimeout(ksession, nodeInstance, mainProcessInstanceId);
             } else {
                 logger.info("Remote endpoint did not accept cancel request. Cancelling internally pid: {}, nodeInstance.id: {}, taskName: {}.",
@@ -67,14 +68,14 @@ public class CancelTaskOperation {
     private void cancelNow(NodeInstance nodeInstance) {
         Map<String, Object> data = new HashMap<>();
         Map<String, Object> result = new HashMap<>();
-        data.put(Utils.REMOTE_CANCEL_FAILED, true);
+        data.put(Constant.REMOTE_CANCEL_FAILED, true);
         try {
-            result.put("content", Utils.objectMapper.writeValueAsString(data));
+            result.put("content", Helper.objectMapper.writeValueAsString(data));
         } catch (JsonProcessingException e) {
             logger.warn("Cannot serialize data.", e);
             result.put("content", "cannot serialize data");
         }
-        KieSession ksession = Utils.getKsession(runtimeManager, nodeInstance.getProcessInstance().getId());
+        KieSession ksession = Helper.getKsession(runtimeManager, nodeInstance.getProcessInstance().getId());
         ksession.getWorkItemManager().completeWorkItem(getWorkItem(nodeInstance).getId(), result);
     }
 
@@ -83,7 +84,7 @@ public class CancelTaskOperation {
 
         HttpResponse httpResponse;
         try {
-            httpResponse = Utils.httpRequest(
+            httpResponse = Helper.httpRequest(
                     cancelUrl,
                     "",
                     loginToken,

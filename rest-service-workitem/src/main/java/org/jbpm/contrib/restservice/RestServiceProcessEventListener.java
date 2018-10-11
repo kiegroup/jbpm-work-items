@@ -1,5 +1,6 @@
 package org.jbpm.contrib.restservice;
 
+import org.jbpm.contrib.restservice.util.Helper;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.kie.api.event.process.DefaultProcessEventListener;
 import org.kie.api.event.process.ProcessCompletedEvent;
@@ -10,8 +11,8 @@ import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.jbpm.contrib.restservice.Utils.cancelAll;
-import static org.jbpm.contrib.restservice.Utils.evaluateSuccessCondition;
+import static org.jbpm.contrib.restservice.util.Helper.cancelAll;
+import static org.jbpm.contrib.restservice.util.Helper.evaluateSuccessCondition;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
@@ -45,13 +46,13 @@ public class RestServiceProcessEventListener extends DefaultProcessEventListener
         logger.debug("Leaving node {} in process instance {}.", nodeName, processInstance.getId());
 
         //evaluate service completion status
-        String successCondition = (String) processInstance.getVariable(Utils.getParameterNameSuccessCondition(nodeName));
-        if (Utils.isEmpty(successCondition)) {
+        String successCondition = (String) processInstance.getVariable(Helper.getParameterNameSuccessCondition(nodeName));
+        if (Helper.isEmpty(successCondition)) {
             //TODO check if it has been cancelled internally. Do we care if there is no successCondition ?
-            processInstance.setVariable(Utils.getParameterNameSuccessCompletions(nodeName), true);
+            processInstance.setVariable(Helper.getParameterNameSuccessCompletions(nodeName), true);
         } else {
             boolean completedSuccessfully = evaluateSuccessCondition(processInstance, successCondition);
-            processInstance.setVariable(Utils.getParameterNameSuccessCompletions(nodeName), completedSuccessfully);
+            processInstance.setVariable(Helper.getParameterNameSuccessCompletions(nodeName), completedSuccessfully);
             if (!completedSuccessfully) {
                 logger.info("Service completed with error, cancelling other operations. ProcessInstanceId {}.",
                         processInstance.getId());
@@ -74,7 +75,7 @@ public class RestServiceProcessEventListener extends DefaultProcessEventListener
         //        }
 
         Object timeoutProcessInstanceIdObj = processInstance.getVariable(
-                Utils.getParameterNameTimeoutProcessInstanceId(nodeName));
+                Helper.getParameterNameTimeoutProcessInstanceId(nodeName));
         if (timeoutProcessInstanceIdObj != null) {
             long timeoutProcessInstanceId = (long) timeoutProcessInstanceIdObj;
             long completedNodeInstanceId = event.getNodeInstance().getId();

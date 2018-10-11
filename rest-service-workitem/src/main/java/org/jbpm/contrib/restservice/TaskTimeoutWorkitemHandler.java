@@ -1,5 +1,6 @@
 package org.jbpm.contrib.restservice;
 
+import org.jbpm.contrib.restservice.util.Helper;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
 import org.kie.api.runtime.manager.RuntimeManager;
 import org.kie.api.runtime.process.NodeInstance;
@@ -11,9 +12,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 
-import static org.jbpm.contrib.restservice.Utils.FORCE_CANCEL_VARIABLE;
-import static org.jbpm.contrib.restservice.Utils.MAIN_PROCESS_INSTANCE_ID_VARIABLE;
-import static org.jbpm.contrib.restservice.Utils.TIMEOUT_NODE_INSTANCE_ID_VARIABLE;
+import static org.jbpm.contrib.restservice.Constant.FORCE_CANCEL_VARIABLE;
+import static org.jbpm.contrib.restservice.Constant.MAIN_PROCESS_INSTANCE_ID_VARIABLE;
+import static org.jbpm.contrib.restservice.Constant.TIMEOUT_NODE_INSTANCE_ID_VARIABLE;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
@@ -35,7 +36,7 @@ public class TaskTimeoutWorkitemHandler extends AbstractLogOrThrowWorkItemHandle
     @Override
     public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
         logger.debug("Executing timeout handler ...");
-        WorkflowProcessInstance timeoutProcessInstance = Utils.getProcessInstance(runtimeManager, workItem.getProcessInstanceId());
+        WorkflowProcessInstance timeoutProcessInstance = Helper.getProcessInstance(runtimeManager, workItem.getProcessInstanceId());
         if (timeoutProcessInstance == null) {
             logger.debug("Cannot find Timeout Process instance for main process instance id {}", workItem.getProcessInstanceId());
         }
@@ -46,7 +47,7 @@ public class TaskTimeoutWorkitemHandler extends AbstractLogOrThrowWorkItemHandle
         long nodeInstanceId = (long) _nodeInstanceId;
 
         long mainProcessInstanceId = (long) timeoutProcessInstance.getVariable(MAIN_PROCESS_INSTANCE_ID_VARIABLE);
-        WorkflowProcessInstance mainProcessInstance = Utils.getProcessInstance(runtimeManager, mainProcessInstanceId);
+        WorkflowProcessInstance mainProcessInstance = Helper.getProcessInstance(runtimeManager, mainProcessInstanceId);
         if (mainProcessInstance == null) {
             logger.warn("Cannot find main process instance with id {} from Timeout Process instance id {}.", mainProcessInstanceId, timeoutProcessInstance.getId());
         }
