@@ -76,7 +76,7 @@ public class IFTTTWorkitemHandlerTest {
                      manager.getResults().size());
         assertTrue(manager.getResults().containsKey(workItem.getId()));
 
-        String testValueJSONString = "{\"value1\":\"testValue1\",\"value2\":\"testValue1\",\"value3\":\"testValue1\"}";
+        String testValueJSONString = "{\"value1\":\"testValue1\",\"value2\":\"testValue2\",\"value3\":\"testValue3\"}";
         assertEquals(testValueJSONString,
                      handler.getRequestBody());
     }
