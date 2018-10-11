@@ -129,8 +129,8 @@ public class IFTTTWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
                             String value2,
                             String value3) {
             this.value1 = StringUtils.isNotEmpty(value1) ? value1 : null;
-            this.value2 = StringUtils.isNotEmpty(value2) ? value1 : null;
-            this.value3 = StringUtils.isNotEmpty(value3) ? value1 : null;
+            this.value2 = StringUtils.isNotEmpty(value2) ? value2 : null;
+            this.value3 = StringUtils.isNotEmpty(value3) ? value3 : null;
         }
 
         public String toJSON() {
