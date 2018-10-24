@@ -15,9 +15,10 @@
  */
 package org.jbpm.process.workitem.owm;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class CurrentWeatherData {
+public class CurrentWeatherData implements Serializable {
     private String cityName;
     private Date date;
     private Double temp;
