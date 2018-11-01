@@ -30,7 +30,6 @@ import org.h2.tools.DeleteDbFiles;
 import org.h2.tools.RunScript;
 import org.jbpm.persistence.util.PersistenceUtil;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
-import org.jbpm.test.util.PoolingDataSource;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -44,6 +43,7 @@ import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.persistence.jpa.JPAKnowledgeService;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
+import org.kie.test.util.db.PoolingDataSourceWrapper;
 
 import static org.jbpm.persistence.util.PersistenceUtil.JBPM_PERSISTENCE_UNIT_NAME;
 import static org.jbpm.persistence.util.PersistenceUtil.createEnvironment;
@@ -56,7 +56,7 @@ public class CamelSqlTest {
 
     private SQLCamelWorkitemHandler handler;
     private HashMap<String, Object> context;
-    private PoolingDataSource pds;
+    private PoolingDataSourceWrapper pds;
 
     @Before
     public void setup() throws Exception {
@@ -98,12 +98,9 @@ public class CamelSqlTest {
                           false);
     }
 
-    public PoolingDataSource setupDataSource() {
+    public PoolingDataSourceWrapper setupDataSource() {
         pds = PersistenceUtil.setupPoolingDataSource(getDefaultDSProperties(),
-                                                     "jdbc/jbpm-ds",
-                                                     false);
-        pds.init();
-
+                                                     "jdbc/jbpm-ds");
         return pds;
     }
 
