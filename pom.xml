@@ -339,6 +339,11 @@
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-test-util</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-workitems-core</artifactId>
         <type>test-jar</type>

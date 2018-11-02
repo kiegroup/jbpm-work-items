@@ -52,7 +52,7 @@ public class ExecWorkItemHandlerTest {
                      handler.getParsedCommandStr());
 
         assertNotNull(result);
-        assertTrue(result.contains("java version"));
+        assertTrue(result.contains("java version") || result.contains("jdk version"));
     }
 
     @Test
@@ -83,7 +83,7 @@ public class ExecWorkItemHandlerTest {
                      handler.getParsedCommandStr());
 
         assertNotNull(result);
-        assertTrue(result.contains("java version"));
+        assertTrue(result.contains("java version") || result.contains("jdk version"));
     }
 
     @Test

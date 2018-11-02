@@ -19,6 +19,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Properties;
+
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
@@ -26,10 +28,11 @@ import org.drools.core.process.instance.impl.WorkItemImpl;
 import org.h2.tools.DeleteDbFiles;
 import org.h2.tools.Server;
 import org.jbpm.process.workitem.core.TestWorkItemManager;
-import org.jbpm.test.util.PoolingDataSource;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.kie.test.util.db.DataSourceFactory;
+import org.kie.test.util.db.PoolingDataSourceWrapper;
 
 import static org.junit.Assert.*;
 
@@ -137,19 +140,18 @@ public class ExecuteSqlWorkItemHandlerTest {
         insertStatement.executeUpdate();
     }
 
-    private static PoolingDataSource setupPoolingDataSource() throws Exception {
+    private static PoolingDataSourceWrapper setupPoolingDataSource() throws Exception {
         h2Server = new TestH2Server();
         h2Server.start();
-        PoolingDataSource pds = new PoolingDataSource();
-        pds.setUniqueName(DS_NAME);
-        pds.setClassName("org.h2.jdbcx.JdbcDataSource");
-        pds.getDriverProperties().put("user",
-                                      "sa");
-        pds.getDriverProperties().put("url",
-                                      "jdbc:h2:mem:executeSql-data;MVCC=true");
-        pds.getDriverProperties().put("driverClassName",
-                                      "org.h2.Driver");
-        pds.init();
+
+        Properties driverProperties = new Properties();
+        driverProperties.setProperty("className", "org.h2.jdbcx.JdbcDataSource");
+        driverProperties.setProperty("user", "sa");
+        driverProperties.setProperty("password", "sa");
+        driverProperties.setProperty("url", "jdbc:h2:mem:jpa-wih;MVCC=true");
+        driverProperties.setProperty("driverClassName", "org.h2.Driver");
+
+        PoolingDataSourceWrapper pds = DataSourceFactory.setupPoolingDataSource(DS_NAME, driverProperties);
         return pds;
     }
 
