@@ -317,6 +317,11 @@
       <type>zip</type>
     </dependency>
     <dependency>
+      <groupId>org.jbpm.contrib</groupId>
+      <artifactId>pastebin-workitem</artifactId>
+      <type>zip</type>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>template-resources</artifactId>
       <scope>provided</scope>
