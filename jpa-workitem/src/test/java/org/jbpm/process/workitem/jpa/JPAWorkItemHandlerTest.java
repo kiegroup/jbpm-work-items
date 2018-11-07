@@ -20,6 +20,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
@@ -33,7 +35,6 @@ import org.h2.tools.DeleteDbFiles;
 import org.h2.tools.Server;
 import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 import org.jbpm.process.workitem.core.TestWorkItemManager;
-import org.jbpm.test.util.PoolingDataSource;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kie.api.io.ResourceType;
@@ -49,6 +50,8 @@ import org.kie.api.task.TaskService;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.runtime.manager.TaskServiceFactory;
 import org.kie.internal.runtime.manager.context.EmptyContext;
+import org.kie.test.util.db.DataSourceFactory;
+import org.kie.test.util.db.PoolingDataSourceWrapper;
 
 import static org.junit.Assert.*;
 
@@ -342,19 +345,19 @@ public class JPAWorkItemHandlerTest {
         return (UserTransaction) InitialContext.doLookup("java:comp/UserTransaction");
     }
 
-    public static PoolingDataSource setupPoolingDataSource() {
+    public static PoolingDataSourceWrapper setupPoolingDataSource() {
         h2Server = new TestH2Server();
         h2Server.start();
-        PoolingDataSource pds = new PoolingDataSource();
-        pds.setUniqueName("jpaWIH");
-        pds.setClassName("org.h2.jdbcx.JdbcDataSource");
-        pds.getDriverProperties().put("user",
-                                      "sa");
-        pds.getDriverProperties().put("url",
-                                      "jdbc:h2:mem:jpa-wih;MVCC=true");
-        pds.getDriverProperties().put("driverClassName",
-                                      "org.h2.Driver");
-        pds.init();
+
+        Properties driverProperties = new Properties();
+        driverProperties.setProperty("className", "org.h2.jdbcx.JdbcDataSource");
+        driverProperties.setProperty("user", "sa");
+        driverProperties.setProperty("password", "sa");
+        driverProperties.setProperty("url", "jdbc:h2:mem:jpa-wih;MVCC=true");
+        driverProperties.setProperty("driverClassName", "org.h2.Driver");
+
+        PoolingDataSourceWrapper pds = DataSourceFactory.setupPoolingDataSource("jpaWIH", driverProperties);
+
         return pds;
     }
 

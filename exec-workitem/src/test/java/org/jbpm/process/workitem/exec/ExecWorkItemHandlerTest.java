@@ -16,13 +16,15 @@
 
 package org.jbpm.process.workitem.exec;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.drools.core.process.instance.impl.WorkItemImpl;
 import org.jbpm.process.workitem.core.TestWorkItemManager;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ExecWorkItemHandlerTest {
 
@@ -42,6 +44,46 @@ public class ExecWorkItemHandlerTest {
         assertEquals(1,
                      manager.getResults().size());
         assertTrue(manager.getResults().containsKey(workItem.getId()));
+
+        Map<String, Object> results = ((TestWorkItemManager) manager).getResults(workItem.getId());
+        String result = (String) results.get(ExecWorkItemHandler.RESULT);
+
+        assertEquals("[java, -version]",
+                     handler.getParsedCommandStr());
+
+        assertNotNull(result);
+        assertTrue(result.contains("java version") || result.contains("jdk version"));
+    }
+
+    @Test
+    public void testExecCommandWithArguments() throws Exception {
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+        workItem.setParameter("Command",
+                              "java");
+        List<String> argumentList = new ArrayList<>();
+        argumentList.add("-version");
+        workItem.setParameter("Arguments",
+                              argumentList);
+        ExecWorkItemHandler handler = new ExecWorkItemHandler();
+        handler.setLogThrownException(true);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+
+        assertNotNull(manager.getResults());
+        assertEquals(1,
+                     manager.getResults().size());
+        assertTrue(manager.getResults().containsKey(workItem.getId()));
+
+        Map<String, Object> results = ((TestWorkItemManager) manager).getResults(workItem.getId());
+        String result = (String) results.get(ExecWorkItemHandler.RESULT);
+
+        assertEquals("[java, -version]",
+                     handler.getParsedCommandStr());
+
+        assertNotNull(result);
+        assertTrue(result.contains("java version") || result.contains("jdk version"));
     }
 
     @Test
