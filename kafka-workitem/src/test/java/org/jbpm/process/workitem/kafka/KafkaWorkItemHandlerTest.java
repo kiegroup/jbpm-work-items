@@ -32,7 +32,7 @@ public class KafkaWorkItemHandlerTest {
         workItem.setParameter("Topic", "myTopic");
         workItem.setParameter("Key", "1");
         workItem.setParameter("Value", "Sample");
-        KafkaWorkItemHandler handler = new KafkaWorkItemHandler(null, null, null, null);
+        KafkaWorkItemHandler handler = new KafkaWorkItemHandler();
         MockProducer<Long, String> mockProducer = new MockProducer<Long, String>();
         handler.setProducer(mockProducer);
 
