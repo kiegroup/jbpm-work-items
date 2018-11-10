@@ -29,15 +29,10 @@ public class KafkaWorkItemHandlerTest {
 
         TestWorkItemManager manager = new TestWorkItemManager();
         WorkItemImpl workItem = new WorkItemImpl();
-        workItem.setParameter("BootstrapServers", "localhost:9092");
-        workItem.setParameter("ClientId", "KafkaExampleProducer");
-        workItem.setParameter("KeySerializerClass", "org.apache.kafka.common.serialization.StringSerializer");
-        workItem.setParameter("ValueSerializerClass", "org.apache.kafka.common.serialization.StringSerializer");
         workItem.setParameter("Topic", "myTopic");
         workItem.setParameter("Key", "1");
         workItem.setParameter("Value", "Sample");
-        KafkaWorkItemHandler handler = new KafkaWorkItemHandler();
-
+        KafkaWorkItemHandler handler = new KafkaWorkItemHandler(null, null, null, null);
         MockProducer<Long, String> mockProducer = new MockProducer<Long, String>();
         handler.setProducer(mockProducer);
 

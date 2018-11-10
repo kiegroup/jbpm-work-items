@@ -44,10 +44,6 @@ import org.slf4j.LoggerFactory;
      defaultHandler = "mvel: new org.jbpm.process.workitem.kafka.KafkaWorkItemHandler()",
      documentation = "${artifactId}/index.html",
      parameters = {
-                   @WidParameter(name = "BootstrapServers", required = true),
-                   @WidParameter(name = "ClientId", required = true),
-                   @WidParameter(name = "KeySerializerClass", required = true),
-                   @WidParameter(name = "ValueSerializerClass", required = true),
                    @WidParameter(name = "Topic", required = true),
                    @WidParameter(name = "Key", required = true),
                    @WidParameter(name = "Value", required = true)
@@ -69,6 +65,20 @@ public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler impl
 
     private Producer<Long, String> producer;
 
+    public KafkaWorkItemHandler() {
+
+    }
+
+    public KafkaWorkItemHandler(String bootstrapServers, String client_id, String keySerializerClass, String valueSerializerClass) {
+        Properties config = new Properties();
+        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        config.put(ProducerConfig.CLIENT_ID_CONFIG, client_id);
+        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializerClass);
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueSerializerClass);
+        producer = new KafkaProducer<Long, String>(config);
+    }
+
+
     public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
 
         try {
@@ -76,24 +86,10 @@ public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler impl
                                                 workItem);
 
             Map<String, Object> results = new HashMap<String, Object>();
-
-            String bootstrapServers = (String) workItem.getParameter("BootstrapServers");
-            String client_id = (String) workItem.getParameter("ClientId");
-            String keySerializerClass = (String) workItem.getParameter("KeySerializerClass");
-            String valueSerializerClass = (String) workItem.getParameter("ValueSerializerClass");
             String topic = (String) workItem.getParameter("Topic");
             String key = (String) workItem.getParameter("Key");
             String value = (String) workItem.getParameter("Value");
 
-            Properties config = new Properties();
-            config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-            config.put(ProducerConfig.CLIENT_ID_CONFIG, client_id);
-            config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializerClass);
-            config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueSerializerClass);
-
-            if (producer == null) {
-                producer = createProducer(config);
-            }
             try {
 
                 producer.send(new ProducerRecord(topic, key, value));
@@ -106,6 +102,7 @@ public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler impl
                 results.put("Result", "failure");
             }
         } catch (Exception exp) {
+            LOG.error("Handler error", exp);
             handleException(exp);
         }
 
@@ -115,10 +112,6 @@ public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler impl
 
     }
 
-    protected Producer<Long, String> createProducer(Properties config) {
-        return new KafkaProducer<Long, String>(config);
-    }
-
     public Producer<Long, String> getProducer() {
         return producer;
     }
@@ -126,6 +119,7 @@ public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler impl
     public void setProducer(Producer<Long, String> producer) {
         this.producer = producer;
     }
+
 
     @Override
     public void close() {
