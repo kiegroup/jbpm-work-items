@@ -67,8 +67,10 @@
     <version.xmlsec>1.5.1</version.xmlsec>
     <version.google.guava>14.0.1</version.google.guava>
     <version.riot.api>4.1.0</version.riot.api>
+    <version.jpastebin>1.0.1</version.jpastebin>
+    <version.vimeo>1.10</version.vimeo>
+    <version.json>20140107</version.json>
     <version.kafka>1.1.0</version.kafka>
-
     <!-- OSGI tests properties -->
     <version.org.apache.karaf>4.2.0</version.org.apache.karaf>
     <version.org.ops4j.pax.exam>4.11.0</version.org.ops4j.pax.exam>
@@ -331,6 +333,24 @@
         <groupId>org.apache.santuario</groupId>
         <artifactId>xmlsec</artifactId>
         <version>${version.xmlsec}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.clickntap</groupId>
+        <artifactId>vimeo</artifactId>
+        <version>${version.vimeo}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>${version.json}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org</groupId>
+        <artifactId>jpastebin</artifactId>
+        <version>${version.jpastebin}</version>
       </dependency>
 
       <!-- test depends -->
@@ -612,6 +632,16 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
+        <artifactId>pastebin-workitem</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>vimeo-workitem</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
         <artifactId>repository</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -804,6 +834,18 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
+        <artifactId>pastebin-workitem</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>vimeo-workitem</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
         <artifactId>kafka-workitem</artifactId>
         <version>${project.version}</version>
         <type>zip</type>
@@ -936,6 +978,20 @@
     </repository>
 
     <repository>
+      <id>jboss-thirdparty-uploads</id>
+      <name>JBoss Thirdparty Uploads</name>
+      <url>https://repository.jboss.org/nexus/service/local/repositories/thirdparty-uploads/content/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+      </snapshots>
+    </repository>
+
+    <repository>
       <id>atlassian-public-repository</id>
       <name>Atlassian Public Repository</name>
       <url>https://maven.atlassian.com/content/repositories/atlassian-public/</url>
@@ -1014,6 +1070,8 @@
         <module>pdf-workitem</module>
         <module>execute-sql-workitem</module>
         <module>riot-workitem</module>
+        <module>pastebin-workitem</module>
+        <module>vimeo-workitem</module>
         <module>repository</module>
         <module>repository-springboot</module>
         <module>repository-wildfly</module>
