@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.jbpm.contrib</groupId>
     <artifactId>workitems</artifactId>
-    <version>7.14.0-SNAPSHOT</version>
+    <version>7.15.0-SNAPSHOT</version>
   </parent>
   <artifactId>kafka-workitem</artifactId>
   <name>Kafka</name>
-  <description>publish messages from a process</description>
+  <description>publish kafka messages from a process</description>
    <organization>
-    <name>jBPM dev team</name>
+    <name>pnairatl@gmail.com</name>
   </organization>
 
    <dependencies>

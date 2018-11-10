@@ -41,7 +41,10 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class HostedRepositoryIntegrationTest {
 
@@ -100,7 +103,7 @@ public class HostedRepositoryIntegrationTest {
         Map<String, WorkDefinitionImpl> repoResults = WorkItemRepository.getWorkDefinitions(uri.toString());
         assertNotNull(repoResults);
         // update this when new workitems are added
-        assertEquals(62,
+        assertEquals(69,
                      repoResults.size());
     }
 

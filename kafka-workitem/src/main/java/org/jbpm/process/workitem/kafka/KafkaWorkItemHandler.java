@@ -25,6 +25,7 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -33,12 +34,13 @@ import org.jbpm.process.workitem.core.util.service.WidAction;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
+import org.kie.internal.runtime.Cacheable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-@Wid(widfile = "Kafka-workitem.wid", name = "KafkaPublishMessages",
-     displayName = "KafkaWorkItemDefinitions",
+@Wid(widfile = "KafkaWorkItem.wid", name = "KafkaPublishMessages",
+     displayName = "KafkaPublishMessages",
      defaultHandler = "mvel: new org.jbpm.process.workitem.kafka.KafkaWorkItemHandler()",
      documentation = "${artifactId}/index.html",
      parameters = {
@@ -57,11 +59,11 @@ import org.slf4j.LoggerFactory;
                      @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
      },
      serviceInfo = @WidService(category = "${name}", description = "${description}",
-                               keywords = "kafka",
+                               keywords = "kafka,puslish,message,topic",
                                action = @WidAction(title = "Publish message to a kafka topic")
      ))
 
-public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
+public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler implements Cacheable {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaWorkItemHandler.class);
 
@@ -69,37 +71,42 @@ public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
 
-        Map<String, Object> results = new HashMap<String, Object>();
-
-        String bootstrapServers = (String) workItem.getParameter("BootstrapServers");
-        String client_id = (String) workItem.getParameter("ClientId");
-        String keySerializerClass = (String) workItem.getParameter("KeySerializerClass");
-        String valueSerializerClass = (String) workItem.getParameter("ValueSerializerClass");
-        String topic = (String) workItem.getParameter("Topic");
-        String key = (String) workItem.getParameter("Key");
-        String value = (String) workItem.getParameter("Value");
-
-
-        Properties config = new Properties();
-        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        config.put(ProducerConfig.CLIENT_ID_CONFIG, client_id);
-        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializerClass);
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueSerializerClass);
-
-        if (producer == null) {
-            producer = createProducer(config);
-        }
         try {
+            RequiredParameterValidator.validate(this.getClass(),
+                                                workItem);
 
-            producer.send(new ProducerRecord(topic, key, value));
-            results.put("Result", "success");
-            manager.completeWorkItem(workItem.getId(), results);
-        } catch (Exception e) {
-            LOG.error("Kafka error", e);
-            producer.flush();
-            producer.close();
-            results.put("Result", "failure");
-            handleException(e);
+            Map<String, Object> results = new HashMap<String, Object>();
+
+            String bootstrapServers = (String) workItem.getParameter("BootstrapServers");
+            String client_id = (String) workItem.getParameter("ClientId");
+            String keySerializerClass = (String) workItem.getParameter("KeySerializerClass");
+            String valueSerializerClass = (String) workItem.getParameter("ValueSerializerClass");
+            String topic = (String) workItem.getParameter("Topic");
+            String key = (String) workItem.getParameter("Key");
+            String value = (String) workItem.getParameter("Value");
+
+            Properties config = new Properties();
+            config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+            config.put(ProducerConfig.CLIENT_ID_CONFIG, client_id);
+            config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializerClass);
+            config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueSerializerClass);
+
+            if (producer == null) {
+                producer = createProducer(config);
+            }
+            try {
+
+                producer.send(new ProducerRecord(topic, key, value));
+                results.put("Result", "success");
+                manager.completeWorkItem(workItem.getId(), results);
+            } catch (Exception e) {
+                LOG.error("Kafka error", e);
+                producer.flush();
+                producer.close();
+                results.put("Result", "failure");
+            }
+        } catch (Exception exp) {
+            handleException(exp);
         }
 
     }
@@ -108,7 +115,7 @@ public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     }
 
-    private static Producer<Long, String> createProducer(Properties config) {
+    protected Producer<Long, String> createProducer(Properties config) {
         return new KafkaProducer<Long, String>(config);
     }
 
@@ -118,6 +125,14 @@ public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     public void setProducer(Producer<Long, String> producer) {
         this.producer = producer;
+    }
+
+    @Override
+    public void close() {
+        if (producer != null) {
+            producer.flush();
+            producer.close();
+        }
     }
 
 }
