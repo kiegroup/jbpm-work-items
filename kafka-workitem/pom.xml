@@ -25,6 +25,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-internal</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-workitems-core</artifactId>
       <scope>provided</scope>
