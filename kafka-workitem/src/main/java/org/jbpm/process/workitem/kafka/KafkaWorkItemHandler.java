@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
                      @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
      },
      serviceInfo = @WidService(category = "${name}", description = "${description}",
-                               keywords = "kafka,puslish,message,topic",
+                               keywords = "kafka,publish,message,topic",
                                action = @WidAction(title = "Publish message to a kafka topic")
      ))
 
@@ -98,7 +98,6 @@ public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler impl
             } catch (Exception e) {
                 LOG.error("Kafka error", e);
                 producer.flush();
-                producer.close();
                 results.put("Result", "failure");
             }
         } catch (Exception exp) {
