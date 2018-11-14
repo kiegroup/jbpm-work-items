@@ -70,7 +70,7 @@
     <version.jpastebin>1.0.1</version.jpastebin>
     <version.vimeo>1.10</version.vimeo>
     <version.json>20140107</version.json>
-
+    <version.kafka>1.1.0</version.kafka>
     <!-- OSGI tests properties -->
     <version.org.apache.karaf>4.2.0</version.org.apache.karaf>
     <version.org.ops4j.pax.exam>4.11.0</version.org.ops4j.pax.exam>
@@ -241,6 +241,11 @@
         <groupId>com.atlassian.jira</groupId>
         <artifactId>jira-rest-java-client</artifactId>
         <version>${version.atlassian.jira}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.kafka</groupId>
+        <artifactId>kafka-clients</artifactId>
+        <version>${version.kafka}</version>
       </dependency>
 
       <dependency>
@@ -640,6 +645,11 @@
         <artifactId>repository</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>kafka-workitem</artifactId>
+        <version>${project.version}</version>
+      </dependency>
 
       <!-- zip module dependencies -->
       <dependency>
@@ -831,6 +841,12 @@
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
         <artifactId>vimeo-workitem</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>kafka-workitem</artifactId>
         <version>${project.version}</version>
         <type>zip</type>
       </dependency>
@@ -1060,6 +1076,7 @@
         <module>repository-springboot</module>
         <module>repository-wildfly</module>
         <module>karaf-itests</module>
+        <module>kafka-workitem</module>
       </modules>
     </profile>
     <profile>
