@@ -70,13 +70,10 @@ public class ExecuteSqlWorkItemHandler extends AbstractLogOrThrowWorkItemHandler
     private DataSource ds;
     private int maxResults;
     private String columnSeparator;
+    private String dataSourceName;
 
     public ExecuteSqlWorkItemHandler(String dataSourceName) {
-        try {
-            ds = InitialContext.doLookup(dataSourceName);
-        } catch (NamingException e) {
-            throw new RuntimeException("Unable to look up data source: " + dataSourceName + " - " + e.getMessage());
-        }
+        this.dataSourceName = dataSourceName;
     }
 
     public void executeWorkItem(WorkItem workItem,
@@ -88,6 +85,12 @@ public class ExecuteSqlWorkItemHandler extends AbstractLogOrThrowWorkItemHandler
         try {
             RequiredParameterValidator.validate(this.getClass(),
                                                 workItem);
+
+            try {
+                ds = InitialContext.doLookup(dataSourceName);
+            } catch (NamingException e) {
+                throw new RuntimeException("Unable to look up data source: " + dataSourceName + " - " + e.getMessage());
+            }
 
             Map<String, Object> results = new HashMap<>();
             String sqlStatement = (String) workItem.getParameter("SQLStatement");

@@ -76,6 +76,9 @@
     <version.org.ops4j.pax.exam>4.11.0</version.org.ops4j.pax.exam>
     <version.org.apache.servicemix.bundles.javax-inject>1_2</version.org.apache.servicemix.bundles.javax-inject>
 
+    <!-- spring boot properties -->
+    <version.spring-boot>1.5.12.RELEASE</version.spring-boot>
+
     <!-- Failsafe plugin-related properties -->
     <failsafe.arg.line>
       -Dfile.encoding=${project.build.sourceEncoding}
@@ -1072,11 +1075,12 @@
         <module>riot-workitem</module>
         <module>pastebin-workitem</module>
         <module>vimeo-workitem</module>
+        <module>kafka-workitem</module>
         <module>repository</module>
         <module>repository-springboot</module>
         <module>repository-wildfly</module>
+        <module>repository-springboot-autoconfig</module>
         <module>karaf-itests</module>
-        <module>kafka-workitem</module>
       </modules>
     </profile>
     <profile>
