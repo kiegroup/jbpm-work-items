@@ -332,6 +332,17 @@
       <type>zip</type>
     </dependency>
     <dependency>
+      <groupId>org.jbpm.contrib</groupId>
+      <artifactId>google-maps-workitem</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.mortbay.jetty</groupId>
+          <artifactId>jetty</artifactId>
+        </exclusion>
+      </exclusions>
+      <type>zip</type>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>template-resources</artifactId>
       <scope>provided</scope>
