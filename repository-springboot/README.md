@@ -20,7 +20,7 @@ cd repository-springboot
 Next you can start the repository with:
 
 ```
-java -jar target/repository-springboot-7.15.0-SNAPSHOT.jar
+java -jar target/repository-springboot-7.16.0-SNAPSHOT.jar
 ```
 
 Now you can access the repository at :
