@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "DropboxDownloadFileDefinitions.wid", name = "DropboxDownloadFile",
         displayName = "DropboxDownloadFile",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.dropbox.DownloadFileWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.dropbox.DownloadFileWorkitemHandler(\"clientIdentifier\", \"accessToken\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "DocumentPath", required = true)
@@ -54,7 +54,8 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "DropBox,file,files,download,document,documents",
-                action = @WidAction(title = "Upload a file to DropBox")
+                action = @WidAction(title = "Upload a file to DropBox"),
+                authentication = @WidAuth()
         ))
 public class DownloadFileWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 
