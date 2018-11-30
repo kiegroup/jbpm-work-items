@@ -35,6 +35,7 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.jbpm.process.workitem.ibm.watson.result.ImageClassificationResult;
 import org.kie.api.runtime.process.WorkItem;
@@ -44,7 +45,7 @@ import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "ClassifyImageDefinitions.wid", name = "IBMWatsonClassifyImage",
         displayName = "IBMWatsonClassifyImage",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.ibm.watson.ClassifyImageWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.ibm.watson.ClassifyImageWorkitemHandler(\"apiKey\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "ImageToClassify", required = true)
@@ -57,7 +58,10 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "ibm,watson,image,classify",
-                action = @WidAction(title = "Classify an image using IBM Watson")
+                action = @WidAction(title = "Classify an image using IBM Watson"),
+                authinfo = @WidAuth(required = true, params = {"apiKey"},
+                        paramsdescription = {"IBM Watson api key"},
+                        referencesite = "https://www.ibm.com/watson/developercloud/doc/virtual-agent/api-keys.html")
         ))
 public class ClassifyImageWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 
@@ -81,7 +85,6 @@ public class ClassifyImageWorkitemHandler extends AbstractLogOrThrowWorkItemHand
             Document classificationImage = (Document) workItem.getParameter("ImageToClassify");
 
             Map<String, Object> widResults = new HashMap<String, Object>();
-
 
             VisualRecognition service = auth.getService(apiKey);
 

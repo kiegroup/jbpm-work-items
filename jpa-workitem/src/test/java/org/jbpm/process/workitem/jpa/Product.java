@@ -17,7 +17,6 @@
 package org.jbpm.process.workitem.jpa;
 
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -41,13 +40,12 @@ public class Product implements Serializable {
     public Product() {
     }
 
-
-    public Product(String description, float price) {
+    public Product(String description,
+                   float price) {
         super();
         this.description = description;
         this.price = price;
     }
-
 
     public long getId() {
         return id;
@@ -77,5 +75,4 @@ public class Product implements Serializable {
     public String toString() {
         return "[id=" + id + ", description=" + description + ", price=" + price + "]";
     }
-
 }

@@ -15,8 +15,8 @@
  */
 package org.jbpm.process.workitem.ibm.watson.result;
 
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifierResult;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassResult;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifierResult;
 
 public class ImageClassificationResult {
 
@@ -26,7 +26,8 @@ public class ImageClassificationResult {
     private Float classScore;
     private String classTypeHierarchy;
 
-    public ImageClassificationResult(ClassifierResult classifierResult, ClassResult classResult) {
+    public ImageClassificationResult(ClassifierResult classifierResult,
+                                     ClassResult classResult) {
         this.classifierId = classifierResult.getClassifierId();
         this.classifierName = classifierResult.getName();
         this.className = classResult.getClassName();

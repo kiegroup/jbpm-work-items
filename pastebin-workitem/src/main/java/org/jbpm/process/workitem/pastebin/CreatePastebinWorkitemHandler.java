@@ -27,6 +27,7 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.jpastebin.pastebin.PastebinLink;
 import org.jpastebin.pastebin.PastebinPaste;
@@ -37,7 +38,7 @@ import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "CreatePastebin.wid", name = "CreatePastebin",
         displayName = "CreatePastebin",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.pastebin.CreatePastebinWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.pastebin.CreatePastebinWorkitemHandler(\"develKey\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "Title"),
@@ -54,7 +55,10 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "paste,pastebin,create",
-                action = @WidAction(title = "Create a paste on Pastebin")
+                action = @WidAction(title = "Create a paste on Pastebin"),
+                authinfo = @WidAuth(required = true, params = {"develKey"},
+                        paramsdescription = {"Pastebin developer key"},
+                        referencesite = "https://pastebin.com/api.php")
         ))
 public class CreatePastebinWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

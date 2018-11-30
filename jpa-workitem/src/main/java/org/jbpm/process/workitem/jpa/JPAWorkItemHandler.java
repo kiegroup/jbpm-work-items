@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "JPADefinitions.wid", name = "JPA",
         displayName = "JPA",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.jpa.JPAWorkItemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.jpa.JPAWorkItemHandler(\"persistenceUnit\", \"classloader\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "Type"),
@@ -113,15 +113,15 @@ public class JPAWorkItemHandler extends AbstractLogOrThrowWorkItemHandler
     private ClassLoader classloader;
 
     public JPAWorkItemHandler(String persistenceUnit,
-                              ClassLoader cl) {
+                              ClassLoader classloader) {
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try {
-            Thread.currentThread().setContextClassLoader(cl);
+            Thread.currentThread().setContextClassLoader(classloader);
             this.emf = Persistence.createEntityManagerFactory(persistenceUnit);
         } finally {
             Thread.currentThread().setContextClassLoader(tccl);
         }
-        this.classloader = cl;
+        this.classloader = classloader;
     }
 
     public void executeWorkItem(WorkItem wi,

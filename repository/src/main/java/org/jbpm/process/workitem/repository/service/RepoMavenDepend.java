@@ -16,6 +16,7 @@
 package org.jbpm.process.workitem.repository.service;
 
 public class RepoMavenDepend {
+
     private String groupId;
     private String artifactId;
     private String version;

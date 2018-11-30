@@ -149,7 +149,7 @@ public class MavenEmbedderWorkitemHandlerTest extends AbstractBaseTest {
 
         // make sure the sample maven project was cleaned
         assertFalse(new File("src/test/resources/simple/target").exists());
-        assertFalse(new File("src/test/resources/simple/target/classes").exists());        
+        assertFalse(new File("src/test/resources/simple/target/classes").exists());
     }
 
     @Test

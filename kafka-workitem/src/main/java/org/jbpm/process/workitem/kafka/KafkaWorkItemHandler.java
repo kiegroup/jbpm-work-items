@@ -15,7 +15,6 @@
  */
 package org.jbpm.process.workitem.kafka;
 
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -38,48 +37,55 @@ import org.kie.internal.runtime.Cacheable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 @Wid(widfile = "KafkaWorkItem.wid", name = "KafkaPublishMessages",
-     displayName = "KafkaPublishMessages",
-     defaultHandler = "mvel: new org.jbpm.process.workitem.kafka.KafkaWorkItemHandler()",
-     documentation = "${artifactId}/index.html",
-     parameters = {
-                   @WidParameter(name = "Topic", required = true),
-                   @WidParameter(name = "Key", required = true),
-                   @WidParameter(name = "Value", required = true)
-     },
-     results = {
+        displayName = "KafkaPublishMessages",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.kafka.KafkaWorkItemHandler(\"bootstrapServers\", \"clientId\", \"keySerializerClass\", \"valueSerializerClass\")",
+        documentation = "${artifactId}/index.html",
+        parameters = {
+                @WidParameter(name = "Topic", required = true),
+                @WidParameter(name = "Key", required = true),
+                @WidParameter(name = "Value", required = true)
+        },
+        results = {
                 @WidResult(name = "Result")
-     },
-     mavenDepends = {
-                     @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
-     },
-     serviceInfo = @WidService(category = "${name}", description = "${description}",
-                               keywords = "kafka,publish,message,topic",
-                               action = @WidAction(title = "Publish message to a kafka topic")
-     ))
+        },
+        mavenDepends = {
+                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
+        },
+        serviceInfo = @WidService(category = "${name}", description = "${description}",
+                keywords = "kafka,publish,message,topic",
+                action = @WidAction(title = "Publish message to a kafka topic")
+        ))
 
 public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler implements Cacheable {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaWorkItemHandler.class);
 
     private Producer<Long, String> producer;
+    private static final String RESULTS_VALUE = "Result";
 
-    public KafkaWorkItemHandler() {
-
+    public KafkaWorkItemHandler(Producer producer) {
+        this.producer = producer;
     }
 
-    public KafkaWorkItemHandler(String bootstrapServers, String client_id, String keySerializerClass, String valueSerializerClass) {
+    public KafkaWorkItemHandler(String bootstrapServers,
+                                String clientId,
+                                String keySerializerClass,
+                                String valueSerializerClass) {
         Properties config = new Properties();
-        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        config.put(ProducerConfig.CLIENT_ID_CONFIG, client_id);
-        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializerClass);
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueSerializerClass);
+        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                   bootstrapServers);
+        config.put(ProducerConfig.CLIENT_ID_CONFIG,
+                   clientId);
+        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
+                   keySerializerClass);
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+                   valueSerializerClass);
         producer = new KafkaProducer<Long, String>(config);
     }
 
-
-    public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
+    public void executeWorkItem(WorkItem workItem,
+                                WorkItemManager manager) {
 
         try {
             RequiredParameterValidator.validate(this.getClass(),
@@ -92,33 +98,31 @@ public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler impl
 
             try {
 
-                producer.send(new ProducerRecord(topic, key, value));
-                results.put("Result", "success");
-                manager.completeWorkItem(workItem.getId(), results);
+                producer.send(new ProducerRecord(topic,
+                                                 key,
+                                                 value));
+                results.put(RESULTS_VALUE,
+                            "success");
+                manager.completeWorkItem(workItem.getId(),
+                                         results);
             } catch (Exception e) {
-                LOG.error("Kafka error", e);
+                LOG.error("Kafka error",
+                          e);
                 producer.flush();
-                results.put("Result", "failure");
+                results.put(RESULTS_VALUE,
+                            "failure");
             }
         } catch (Exception exp) {
-            LOG.error("Handler error", exp);
+            LOG.error("Handler error",
+                      exp);
             handleException(exp);
         }
-
     }
 
-    public void abortWorkItem(WorkItem workItem, WorkItemManager manager) {
+    public void abortWorkItem(WorkItem workItem,
+                              WorkItemManager manager) {
 
     }
-
-    public Producer<Long, String> getProducer() {
-        return producer;
-    }
-
-    public void setProducer(Producer<Long, String> producer) {
-        this.producer = producer;
-    }
-
 
     @Override
     public void close() {
@@ -127,5 +131,4 @@ public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler impl
             producer.close();
         }
     }
-
 }

@@ -24,13 +24,14 @@ import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 
 @Wid(widfile = "SlackPostMessageToChannelDefinitions.wid", name = "SlackPostMessageToChannel",
         displayName = "SlackPostMessageToChannel",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.slack.PostMessageToChannelWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.slack.PostMessageToChannelWorkitemHandler(\"accessToken\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "ChannelName", required = true),
@@ -41,7 +42,10 @@ import org.kie.api.runtime.process.WorkItemManager;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "slack,message,send,channel",
-                action = @WidAction(title = "Send message to a Slack channel")
+                action = @WidAction(title = "Send message to a Slack channel"),
+                authinfo = @WidAuth(required = true, params = {"accessToken"},
+                        paramsdescription = {"Slack access token"},
+                        referencesite = "https://api.slack.com/tokens")
         ))
 public class PostMessageToChannelWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

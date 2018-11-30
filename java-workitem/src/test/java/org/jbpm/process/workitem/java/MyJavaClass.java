@@ -37,28 +37,33 @@ public class MyJavaClass {
         return "Hello " + name;
     }
 
-    public String myFirstMethod(String name, Integer age) {
+    public String myFirstMethod(String name,
+                                Integer age) {
         return "Hello " + name + ", age " + age;
     }
 
-    public String myFirstMethod(String name, String age) {
+    public String myFirstMethod(String name,
+                                String age) {
         return "Hello " + name + ", age " + age;
     }
 
-    public String myFirstMethod(String name, Integer age, String gender) {
+    public String myFirstMethod(String name,
+                                Integer age,
+                                String gender) {
         return "Hello " + name + ", age " + age + ", gender " + gender;
     }
 
-    public List<String> mySecondMethod(String name, List<String> children) {
+    public List<String> mySecondMethod(String name,
+                                       List<String> children) {
         List<String> result = new ArrayList<String>();
-        for (String child: children) {
+        for (String child : children) {
             result.add("Hello " + child);
         }
         return result;
     }
 
     public void writeHello(String name) {
-        logger.info("Hello {}", name);
+        logger.info("Hello {}",
+                    name);
     }
-
 }

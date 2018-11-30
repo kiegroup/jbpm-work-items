@@ -53,7 +53,8 @@ public class RiotUtils {
         return playedMatchesList.get(0);
     }
 
-    public static List<MatchReference> geNumberOfPlayedMatches(List<MatchReference> playedMatchesList, int numOfMatches) {
+    public static List<MatchReference> geNumberOfPlayedMatches(List<MatchReference> playedMatchesList,
+                                                               int numOfMatches) {
 
         Collections.sort(playedMatchesList,
                          matchTimestampComparator);

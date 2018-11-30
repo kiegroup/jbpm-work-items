@@ -24,6 +24,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class GeneratePDFWorkitemIntegrationTest {
+
     @Test
     public void testWorkitemValidity() {
         String repoPath = "file://" + System.getProperty("builddir") +

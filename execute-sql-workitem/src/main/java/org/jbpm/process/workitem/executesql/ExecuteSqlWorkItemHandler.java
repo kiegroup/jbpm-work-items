@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "ExecuteSQLDefinitions.wid", name = "ExecuteSQL",
         displayName = "ExecuteSQL",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.executesql.ExecuteSqlWorkItemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.executesql.ExecuteSqlWorkItemHandler(\"dataSourceName\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "SQLStatement", required = true),

@@ -122,15 +122,14 @@ public class MavenEmbedderCommandTest {
         // make sure the sample maven project was cleaned
         assertFalse(new File("src/test/resources/simple/target").exists());
         assertFalse(new File("src/test/resources/simple/target/classes").exists());
-    }        
-    
+    }
+
     @Ignore("Ignored for now until the maven archetypes are included")
     @Test
     public void testArchetypeGenerateCommandMultiThread() throws Exception {
         TestWorkItemManager manager = new TestWorkItemManager();
-        File simpleTestProjectDir = new File("target" + File.separator + UUID.randomUUID().toString());        
-    	simpleTestProjectDir.mkdir();
-        
+        File simpleTestProjectDir = new File("target" + File.separator + UUID.randomUUID().toString());
+        simpleTestProjectDir.mkdir();
 
         Map<String, Object> commandContextData = new HashMap<>();
         commandContextData.put("Goals",
@@ -143,63 +142,65 @@ public class MavenEmbedderCommandTest {
                                "");
 
         CommandContext commandContext = new CommandContext(commandContextData);
-        
+
         Map<String, Object> commandContextData2 = new HashMap<>();
         commandContextData2.put("Goals",
-                               "archetype:generate");
+                                "archetype:generate");
         commandContextData2.put("CLOptions",
-                               "-B -DarchetypeGroupId=org.kie -DarchetypeArtifactId=kie-kjar-archetype -DarchetypeVersion=7.16.0-SNAPSHOT -DgroupId=com.company -DartifactId=kjar -Dversion=1.0-SNAPSHOT -Dpackage=com.company");
+                                "-B -DarchetypeGroupId=org.kie -DarchetypeArtifactId=kie-kjar-archetype -DarchetypeVersion=7.16.0-SNAPSHOT -DgroupId=com.company -DartifactId=kjar -Dversion=1.0-SNAPSHOT -Dpackage=com.company");
         commandContextData2.put("WorkDirectory",
-                               simpleTestProjectDir.getAbsolutePath());
+                                simpleTestProjectDir.getAbsolutePath());
         commandContextData2.put("ProjectRoot",
-                               "");
+                                "");
 
         CommandContext commandContext2 = new CommandContext(commandContextData2);
 
-        
         Thread t1 = buildThread(commandContext);
         Thread t2 = buildThread(commandContext2);
-        
+
         t1.start();
         t2.start();
-        
+
         t1.join();
         t2.join();
 
         // make sure the sample maven project was cleaned
         assertTrue(simpleTestProjectDir.exists());
-        assertTrue(new File(simpleTestProjectDir, "service").exists());
-        assertTrue(new File(simpleTestProjectDir, "service" + File.separator + "pom.xml").exists());
-        assertFalse(new File(simpleTestProjectDir, "service" + File.separator + "global").exists());
-        
-        
-        assertTrue(new File(simpleTestProjectDir, "kjar").exists());
-        assertTrue(new File(simpleTestProjectDir, "kjar" + File.separator + "pom.xml").exists());
-        assertTrue(new File(simpleTestProjectDir, "kjar" + File.separator + "global").exists());
+        assertTrue(new File(simpleTestProjectDir,
+                            "service").exists());
+        assertTrue(new File(simpleTestProjectDir,
+                            "service" + File.separator + "pom.xml").exists());
+        assertFalse(new File(simpleTestProjectDir,
+                             "service" + File.separator + "global").exists());
+
+        assertTrue(new File(simpleTestProjectDir,
+                            "kjar").exists());
+        assertTrue(new File(simpleTestProjectDir,
+                            "kjar" + File.separator + "pom.xml").exists());
+        assertTrue(new File(simpleTestProjectDir,
+                            "kjar" + File.separator + "global").exists());
     }
-    
-    
+
     protected Thread buildThread(CommandContext commandContext) {
         return new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				MavenEmbedderCommand command = new MavenEmbedderCommand();
-				try {
-			        ExecutionResults commandResults = command.execute(commandContext);
-	
-			        assertNotNull(commandResults);
-			        assertTrue(commandResults.getData("MavenResults") instanceof Map);
-	
-			        Map<String, String> mavenResults = (Map<String, String>) commandResults.getData("MavenResults");
-			        assertNotNull(mavenResults);
-			        assertEquals("",
-			                     mavenResults.get("stderr"));
-				} catch (Exception e) {
-					fail("Thread execution of maven command failed " + e.getMessage());
-				}
-				
-			}
-		});
+
+            @Override
+            public void run() {
+                MavenEmbedderCommand command = new MavenEmbedderCommand();
+                try {
+                    ExecutionResults commandResults = command.execute(commandContext);
+
+                    assertNotNull(commandResults);
+                    assertTrue(commandResults.getData("MavenResults") instanceof Map);
+
+                    Map<String, String> mavenResults = (Map<String, String>) commandResults.getData("MavenResults");
+                    assertNotNull(mavenResults);
+                    assertEquals("",
+                                 mavenResults.get("stderr"));
+                } catch (Exception e) {
+                    fail("Thread execution of maven command failed " + e.getMessage());
+                }
+            }
+        });
     }
 }

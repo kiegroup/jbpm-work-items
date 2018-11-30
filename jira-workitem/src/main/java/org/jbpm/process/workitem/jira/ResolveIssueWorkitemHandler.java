@@ -30,6 +30,7 @@ import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -38,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "JiraResolveIssue.wid", name = "JiraResolveIssue",
         displayName = "JiraResolveIssue",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.jira.ResolveIssueWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.jira.ResolveIssueWorkitemHandler(\"userName\", \"password\", \"repoURI\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "IssueKey", required = true),
@@ -50,7 +51,10 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "jira,issue,resolve",
-                action = @WidAction(title = "Resolve existing Jira issue")
+                action = @WidAction(title = "Resolve existing Jira issue"),
+                authinfo = @WidAuth(required = true, params = {"userName", "password"},
+                        paramsdescription = {"Jira user", "Jira password"},
+                        referencesite = "https://www.atlassian.com/software/jira")
         ))
 public class ResolveIssueWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

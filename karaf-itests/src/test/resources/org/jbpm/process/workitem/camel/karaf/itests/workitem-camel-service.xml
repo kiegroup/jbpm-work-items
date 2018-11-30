@@ -12,10 +12,10 @@
 
   <kie:kmodule id="workitem-kmodule">
     <kie:kbase name="camel-workitem-kbase" packages="org.jbpm.process.workitem.camel.karaf.itests.workitem">
-      <kie:ksession name="camel-workitem-ksession" />
+      <kie:ksession name="camel-workitem-ksession"/>
     </kie:kbase>
   </kie:kmodule>
 
-  <osgi:service ref="camel-workitem-ksession" interface="org.kie.api.runtime.KieSession" />
+  <osgi:service ref="camel-workitem-ksession" interface="org.kie.api.runtime.KieSession"/>
 
 </beans>

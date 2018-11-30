@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class CurrentWeatherData implements Serializable {
+
     private String cityName;
     private Date date;
     private Double temp;

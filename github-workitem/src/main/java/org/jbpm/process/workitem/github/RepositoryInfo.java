@@ -30,7 +30,7 @@ public class RepositoryInfo {
     public int watchers;
 
     public RepositoryInfo(Repository repository) {
-        if(repository != null) {
+        if (repository != null) {
             this.id = repository.getId();
             this.name = repository.getName();
             this.gitURL = repository.getGitUrl();

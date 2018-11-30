@@ -28,6 +28,7 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -41,7 +42,7 @@ import org.web3j.protocol.http.HttpService;
 
 @Wid(widfile = "EthereumTransactExistingContract.wid", name = "EthereumTransactExistingContract",
         displayName = "EthereumTransactExistingContract",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.ethereum.TransactExistingContractWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.ethereum.TransactExistingContractWorkitemHandler(\"walletPassword\", \"walletPath\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "ServiceURL", required = true),
@@ -59,7 +60,9 @@ import org.web3j.protocol.http.HttpService;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "Ethereum,blockchain,smart,contract,smartcontract,transaction,send",
-                action = @WidAction(title = "Perform a transaction to an existing contract on the blockchain")
+                action = @WidAction(title = "Perform a transaction to an existing contract on the blockchain"),
+                authinfo = @WidAuth(required = true, params = {"walletPassword", "walletPath"},
+                        paramsdescription = {"Wallet password", "Path to the wallet file"})
         ))
 public class TransactExistingContractWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

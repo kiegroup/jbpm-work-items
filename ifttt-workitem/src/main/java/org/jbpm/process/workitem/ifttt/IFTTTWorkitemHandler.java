@@ -30,6 +30,7 @@ import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -38,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "IFTTTDefinitions.wid", name = "IFTTTCall",
         displayName = "IFTTTCall",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.ifttt.IFTTTWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.ifttt.IFTTTWorkitemHandler(\"key\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "Trigger", required = true),
@@ -51,7 +52,11 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "ifttt,trigger,endpoint",
-                action = @WidAction(title = "Trigger an IFTTT endpoint")
+                action = @WidAction(title = "Trigger an IFTTT endpoint"),
+                authinfo = @WidAuth(required = true, params = {"key"},
+                        paramsdescription = {"IFTTT app key"},
+                        referencesite = "https://platform.ifttt.com/docs/api_reference")
+
         ))
 public class IFTTTWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

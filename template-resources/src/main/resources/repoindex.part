@@ -39,6 +39,7 @@
                   <th scope="col">#</th>
                   <th scope="col">Name</th>
                   <th scope="col">Handler</th>
+                  <th scope="col">Auth Required</th>
                   <th scope="col">Docs</th>
                 </tr>
               </thead>
@@ -49,7 +50,8 @@
                 <tr>
                       <th scope="row">$i$</th>
                       <td>$widInfo.(k).name$</td>
-                      <td>$widInfo.(k).defaultHandler$</td>
+                      <td>$widInfo.(k).defaultHandlerUnEscaped$</td>
+                      <td>$widInfo.(k).serviceInfo.authInfo.required$</td>
                       <td><a href="\$$openbracket$artifactId$closebracket$/index.html#$widInfo.(k).name$" class="btn btn-secondary btn-sm" role="button" aria-disabled="true"><span class="fa fa-eye">&nbsp;View</span></a></td>
                     </tr>
                }$

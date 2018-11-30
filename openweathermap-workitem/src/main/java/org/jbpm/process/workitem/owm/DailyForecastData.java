@@ -15,11 +15,12 @@
  */
 package org.jbpm.process.workitem.owm;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class DailyForecastData {
+public class DailyForecastData implements Serializable {
 
     int dataCount;
     private String cityName;
@@ -41,15 +42,15 @@ public class DailyForecastData {
         this.cityName = cityName;
     }
 
-    public java.util.List<org.jbpm.process.workitem.owm.DailyForecastData.DailyForecastDay> getDailyForecastDayList() {
+    public List<DailyForecastDay> getDailyForecastDayList() {
         return dailyForecastDayList;
     }
 
-    public void setDailyForecastDayList(java.util.List<org.jbpm.process.workitem.owm.DailyForecastData.DailyForecastDay> dailyForecastDayList) {
+    public void setDailyForecastDayList(List<DailyForecastDay> dailyForecastDayList) {
         this.dailyForecastDayList = dailyForecastDayList;
     }
 
-    class DailyForecastDay {
+    public class DailyForecastDay implements Serializable {
 
         private Date date;
         private Double cloud;
@@ -65,11 +66,11 @@ public class DailyForecastData {
         private Double eveningTemp;
         private Double nightTemp;
 
-        public java.util.Date getDate() {
+        public Date getDate() {
             return date;
         }
 
-        public void setDate(java.util.Date date) {
+        public void setDate(Date date) {
             this.date = date;
         }
 

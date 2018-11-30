@@ -49,7 +49,8 @@ public class IFTTTWorkitemHandlerTest {
 
         when(client.target(anyString())).thenReturn(webTarget);
         when(webTarget.request()).thenReturn(builder);
-        when(builder.post(any(Entity.class),any(Class.class))).thenReturn(new String("testResponse"));
+        when(builder.post(any(Entity.class),
+                          any(Class.class))).thenReturn(new String("testResponse"));
     }
 
     @Test

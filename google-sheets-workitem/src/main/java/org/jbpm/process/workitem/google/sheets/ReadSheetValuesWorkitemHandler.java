@@ -28,6 +28,7 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -36,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "GoogleReadSheetValuesDefinitions.wid", name = "GoogleReadSheetValues",
         displayName = "GoogleReadSheetValues",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.google.sheets.ReadSheetValuesWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.google.sheets.ReadSheetValuesWorkitemHandler(\"appName\", \"clentSecret\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "SheetId", required = true),
@@ -50,7 +51,10 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "google,sheets,read",
-                action = @WidAction(title = "Read spreadsheet using Google Sheets")
+                action = @WidAction(title = "Read spreadsheet using Google Sheets"),
+                authinfo = @WidAuth(required = true, params = {"appName", "clentSecret"},
+                        paramsdescription = {"Google app name", "Google client secret"},
+                        referencesite = "https://developers.google.com/sheets/api/guides/authorizing")
         ))
 public class ReadSheetValuesWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

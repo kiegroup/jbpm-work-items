@@ -16,11 +16,12 @@
 package org.jbpm.process.workitem.kafka;
 
 import org.apache.kafka.clients.producer.MockProducer;
+import org.apache.kafka.clients.producer.Producer;
 import org.drools.core.process.instance.impl.WorkItemImpl;
 import org.jbpm.process.workitem.core.TestWorkItemManager;
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class KafkaWorkItemHandlerTest {
 
@@ -29,16 +30,17 @@ public class KafkaWorkItemHandlerTest {
 
         TestWorkItemManager manager = new TestWorkItemManager();
         WorkItemImpl workItem = new WorkItemImpl();
-        workItem.setParameter("Topic", "myTopic");
-        workItem.setParameter("Key", "1");
-        workItem.setParameter("Value", "Sample");
-        KafkaWorkItemHandler handler = new KafkaWorkItemHandler();
-        MockProducer<Long, String> mockProducer = new MockProducer<Long, String>();
-        handler.setProducer(mockProducer);
+        workItem.setParameter("Topic",
+                              "myTopic");
+        workItem.setParameter("Key",
+                              "1");
+        workItem.setParameter("Value",
+                              "Sample");
 
-        handler.executeWorkItem(workItem, manager);
+        Producer<Long, String> mockProducer = new MockProducer();
+        KafkaWorkItemHandler handler = new KafkaWorkItemHandler(mockProducer);
+        handler.executeWorkItem(workItem,
+                                manager);
         assertNotNull(manager.getResults());
-
     }
-
 }

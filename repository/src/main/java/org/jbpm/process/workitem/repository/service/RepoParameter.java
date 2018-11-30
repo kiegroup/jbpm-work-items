@@ -16,6 +16,7 @@
 package org.jbpm.process.workitem.repository.service;
 
 public class RepoParameter {
+
     private String name;
     private String type;
 

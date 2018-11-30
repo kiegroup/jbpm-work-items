@@ -8,17 +8,17 @@
   <artifactId>kafka-workitem</artifactId>
   <name>Kafka</name>
   <description>publish kafka messages from a process</description>
-   <organization>
+  <organization>
     <name>pnairatl@gmail.com</name>
   </organization>
 
-   <dependencies>
+  <dependencies>
     <!-- needed for kafka  -->
     <dependency>
       <groupId>org.apache.kafka</groupId>
       <artifactId>kafka-clients</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-api</artifactId>
@@ -174,5 +174,5 @@
       </plugin>
     </plugins>
   </build>
-  
+
 </project>

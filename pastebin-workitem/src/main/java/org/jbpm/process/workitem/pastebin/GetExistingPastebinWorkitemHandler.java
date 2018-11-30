@@ -25,6 +25,7 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.jpastebin.pastebin.Pastebin;
 import org.jpastebin.pastebin.PastebinLink;
@@ -35,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "GetPastebin.wid", name = "GetPastebin",
         displayName = "GetPastebin",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.pastebin.GetExistingPastebinWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.pastebin.GetExistingPastebinWorkitemHandler(\"develKey\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "PastebinKey", required = true)
@@ -48,7 +49,10 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "paste,pastebin,get,existing",
-                action = @WidAction(title = "Get an existing Pastebin")
+                action = @WidAction(title = "Get an existing Pastebin"),
+                authinfo = @WidAuth(required = true, params = {"develKey"},
+                        paramsdescription = {"Pastebin developer key"},
+                        referencesite = "https://pastebin.com/api.php")
         ))
 public class GetExistingPastebinWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 
@@ -73,7 +77,7 @@ public class GetExistingPastebinWorkitemHandler extends AbstractLogOrThrowWorkIt
             String pastebinKey = (String) workItem.getParameter("PastebinKey");
 
             PastebinLink pastebinLink = (PastebinLink) workItem.getParameter("PastebinLink");
-            if(pastebinLink == null) {
+            if (pastebinLink == null) {
                 pastebinLink = Pastebin.getPaste(pastebinKey);
             }
 

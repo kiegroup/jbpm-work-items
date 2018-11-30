@@ -26,6 +26,7 @@ import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -34,7 +35,7 @@ import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "GoogleAddTaskDefinitions.wid", name = "GoogleAddTask",
         displayName = "GoogleAddTask",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.google.tasks.AddTaskWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.google.tasks.AddTaskWorkitemHandler(\"appName\", \"clentSecret\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "TaskName", required = true),
@@ -45,7 +46,10 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "google,tasks,add",
-                action = @WidAction(title = "Add a new task using Google Tasks")
+                action = @WidAction(title = "Add a new task using Google Tasks"),
+                authinfo = @WidAuth(required = true, params = {"appName", "clentSecret"},
+                        paramsdescription = {"Google app name", "Google client secret"},
+                        referencesite = "https://developers.google.com/tasks/auth")
         ))
 public class AddTaskWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

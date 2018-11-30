@@ -21,6 +21,7 @@ import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -31,7 +32,7 @@ import twitter4j.Twitter;
 
 @Wid(widfile = "TwitterSendDirectMessage.wid", name = "TwitterSendDirectMessage",
         displayName = "TwitterSendDirectMessage",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.twitter.SendDirectMessageWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.twitter.SendDirectMessageWorkitemHandler(\"consumerKey\", \"consumerSecret\", \"accessKey\", \"accessSecret\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "Message", required = true),
@@ -43,7 +44,10 @@ import twitter4j.Twitter;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "twitter,tweet,send,message,direct",
-                action = @WidAction(title = "Send a direct twitter message")
+                action = @WidAction(title = "Send a direct twitter message"),
+                authinfo = @WidAuth(required = true, params = {"consumerKey", "consumerSecret", "accessKey", "accessSecret"},
+                        paramsdescription = {"Twitter consumer key", "Twitter consumer secret", "Twitter access key", "Twitter access secret"},
+                        referencesite = "https://developer.twitter.com/en/docs/basics/authentication/guides/access-tokens.html")
         ))
 public class SendDirectMessageWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

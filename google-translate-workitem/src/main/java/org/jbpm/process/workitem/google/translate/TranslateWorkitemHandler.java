@@ -22,21 +22,22 @@ import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.Translate.TranslateOption;
 import com.google.cloud.translate.Translation;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 
 @Wid(widfile = "GoogleTranslateDefinitions.wid", name = "GoogleTranslate",
         displayName = "GoogleTranslate",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.google.translate.TranslateWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.google.translate.TranslateWorkitemHandler(\"apiKey\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "ToTranslate", required = true),
@@ -51,7 +52,10 @@ import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "google,translate,language",
-                action = @WidAction(title = "Translate text to a different language")
+                action = @WidAction(title = "Translate text to a different language"),
+                authinfo = @WidAuth(required = true, params = {"apiKey"},
+                        paramsdescription = {"Google cloud api key"},
+                        referencesite = "https://cloud.google.com/translate/docs/quickstart")
         ))
 public class TranslateWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

@@ -16,6 +16,7 @@
 package org.jbpm.process.workitem.repository.service;
 
 public class RepoResult {
+
     private String name;
     private String type;
 

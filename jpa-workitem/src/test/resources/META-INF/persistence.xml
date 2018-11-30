@@ -12,16 +12,16 @@
     <class>org.jbpm.process.workitem.jpa.Product</class>
 
     <properties>
-      <property name="hibernate.max_fetch_depth" value="3" />
-      <property name="hibernate.hbm2ddl.auto" value="update" />
-      <property name="hibernate.show_sql" value="true" />
-      <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
+      <property name="hibernate.max_fetch_depth" value="3"/>
+      <property name="hibernate.hbm2ddl.auto" value="update"/>
+      <property name="hibernate.show_sql" value="true"/>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
 
       <!-- BZ 841786: AS7/EAP 6/Hib 4 uses new (sequence) generators which seem
         to cause problems -->
-      <property name="hibernate.id.new_generator_mappings" value="false" />
+      <property name="hibernate.id.new_generator_mappings" value="false"/>
       <property name="hibernate.transaction.jta.platform"
-                value="org.hibernate.service.jta.platform.internal.JBossStandAloneJtaPlatform" />
+                value="org.hibernate.service.jta.platform.internal.JBossStandAloneJtaPlatform"/>
     </properties>
   </persistence-unit>
 
@@ -42,16 +42,16 @@
     <class>org.jbpm.process.audit.NodeInstanceLog</class>
     <class>org.jbpm.process.audit.VariableInstanceLog</class>
     <properties>
-      <property name="hibernate.max_fetch_depth" value="3" />
-      <property name="hibernate.hbm2ddl.auto" value="update" />
-      <property name="hibernate.show_sql" value="true" />
-      <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
+      <property name="hibernate.max_fetch_depth" value="3"/>
+      <property name="hibernate.hbm2ddl.auto" value="update"/>
+      <property name="hibernate.show_sql" value="true"/>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
 
       <!-- BZ 841786: AS7/EAP 6/Hib 4 uses new (sequence) generators which seem
         to cause problems -->
-      <property name="hibernate.id.new_generator_mappings" value="false" />
+      <property name="hibernate.id.new_generator_mappings" value="false"/>
       <property name="hibernate.transaction.jta.platform"
-                value="org.hibernate.service.jta.platform.internal.JBossStandAloneJtaPlatform" />
+                value="org.hibernate.service.jta.platform.internal.JBossStandAloneJtaPlatform"/>
     </properties>
   </persistence-unit>
 

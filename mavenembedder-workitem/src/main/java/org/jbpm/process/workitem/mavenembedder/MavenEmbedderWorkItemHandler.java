@@ -76,8 +76,11 @@ public class MavenEmbedderWorkItemHandler extends AbstractLogOrThrowWorkItemHand
             String projectRoot = (String) workItem.getParameter("ProjectRoot");
             String modeStr = (String) workItem.getParameter("Mode");
             MavenEmbedderUtils.MavenEmbedderMode mode = MavenEmbedderUtils.MavenEmbedderMode.valueOf(modeStr == null ? "SYNC" : modeStr.toUpperCase());
-            
-            logger.debug("About to execute maven {} with options {} with working directory {}", goals, commandLineOptions, workDir);
+
+            logger.debug("About to execute maven {} with options {} with working directory {}",
+                         goals,
+                         commandLineOptions,
+                         workDir);
             switch (mode) {
                 case SYNC:
 

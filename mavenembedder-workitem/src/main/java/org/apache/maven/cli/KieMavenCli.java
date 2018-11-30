@@ -22,71 +22,70 @@ import java.util.Iterator;
 import org.apache.commons.cli.Option;
 
 /**
- * 
- * This is an extension of the default MavenCli implementation to allow maven invocation concurrently. 
+ * This is an extension of the default MavenCli implementation to allow maven invocation concurrently.
  * The main issues found are:
  * - OptionsBuilder class is not thread safe and thus multiple threads doing doMain will run into race conditions modifying different entries of the options
  * - projectRoot by default is allowed to be set via system properties which does not make sense in concurrent builds env
  * - -D options from arguments of doMain should not be set as system properties as that will corrupt different builds
- * 
+ * <p>
  * This is considered as workaround for the time being ... though it's unclear if we can get these fixed in maven/cli itself.
- *
  */
 public class KieMavenCli extends MavenCli {
 
-	private String projectRoot;
+    private String projectRoot;
 
-	public KieMavenCli(String projectRoot) {
-		this.projectRoot = projectRoot;
-	}
+    public KieMavenCli(String projectRoot) {
+        this.projectRoot = projectRoot;
+    }
 
-	@Override
-	public int doMain(CliRequest cliRequest) {
-		cliRequest.multiModuleProjectDirectory = new File(projectRoot);
-		return super.doMain(cliRequest);
-	}
+    @Override
+    public int doMain(CliRequest cliRequest) {
+        cliRequest.multiModuleProjectDirectory = new File(projectRoot);
+        return super.doMain(cliRequest);
+    }
 
-	@Override
-	void cli(CliRequest cliRequest) throws Exception {
-		synchronized (KieMavenCli.class) {
+    @Override
+    void cli(CliRequest cliRequest) throws Exception {
+        synchronized (KieMavenCli.class) {
 
-			super.cli(cliRequest);
-			if (cliRequest.commandLine.hasOption(CLIManager.SET_SYSTEM_PROPERTY)) {
-				String[] defStrs = cliRequest.commandLine.getOptionValues(CLIManager.SET_SYSTEM_PROPERTY);
+            super.cli(cliRequest);
+            if (cliRequest.commandLine.hasOption(CLIManager.SET_SYSTEM_PROPERTY)) {
+                String[] defStrs = cliRequest.commandLine.getOptionValues(CLIManager.SET_SYSTEM_PROPERTY);
 
-				if (defStrs != null) {
-					for (String property : defStrs) {
-						String name;
+                if (defStrs != null) {
+                    for (String property : defStrs) {
+                        String name;
 
-						String value;
+                        String value;
 
-						int i = property.indexOf("=");
+                        int i = property.indexOf("=");
 
-						if (i <= 0) {
-							name = property.trim();
+                        if (i <= 0) {
+                            name = property.trim();
 
-							value = "true";
-						} else {
-							name = property.substring(0, i).trim();
+                            value = "true";
+                        } else {
+                            name = property.substring(0,
+                                                      i).trim();
 
-							value = property.substring(i + 1);
-						}
+                            value = property.substring(i + 1);
+                        }
 
-						cliRequest.userProperties.setProperty(name, value);
-					}
+                        cliRequest.userProperties.setProperty(name,
+                                                              value);
+                    }
 
-					Iterator<Option> it = cliRequest.commandLine.iterator();
+                    Iterator<Option> it = cliRequest.commandLine.iterator();
 
-					while (it.hasNext()) {
-						Option option = (Option) it.next();
+                    while (it.hasNext()) {
+                        Option option = (Option) it.next();
 
-						if (option.getOpt().equals(Character.toString(CLIManager.SET_SYSTEM_PROPERTY))) {
-							it.remove();
-						}
-					}
-				}
-			}
-		}
-	}
-
+                        if (option.getOpt().equals(Character.toString(CLIManager.SET_SYSTEM_PROPERTY))) {
+                            it.remove();
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

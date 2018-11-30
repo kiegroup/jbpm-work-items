@@ -20,7 +20,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
-
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
@@ -145,13 +144,19 @@ public class ExecuteSqlWorkItemHandlerTest {
         h2Server.start();
 
         Properties driverProperties = new Properties();
-        driverProperties.setProperty("className", "org.h2.jdbcx.JdbcDataSource");
-        driverProperties.setProperty("user", "sa");
-        driverProperties.setProperty("password", "sa");
-        driverProperties.setProperty("url", "jdbc:h2:mem:jpa-wih;MVCC=true");
-        driverProperties.setProperty("driverClassName", "org.h2.Driver");
+        driverProperties.setProperty("className",
+                                     "org.h2.jdbcx.JdbcDataSource");
+        driverProperties.setProperty("user",
+                                     "sa");
+        driverProperties.setProperty("password",
+                                     "sa");
+        driverProperties.setProperty("url",
+                                     "jdbc:h2:mem:jpa-wih;MVCC=true");
+        driverProperties.setProperty("driverClassName",
+                                     "org.h2.Driver");
 
-        PoolingDataSourceWrapper pds = DataSourceFactory.setupPoolingDataSource(DS_NAME, driverProperties);
+        PoolingDataSourceWrapper pds = DataSourceFactory.setupPoolingDataSource(DS_NAME,
+                                                                                driverProperties);
         return pds;
     }
 
