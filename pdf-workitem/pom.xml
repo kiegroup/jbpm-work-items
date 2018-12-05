@@ -9,7 +9,7 @@
     <version>7.16.0-SNAPSHOT</version>
   </parent>
 
-    <artifactId>pdf-workitem</artifactId>
+  <artifactId>pdf-workitem</artifactId>
   <name>PDF</name>
   <description>Create PDF from xhtml template using freemarker</description>
   <organization>

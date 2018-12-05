@@ -57,12 +57,12 @@ public class MavenEmbedderUtils {
         String[] allOptions = ArrayUtils.addAll(allGoals,
                                                 allCommandLineOptions);
         int result = cli.doMain(allOptions,
-                   workDir,
-                   cliOut,
-                   cliErr);
-        
+                                workDir,
+                                cliOut,
+                                cliErr);
+
         if (result != 0) {
-        	throw new RuntimeException("Maven build finished with unexpected result = " + result);
+            throw new RuntimeException("Maven build finished with unexpected result = " + result);
         }
 
         String stdout = baosOut.toString("UTF-8");

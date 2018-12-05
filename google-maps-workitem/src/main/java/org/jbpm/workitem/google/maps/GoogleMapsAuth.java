@@ -18,6 +18,7 @@ package org.jbpm.workitem.google.maps;
 import com.google.maps.GeoApiContext;
 
 public class GoogleMapsAuth {
+
     public GeoApiContext authorize(String apiKey) throws Exception {
         return new GeoApiContext.Builder()
                 .apiKey(apiKey)

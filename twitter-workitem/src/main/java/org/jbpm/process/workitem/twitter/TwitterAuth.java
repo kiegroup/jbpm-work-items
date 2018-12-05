@@ -16,8 +16,8 @@
 package org.jbpm.process.workitem.twitter;
 
 import twitter4j.Twitter;
-import twitter4j.conf.ConfigurationBuilder;
 import twitter4j.TwitterFactory;
+import twitter4j.conf.ConfigurationBuilder;
 
 public class TwitterAuth {
 

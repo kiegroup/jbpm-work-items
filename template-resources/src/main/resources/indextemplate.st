@@ -31,7 +31,7 @@
             <td>$widInfo.(k).displayName$</td>
             <td>$widInfo.(k).category$</td>
             <td>$widInfo.(k).description$</td>
-            <td>$widInfo.(k).defaultHandler$</td>
+            <td>$widInfo.(k).defaultHandlerUnEscaped$</td>
         </tr>
         </tbody>
     </table>
@@ -120,6 +120,36 @@
     </table>
     <br/>
     $endif$
+    $if(widInfo.(k).serviceInfo.authInfo)$
+        <b>Authentication Information</b>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>Auth Required</th>
+                <th>Params</th>
+                <th>Params Description</th>
+                <th>Reference Site</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>$widInfo.(k).serviceInfo.authInfo.required$</td>
+                <td>
+                $widInfo.(k).serviceInfo.authInfo.params:{k1|
+                    $k1$<br/>
+                }$
+                </td>
+                <td>
+                $widInfo.(k).serviceInfo.authInfo.paramsDescription:{k1|
+                    $k1$<br>
+                }$
+                </td>
+                <td>$widInfo.(k).serviceInfo.authInfo.referencesite$</td>
+             </tr>
+             </tbody>
+        </table>
+        <br/>
+        $endif$
     </div></div><p/>
     }$
     </div>

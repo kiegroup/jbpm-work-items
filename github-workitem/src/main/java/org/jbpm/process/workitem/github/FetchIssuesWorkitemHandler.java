@@ -29,6 +29,7 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -37,7 +38,7 @@ import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "GithubFetchIssues.wid", name = "GithubFetchIssues",
         displayName = "GithubFetchIssues",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.github.FetchIssuesWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.github.FetchIssuesWorkitemHandler(\"userName\", \"password\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "User", required = true),
@@ -52,7 +53,10 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "github,repo,repository,fetch,issues",
-                action = @WidAction(title = "Fetch issues for a project from GitHub")
+                action = @WidAction(title = "Fetch issues for a project from GitHub"),
+                authinfo = @WidAuth(required = true, params = {"userName", "password"},
+                        paramsdescription = {"Github username", "Github password"},
+                        referencesite = "https://github.com/")
         ))
 public class FetchIssuesWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

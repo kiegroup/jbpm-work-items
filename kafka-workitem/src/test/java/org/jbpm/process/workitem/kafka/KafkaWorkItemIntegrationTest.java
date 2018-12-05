@@ -21,17 +21,15 @@ import org.jbpm.process.workitem.WorkDefinitionImpl;
 import org.jbpm.process.workitem.WorkItemRepository;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class KafkaWorkItemIntegrationTest {
 
     @Test
     public void testWorkitemValidity() {
         String repoPath = "file://" + System.getProperty("builddir") +
-                          "/" + System.getProperty("artifactId") + "-" +
-                          System.getProperty("version") + "/";
+                "/" + System.getProperty("artifactId") + "-" +
+                System.getProperty("version") + "/";
 
         Map<String, WorkDefinitionImpl> repoResults = new WorkItemRepository().getWorkDefinitions(repoPath,
                                                                                                   null,
@@ -42,5 +40,4 @@ public class KafkaWorkItemIntegrationTest {
 
         assertTrue(repoResults.containsKey("KafkaPublishMessages"));
     }
-
 }

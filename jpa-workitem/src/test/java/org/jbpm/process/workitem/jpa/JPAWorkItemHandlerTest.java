@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
@@ -350,13 +349,19 @@ public class JPAWorkItemHandlerTest {
         h2Server.start();
 
         Properties driverProperties = new Properties();
-        driverProperties.setProperty("className", "org.h2.jdbcx.JdbcDataSource");
-        driverProperties.setProperty("user", "sa");
-        driverProperties.setProperty("password", "sa");
-        driverProperties.setProperty("url", "jdbc:h2:mem:jpa-wih;MVCC=true");
-        driverProperties.setProperty("driverClassName", "org.h2.Driver");
+        driverProperties.setProperty("className",
+                                     "org.h2.jdbcx.JdbcDataSource");
+        driverProperties.setProperty("user",
+                                     "sa");
+        driverProperties.setProperty("password",
+                                     "sa");
+        driverProperties.setProperty("url",
+                                     "jdbc:h2:mem:jpa-wih;MVCC=true");
+        driverProperties.setProperty("driverClassName",
+                                     "org.h2.Driver");
 
-        PoolingDataSourceWrapper pds = DataSourceFactory.setupPoolingDataSource("jpaWIH", driverProperties);
+        PoolingDataSourceWrapper pds = DataSourceFactory.setupPoolingDataSource("jpaWIH",
+                                                                                driverProperties);
 
         return pds;
     }

@@ -110,7 +110,8 @@ public class AbstractKarafIntegrationTest {
         try {
             testProps.load(AbstractKarafIntegrationTest.class.getResourceAsStream("/test.properties"));
         } catch (Exception e) {
-            throw new RuntimeException("Unable to initialize KIE_VERSION property: " + e.getMessage(), e);
+            throw new RuntimeException("Unable to initialize KIE_VERSION property: " + e.getMessage(),
+                                       e);
         }
         KIE_VERSION = testProps.getProperty("project.version");
         logger.info("KIE Project Version : " + KIE_VERSION);
@@ -119,14 +120,15 @@ public class AbstractKarafIntegrationTest {
     protected static String getKarafVersion() {
         String karafVersion = System.getProperty(PROP_KARAF_VERSION);
         if (karafVersion == null) {
-            if(System.getProperty(PROP_KARAF_DISTRIBUTION_FILE) != null) {
+            if (System.getProperty(PROP_KARAF_DISTRIBUTION_FILE) != null) {
                 throw new RuntimeException("When you are running against custom container "
                                                    + "it is necessary to define Karaf version by defining system property karaf.version.");
             }
 
             // set the Karaf version defined by Maven
             MavenUrlReference.VersionResolver versionResolver = MavenUtils.asInProject();
-            karafVersion = versionResolver.getVersion(KARAF_GROUP_ID, KARAF_ARTIFACT_ID);
+            karafVersion = versionResolver.getVersion(KARAF_GROUP_ID,
+                                                      KARAF_ARTIFACT_ID);
         }
         return karafVersion;
     }
@@ -156,7 +158,8 @@ public class AbstractKarafIntegrationTest {
         options.add(karafConfiguration);
 
         if (System.getProperty("additional.features.url") != null) {
-            options.add(editConfigurationFileExtend("etc/org.apache.karaf.features.cfg", "featuresRepositories",
+            options.add(editConfigurationFileExtend("etc/org.apache.karaf.features.cfg",
+                                                    "featuresRepositories",
                                                     System.getProperty("additional.features.url")));
         }
 
@@ -177,31 +180,43 @@ public class AbstractKarafIntegrationTest {
         if (System.getProperty(PROP_ADDITIONAL_MAVEN_REPOS) != null) {
             additionalMavenRepositories = "," + System.getProperty(PROP_ADDITIONAL_MAVEN_REPOS);
         }
-        options.add(editConfigurationFilePut("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.repositories",
+        options.add(editConfigurationFilePut("etc/org.ops4j.pax.url.mvn.cfg",
+                                             "org.ops4j.pax.url.mvn.repositories",
                                              "http://repo1.maven.org/maven2@id=central," +
                                                      "https://repository.jboss.org/nexus/content/groups/public@snapshots@id=jboss-public" +
                                                      additionalMavenRepositories
         ));
-        options.add(editConfigurationFilePut("etc/system.properties", "patching.disabled", "true"));
+        options.add(editConfigurationFilePut("etc/system.properties",
+                                             "patching.disabled",
+                                             "true"));
         if (!"features-fuse".equals(System.getProperty("kie.features.classifier"))) {
             // when not running on Fuse, we have to configure overrides and add some missing features
-            options.add(editConfigurationFilePut("etc/startup.properties", "mvn:org.ops4j.pax.url/pax-url-wrap/2.5.4/jar/uber", "5"));
+            options.add(editConfigurationFilePut("etc/startup.properties",
+                                                 "mvn:org.ops4j.pax.url/pax-url-wrap/2.5.4/jar/uber",
+                                                 "5"));
             options.add(editConfigurationFileExtend("etc/org.apache.karaf.features.cfg",
-                                                    "featuresRepositories", "mvn:org.apache.karaf.features/spring-legacy/" + karafVersion + "/xml/features"));
-            options.add(replaceConfigurationFile("etc/org.apache.karaf.features.xml", new File("target/test-classes/org.apache.karaf.features.xml")));
-            options.add(editConfigurationFileExtend("etc/org.apache.karaf.features.cfg", "featuresBoot", "aries-blueprint"));
+                                                    "featuresRepositories",
+                                                    "mvn:org.apache.karaf.features/spring-legacy/" + karafVersion + "/xml/features"));
+            options.add(replaceConfigurationFile("etc/org.apache.karaf.features.xml",
+                                                 new File("target/test-classes/org.apache.karaf.features.xml")));
+            options.add(editConfigurationFileExtend("etc/org.apache.karaf.features.cfg",
+                                                    "featuresBoot",
+                                                    "aries-blueprint"));
         }
 
         if (System.getProperty(PROP_KARAF_FRAMEWORK) != null) {
-            options.add(editConfigurationFilePut(CustomProperties.KARAF_FRAMEWORK, System.getProperty(PROP_KARAF_FRAMEWORK)));
+            options.add(editConfigurationFilePut(CustomProperties.KARAF_FRAMEWORK,
+                                                 System.getProperty(PROP_KARAF_FRAMEWORK)));
         }
         return new DefaultCompositeOption(options.toArray(new Option[1]));
     }
 
     public static Option localMavenRepoOption() {
-        String localRepo = System.getProperty("maven.repo.local", "");
+        String localRepo = System.getProperty("maven.repo.local",
+                                              "");
         if (localRepo.length() > 0) {
-            logger.info("Using alternative local Maven repository in {}.", new File(localRepo).getAbsolutePath());
+            logger.info("Using alternative local Maven repository in {}.",
+                        new File(localRepo).getAbsolutePath());
         }
         return when(localRepo.length() > 0).useOptions(
                 //                systemProperty("org.ops4j.pax.url.mvn.localRepository").value(new File(localRepo).getAbsolutePath()));
@@ -210,6 +225,7 @@ public class AbstractKarafIntegrationTest {
                                          new File(localRepo).getAbsolutePath()),
                 systemProperty(SYSTEM_PROP_MAVEN_CUSTOM_SETTINGS).value(kieCustomMavenSettingsXML()));
     }
+
     public static Option loadKieFeaturesRepo() {
         String classifier = "features";
         if (System.getProperty("kie.features.classifier") != null) {
@@ -222,7 +238,9 @@ public class AbstractKarafIntegrationTest {
                                 .versionAsInProject().getURL());
     }
 
-    public static MavenArtifactProvisionOption getFeaturesUrl(String groupId, String artifactId, String version) {
+    public static MavenArtifactProvisionOption getFeaturesUrl(String groupId,
+                                                              String artifactId,
+                                                              String version) {
         String classifier = "features";
         if (System.getProperty("kie.features.classifier") != null && "kie-karaf-features".equals(artifactId)) {
             classifier = System.getProperty("kie.features.classifier");
@@ -243,8 +261,11 @@ public class AbstractKarafIntegrationTest {
     }
 
     public static Option loadKieFeatures(String... features) {
-        MavenArtifactProvisionOption featuresUrl = getFeaturesUrl("org.kie", "kie-karaf-features", KIE_VERSION);
-        return features(featuresUrl, features);
+        MavenArtifactProvisionOption featuresUrl = getFeaturesUrl("org.kie",
+                                                                  "kie-karaf-features",
+                                                                  KIE_VERSION);
+        return features(featuresUrl,
+                        features);
     }
 
     public static Option loadKieFeatures(List<String> features) {
@@ -257,7 +278,8 @@ public class AbstractKarafIntegrationTest {
         try {
             testProperties.load(testPropertiesStream);
         } catch (IOException e) {
-            throw new RuntimeException("Unable to read test.properties file", e);
+            throw new RuntimeException("Unable to read test.properties file",
+                                       e);
         }
         return testProperties.getProperty(KIE_MAVEN_SETTINGS_CUSTOM_PROPERTY);
     }

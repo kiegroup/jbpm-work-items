@@ -42,13 +42,14 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 
 @Wid(widfile = "GoogleSendMailDefinitions.wid", name = "GoogleSendMail",
         displayName = "GoogleSendMail",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.google.mail.SendMailWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.google.mail.SendMailWorkitemHandler(\"appName\", \"clentSecret\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "To"),
@@ -65,7 +66,10 @@ import org.kie.api.runtime.process.WorkItemManager;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "google,mail,email,send",
-                action = @WidAction(title = "Send email using Google Mail")
+                action = @WidAction(title = "Send email using Google Mail"),
+                authinfo = @WidAuth(required = true, params = {"appName", "clentSecret"},
+                        paramsdescription = {"Google app name", "Google client secret"},
+                        referencesite = "https://developers.google.com/gmail/api/auth/about-auth")
         ))
 public class SendMailWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

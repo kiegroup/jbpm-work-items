@@ -39,7 +39,8 @@ public class FileTransformer {
             }
             return fileString;
         } catch (Exception e) {
-            logger.error("Failed to read file {}", file.getName());
+            logger.error("Failed to read file {}",
+                         file.getName());
         }
         return null;
     }
@@ -50,7 +51,8 @@ public class FileTransformer {
             BufferedReader reader = new BufferedReader(new FileReader(file));
             return reader;
         } catch (Exception e) {
-            logger.error("Failed to read file {}", file.getName());
+            logger.error("Failed to read file {}",
+                         file.getName());
         }
         return null;
     }

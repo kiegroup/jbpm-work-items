@@ -28,6 +28,7 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -36,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "JiraJqlSearch.wid", name = "JiraJqlSearch",
         displayName = "JiraJqlSearch",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.jira.JqlSearchWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.jira.JqlSearchWorkitemHandler(\"userName\", \"password\", \"repoURI\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "SearchQuery", required = true)
@@ -49,7 +50,10 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "jira,jql,search,query",
-                action = @WidAction(title = "Execute a Jql query")
+                action = @WidAction(title = "Execute a Jql query"),
+                authinfo = @WidAuth(required = true, params = {"userName", "password"},
+                        paramsdescription = {"Jira user", "Jira password"},
+                        referencesite = "https://www.atlassian.com/software/jira")
         ))
 public class JqlSearchWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

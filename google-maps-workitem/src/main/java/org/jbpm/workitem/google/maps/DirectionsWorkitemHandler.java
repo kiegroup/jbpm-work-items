@@ -31,13 +31,14 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 
 @Wid(widfile = "GoogleMapsDirectionsDefinitions.wid", name = "GoogleMapsDirections",
         displayName = "GoogleMapsDirections",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.google.maps.DirectionsWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.google.maps.DirectionsWorkitemHandler(\"apiKey\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "Origin", required = true),
@@ -54,7 +55,10 @@ import org.kie.api.runtime.process.WorkItemManager;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "google,maps,directions,locations",
-                action = @WidAction(title = "Get directions using Google Maps")
+                action = @WidAction(title = "Get directions using Google Maps"),
+                authinfo = @WidAuth(required = true, params = {"apiKey"},
+                        paramsdescription = {"Google maps api key"},
+                        referencesite = "https://developers.google.com/maps/premium/previous-licenses/clientside/auth")
         ))
 public class DirectionsWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

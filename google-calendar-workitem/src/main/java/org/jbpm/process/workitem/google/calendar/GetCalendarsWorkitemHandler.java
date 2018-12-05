@@ -25,6 +25,7 @@ import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -33,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "GoogleGetCalendarsDefinitions.wid", name = "GoogleGetCalendars",
         displayName = "GoogleGetCalendars",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.google.calendar.GetCalendarsWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.google.calendar.GetCalendarsWorkitemHandler(\"appName\", \"clentSecret\")",
         documentation = "${artifactId}/index.html",
         results = {
                 @WidResult(name = "AllCalendars")
@@ -43,7 +44,10 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "google,calendar,get,all",
-                action = @WidAction(title = "Get all existing Google Calendars")
+                action = @WidAction(title = "Get all existing Google Calendars"),
+                authinfo = @WidAuth(required = true, params = {"appName", "clentSecret"},
+                        paramsdescription = {"Google app name", "Google client secret"},
+                        referencesite = "https://developers.google.com/calendar/auth")
         ))
 public class GetCalendarsWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 
@@ -74,7 +78,6 @@ public class GetCalendarsWorkitemHandler extends AbstractLogOrThrowWorkItemHandl
         } catch (Exception e) {
             handleException(e);
         }
-
     }
 
     public CalendarList getAllCalendars(com.google.api.services.calendar.Calendar client) {

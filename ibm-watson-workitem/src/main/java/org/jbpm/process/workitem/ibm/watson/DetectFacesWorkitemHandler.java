@@ -34,6 +34,7 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.jbpm.process.workitem.ibm.watson.result.FaceDetectionResult;
 import org.kie.api.runtime.process.WorkItem;
@@ -43,7 +44,7 @@ import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "DetectFacesDefinitions.wid", name = "IBMWatsonDetectFaces",
         displayName = "IBMWatsonDetectFaces",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.ibm.watson.DetectFacesWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.ibm.watson.DetectFacesWorkitemHandler(\"apiKey\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "ImageToDetect", required = true)
@@ -56,7 +57,10 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "ibm,watson,image,detect,face,faces",
-                action = @WidAction(title = "Detect faces in an image using IBM Watson")
+                action = @WidAction(title = "Detect faces in an image using IBM Watson"),
+                authinfo = @WidAuth(required = true, params = {"apiKey"},
+                        paramsdescription = {"IBM Watson api key"},
+                        referencesite = "https://www.ibm.com/watson/developercloud/doc/virtual-agent/api-keys.html")
         ))
 public class DetectFacesWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

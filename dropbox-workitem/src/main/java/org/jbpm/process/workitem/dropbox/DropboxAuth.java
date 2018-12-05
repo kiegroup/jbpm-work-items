@@ -21,7 +21,7 @@ import com.dropbox.core.v2.DbxClientV2;
 public class DropboxAuth {
 
     public DbxClientV2 authorize(String clientIdentifier,
-                                        String accessToken) throws IllegalArgumentException {
+                                 String accessToken) throws IllegalArgumentException {
         try {
             DbxRequestConfig config = new DbxRequestConfig(clientIdentifier);
             DbxClientV2 client = new DbxClientV2(config,

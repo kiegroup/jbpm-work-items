@@ -44,132 +44,179 @@ public class JavaInvokerTest extends AbstractBaseTest {
     public void testStaticMethod1() throws Exception {
         KieBase kbase = readKnowledgeBase();
         KieSession ksession = createSession(kbase);
-        ksession.getWorkItemManager().registerWorkItemHandler("Java", new JavaInvocationWorkItemHandler());
+        ksession.getWorkItemManager().registerWorkItemHandler("Java",
+                                                              new JavaInvocationWorkItemHandler());
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("Class", "org.jbpm.process.workitem.java.MyJavaClass");
-        params.put("Method", "staticMethod1");
-        params.put("Object", new MyJavaClass());
-        ksession.startProcess("com.sample.bpmn.java", params);
+        params.put("Class",
+                   "org.jbpm.process.workitem.java.MyJavaClass");
+        params.put("Method",
+                   "staticMethod1");
+        params.put("Object",
+                   new MyJavaClass());
+        ksession.startProcess("com.sample.bpmn.java",
+                              params);
     }
 
     @Test
     public void testStaticMethod2() throws Exception {
         KieBase kbase = readKnowledgeBase();
         KieSession ksession = createSession(kbase);
-        ksession.getWorkItemManager().registerWorkItemHandler("Java", new JavaInvocationWorkItemHandler());
+        ksession.getWorkItemManager().registerWorkItemHandler("Java",
+                                                              new JavaInvocationWorkItemHandler());
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("Class", "org.jbpm.process.workitem.java.MyJavaClass");
-        params.put("Method", "staticMethod2");
-        params.put("Object", new MyJavaClass());
+        params.put("Class",
+                   "org.jbpm.process.workitem.java.MyJavaClass");
+        params.put("Method",
+                   "staticMethod2");
+        params.put("Object",
+                   new MyJavaClass());
         List<Object> parameters = new ArrayList<Object>();
         parameters.add("krisv");
-        params.put("Parameters", parameters);
-        ksession.startProcess("com.sample.bpmn.java", params);
+        params.put("Parameters",
+                   parameters);
+        ksession.startProcess("com.sample.bpmn.java",
+                              params);
     }
 
     @Test
     public void testMyFirstMethod1() throws Exception {
         KieBase kbase = readKnowledgeBase();
         KieSession ksession = createSession(kbase);
-        ksession.getWorkItemManager().registerWorkItemHandler("Java", new JavaInvocationWorkItemHandler());
+        ksession.getWorkItemManager().registerWorkItemHandler("Java",
+                                                              new JavaInvocationWorkItemHandler());
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("Class", "org.jbpm.process.workitem.java.MyJavaClass");
-        params.put("Method", "myFirstMethod");
-        params.put("Object", new MyJavaClass());
+        params.put("Class",
+                   "org.jbpm.process.workitem.java.MyJavaClass");
+        params.put("Method",
+                   "myFirstMethod");
+        params.put("Object",
+                   new MyJavaClass());
         List<Object> parameters = new ArrayList<Object>();
         parameters.add("krisv");
         parameters.add(32);
-        params.put("Parameters", parameters);
+        params.put("Parameters",
+                   parameters);
         List<String> parameterTypes = new ArrayList<String>();
         parameterTypes.add("java.lang.String");
         parameterTypes.add("java.lang.Integer");
-        params.put("ParameterTypes", parameterTypes);
-        ksession.startProcess("com.sample.bpmn.java", params);
+        params.put("ParameterTypes",
+                   parameterTypes);
+        ksession.startProcess("com.sample.bpmn.java",
+                              params);
     }
 
     @Test
     public void testMyFirstMethod2() throws Exception {
         KieBase kbase = readKnowledgeBase();
         KieSession ksession = createSession(kbase);
-        ksession.getWorkItemManager().registerWorkItemHandler("Java", new JavaInvocationWorkItemHandler());
+        ksession.getWorkItemManager().registerWorkItemHandler("Java",
+                                                              new JavaInvocationWorkItemHandler());
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("Class", "org.jbpm.process.workitem.java.MyJavaClass");
-        params.put("Method", "myFirstMethod");
-        params.put("Object", new MyJavaClass());
+        params.put("Class",
+                   "org.jbpm.process.workitem.java.MyJavaClass");
+        params.put("Method",
+                   "myFirstMethod");
+        params.put("Object",
+                   new MyJavaClass());
         List<Object> parameters = new ArrayList<Object>();
         parameters.add("krisv");
         parameters.add("32");
-        params.put("Parameters", parameters);
+        params.put("Parameters",
+                   parameters);
         List<String> parameterTypes = new ArrayList<String>();
         parameterTypes.add("java.lang.String");
         parameterTypes.add("java.lang.String");
-        params.put("ParameterTypes", parameterTypes);
-        ksession.startProcess("com.sample.bpmn.java", params);
+        params.put("ParameterTypes",
+                   parameterTypes);
+        ksession.startProcess("com.sample.bpmn.java",
+                              params);
     }
 
     @Test
     public void testMyFirstMethod3() throws Exception {
         KieBase kbase = readKnowledgeBase();
         KieSession ksession = createSession(kbase);
-        ksession.getWorkItemManager().registerWorkItemHandler("Java", new JavaInvocationWorkItemHandler());
+        ksession.getWorkItemManager().registerWorkItemHandler("Java",
+                                                              new JavaInvocationWorkItemHandler());
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("Class", "org.jbpm.process.workitem.java.MyJavaClass");
-        params.put("Method", "myFirstMethod");
-        params.put("Object", new MyJavaClass());
+        params.put("Class",
+                   "org.jbpm.process.workitem.java.MyJavaClass");
+        params.put("Method",
+                   "myFirstMethod");
+        params.put("Object",
+                   new MyJavaClass());
         List<Object> parameters = new ArrayList<Object>();
         parameters.add("krisv");
         parameters.add(32);
         parameters.add("male");
-        params.put("Parameters", parameters);
-        ksession.startProcess("com.sample.bpmn.java", params);
+        params.put("Parameters",
+                   parameters);
+        ksession.startProcess("com.sample.bpmn.java",
+                              params);
     }
 
     @Test
     public void testMySecondMethod() throws Exception {
         KieBase kbase = readKnowledgeBase();
         KieSession ksession = createSession(kbase);
-        ksession.getWorkItemManager().registerWorkItemHandler("Java", new JavaInvocationWorkItemHandler());
+        ksession.getWorkItemManager().registerWorkItemHandler("Java",
+                                                              new JavaInvocationWorkItemHandler());
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("Class", "org.jbpm.process.workitem.java.MyJavaClass");
-        params.put("Method", "mySecondMethod");
-        params.put("Object", new MyJavaClass());
+        params.put("Class",
+                   "org.jbpm.process.workitem.java.MyJavaClass");
+        params.put("Method",
+                   "mySecondMethod");
+        params.put("Object",
+                   new MyJavaClass());
         List<Object> parameters = new ArrayList<Object>();
         parameters.add("krisv");
         List<String> children = new ArrayList<String>();
         children.add("Arne");
         parameters.add(children);
-        params.put("Parameters", parameters);
-        ksession.startProcess("com.sample.bpmn.java.list", params);
+        params.put("Parameters",
+                   parameters);
+        ksession.startProcess("com.sample.bpmn.java.list",
+                              params);
     }
 
     @Test
     public void failingtestHello() throws Exception {
         KieBase kbase = readKnowledgeBase();
         KieSession ksession = createSession(kbase);
-        ksession.getWorkItemManager().registerWorkItemHandler("Java", new JavaInvocationWorkItemHandler());
+        ksession.getWorkItemManager().registerWorkItemHandler("Java",
+                                                              new JavaInvocationWorkItemHandler());
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("Class", "org.jbpm.process.workitem.java.MyJavaClass");
-        params.put("Method", "writeHello");
+        params.put("Class",
+                   "org.jbpm.process.workitem.java.MyJavaClass");
+        params.put("Method",
+                   "writeHello");
         List<Object> parameters = new ArrayList<Object>();
         parameters.add("krisv");
-        params.put("Parameters", parameters);
-        ksession.startProcess("com.sample.bpmn.java", params);
+        params.put("Parameters",
+                   parameters);
+        ksession.startProcess("com.sample.bpmn.java",
+                              params);
     }
 
     private static KieBase readKnowledgeBase() throws Exception {
         ProcessBuilderFactory.setProcessBuilderFactoryService(new ProcessBuilderFactoryServiceImpl());
         ProcessRuntimeFactory.setProcessRuntimeFactoryService(new ProcessRuntimeFactoryServiceImpl());
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kbuilder.add(ResourceFactory.newClassPathResource("JavaInvoker.bpmn"), ResourceType.BPMN2);
-        kbuilder.add(ResourceFactory.newClassPathResource("JavaInvokerListResult.bpmn"), ResourceType.BPMN2);
+        kbuilder.add(ResourceFactory.newClassPathResource("JavaInvoker.bpmn"),
+                     ResourceType.BPMN2);
+        kbuilder.add(ResourceFactory.newClassPathResource("JavaInvokerListResult.bpmn"),
+                     ResourceType.BPMN2);
         return kbuilder.newKieBase();
     }
 
     private static KieSession createSession(KieBase kbase) {
         Properties properties = new Properties();
-        properties.put("drools.processInstanceManagerFactory", "org.jbpm.process.instance.impl.DefaultProcessInstanceManagerFactory");
-        properties.put("drools.processSignalManagerFactory", "org.jbpm.process.instance.event.DefaultSignalManagerFactory");
+        properties.put("drools.processInstanceManagerFactory",
+                       "org.jbpm.process.instance.impl.DefaultProcessInstanceManagerFactory");
+        properties.put("drools.processSignalManagerFactory",
+                       "org.jbpm.process.instance.event.DefaultSignalManagerFactory");
         KieSessionConfiguration config = KnowledgeBaseFactory.newKnowledgeSessionConfiguration(properties);
-        return kbase.newKieSession(config, EnvironmentFactory.newEnvironment());
+        return kbase.newKieSession(config,
+                                   EnvironmentFactory.newEnvironment());
     }
 }

@@ -30,6 +30,7 @@ import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -38,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "GoogleUploadToDriveDefinitions.wid", name = "GoogleUploadToDrive",
         displayName = "GoogleUploadToDrive",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.google.drive.MediaUploadWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.google.drive.MediaUploadWorkitemHandler(\"appName\", \"clentSecret\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "DocToUpload", required = true),
@@ -50,7 +51,10 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "google,drive,media,upload",
-                action = @WidAction(title = "Upload media to Google Drive")
+                action = @WidAction(title = "Upload media to Google Drive"),
+                authinfo = @WidAuth(required = true, params = {"appName", "clentSecret"},
+                        paramsdescription = {"Google app name", "Google client secret"},
+                        referencesite = "https://developers.google.com/drive/api/v3/about-auth")
         ))
 public class MediaUploadWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

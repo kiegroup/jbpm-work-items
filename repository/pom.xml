@@ -62,9 +62,9 @@
                   <fileset dir="${project.build.directory}/${project.artifactId}-${project.version}" includes="**/repoconf.part"/>
                 </concat>
                 <concat fixlastline="yes" destfile="${project.build.directory}/${project.artifactId}-${project.version}/index.html">
-                  <fileset file="${project.build.directory}/classes/repoheader.html" />
+                  <fileset file="${project.build.directory}/classes/repoheader.html"/>
                   <fileset dir="${project.build.directory}/${project.artifactId}-${project.version}" includes="**/repoindex.html"/>
-                  <fileset file="${project.build.directory}/classes/repofooter.html" />
+                  <fileset file="${project.build.directory}/classes/repofooter.html"/>
                 </concat>
               </target>
             </configuration>
@@ -78,7 +78,7 @@
             <configuration>
               <target>
                 <delete>
-                  <fileset dir="${project.build.directory}/${project.artifactId}-${project.version}" includes="repo*.html" />
+                  <fileset dir="${project.build.directory}/${project.artifactId}-${project.version}" includes="repo*.html"/>
                 </delete>
               </target>
             </configuration>
@@ -92,9 +92,9 @@
             <configuration>
               <target>
                 <concat fixlastline="yes" destfile="${project.build.directory}/${project.artifactId}-${project.version}/serviceinfo.js">
-                  <fileset file="${project.build.directory}/classes/serviceinfoheader.js" />
+                  <fileset file="${project.build.directory}/classes/serviceinfoheader.js"/>
                   <fileset dir="${project.build.directory}/${project.artifactId}-${project.version}" includes="**/serviceinfo.json"/>
-                  <fileset file="${project.build.directory}/classes/serviceinfofooter.js" />
+                  <fileset file="${project.build.directory}/classes/serviceinfofooter.js"/>
                 </concat>
               </target>
             </configuration>

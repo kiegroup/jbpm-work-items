@@ -27,13 +27,14 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 
 @Wid(widfile = "UpdateVimeoDefinitions.wid", name = "UpdateVimeo",
         displayName = "UpdateVimeo",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.vimeo.UpdateVideoMetadataWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.vimeo.UpdateVideoMetadataWorkitemHandler(\"accessToken\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "VideoEndpoint", required = true),
@@ -52,7 +53,10 @@ import org.kie.api.runtime.process.WorkItemManager;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "vimeo,video,update,metadata",
-                action = @WidAction(title = "Update existing video metadata")
+                action = @WidAction(title = "Update existing video metadata"),
+                authinfo = @WidAuth(required = true, params = {"accessToken"},
+                        paramsdescription = {"Vimeo access token"},
+                        referencesite = "https://developer.vimeo.com/api/authentication")
         ))
 public class UpdateVideoMetadataWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

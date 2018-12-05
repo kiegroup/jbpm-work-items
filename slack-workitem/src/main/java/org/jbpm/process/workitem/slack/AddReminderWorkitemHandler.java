@@ -20,13 +20,14 @@ import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 
 @Wid(widfile = "SlackAddReminderDefinitions.wid", name = "SlackAddReminder",
         displayName = "SlackAddReminder",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.slack.AddReminderWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.slack.AddReminderWorkitemHandler(\"accessToken\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "ReminderText", required = true),
@@ -37,7 +38,10 @@ import org.kie.api.runtime.process.WorkItemManager;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "slack,reminder,remind,send,message",
-                action = @WidAction(title = "Add a reminder to Slack")
+                action = @WidAction(title = "Add a reminder to Slack"),
+                authinfo = @WidAuth(required = true, params = {"accessToken"},
+                        paramsdescription = {"Slack access token"},
+                        referencesite = "https://api.slack.com/tokens")
         ))
 public class AddReminderWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

@@ -26,6 +26,7 @@ import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -34,7 +35,7 @@ import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "DropboxUploadFileDefinitions.wid", name = "DropboxUploadFile",
         displayName = "DropboxUploadFile",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.dropbox.UploadFileWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.dropbox.UploadFileWorkitemHandler(\"clientIdentifier\", \"accessToken\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "Path", required = true),
@@ -45,7 +46,10 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "DropBox,file,files,upload,document,documents",
-                action = @WidAction(title = "Download a file from DropBox")
+                action = @WidAction(title = "Download a file from DropBox"),
+                authinfo = @WidAuth(required = true, params = {"clientIdentifier", "accessToken"},
+                        paramsdescription = {"Dropbox client identifier", "Dropbox access token"},
+                        referencesite = "https://www.dropbox.com/lp/developers")
         ))
 public class UploadFileWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

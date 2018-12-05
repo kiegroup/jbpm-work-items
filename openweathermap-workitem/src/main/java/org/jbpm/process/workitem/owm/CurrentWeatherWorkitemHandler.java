@@ -28,6 +28,7 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -36,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "CurrentWeatherDefinitions.wid", name = "CurrentWeather",
         displayName = "CurrentWeather",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.owm.CurrentWeatherWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.owm.CurrentWeatherWorkitemHandler(\"apiKey\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "CityName", required = true),
@@ -50,7 +51,10 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "openweathermap,weather,current",
-                action = @WidAction(title = "Get current weather information for a location")
+                action = @WidAction(title = "Get current weather information for a location"),
+                authinfo = @WidAuth(required = true, params = {"apiKey"},
+                        paramsdescription = {"OpenWeatherMap api key"},
+                        referencesite = "https://openweathermap.org/appid")
         ))
 public class CurrentWeatherWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

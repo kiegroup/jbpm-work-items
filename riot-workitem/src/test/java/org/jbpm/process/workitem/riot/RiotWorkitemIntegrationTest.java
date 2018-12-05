@@ -19,12 +19,12 @@ import java.util.Map;
 
 import org.jbpm.process.workitem.WorkDefinitionImpl;
 import org.jbpm.process.workitem.WorkItemRepository;
-
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class RiotWorkitemIntegrationTest {
+
     @Test
     public void testWorkitemValidity() {
 

@@ -39,6 +39,7 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -47,7 +48,7 @@ import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "GoogleAddEventDefinitions.wid", name = "GoogleAddEvent",
         displayName = "GoogleAddEvent",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.google.calendar.AddEventWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.google.calendar.AddEventWorkitemHandler(\"appName\", \"clentSecret\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "CalendarSummary", required = true),
@@ -65,7 +66,10 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "google,calendar,add,event",
-                action = @WidAction(title = "Add a new event to existing Google Calendar")
+                action = @WidAction(title = "Add a new event to existing Google Calendar"),
+                authinfo = @WidAuth(required = true, params = {"appName", "clentSecret"},
+                        paramsdescription = {"Google app name", "Google client secret"},
+                        referencesite = "https://developers.google.com/calendar/auth")
         ))
 public class AddEventWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 
@@ -117,7 +121,6 @@ public class AddEventWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
         } catch (Exception e) {
             handleException(e);
         }
-
     }
 
     public Event addEvent(com.google.api.services.calendar.Calendar client,

@@ -25,6 +25,7 @@ import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
@@ -55,7 +56,10 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "jabber,im,xmpp,message,send",
-                action = @WidAction(title = "Send a message using Jabber")
+                action = @WidAction(title = "Send a message using Jabber"),
+                authinfo = @WidAuth(required = true, params = {"user", "password"},
+                        paramsdescription = {"Jabber user", "Jabber password"},
+                        referencesite = "https://www.jabber.org/")
         ))
 public class JabberWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 

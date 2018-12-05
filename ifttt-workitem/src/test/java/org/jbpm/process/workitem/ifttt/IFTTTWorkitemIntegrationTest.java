@@ -19,12 +19,12 @@ import java.util.Map;
 
 import org.jbpm.process.workitem.WorkDefinitionImpl;
 import org.jbpm.process.workitem.WorkItemRepository;
-
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class IFTTTWorkitemIntegrationTest {
+
     @Test
     public void testWorkitemValidity() {
         String repoPath = "file://" + System.getProperty("builddir") +
@@ -32,8 +32,8 @@ public class IFTTTWorkitemIntegrationTest {
                 System.getProperty("version") + "/";
 
         Map<String, WorkDefinitionImpl> repoResults = new WorkItemRepository().getWorkDefinitions(repoPath,
-                                                                                            null,
-                                                                                            System.getProperty("artifactId"));
+                                                                                                  null,
+                                                                                                  System.getProperty("artifactId"));
         assertNotNull(repoResults);
         assertEquals(1,
                      repoResults.size());

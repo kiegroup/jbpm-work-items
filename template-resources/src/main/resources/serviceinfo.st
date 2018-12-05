@@ -21,6 +21,17 @@ $openbracket$
                 "istrigger" : "true",
                 "triggertitle" : "$widInfo.(k).serviceInfo.trigger.title$",
             $endif$
+            "requiresauth" : "$widInfo.(k).serviceInfo.authInfo.required$",
+            $if(widInfo.(k).serviceInfo.authInfo.required)$
+                "authparams" : [
+                    $widInfo.(k).serviceInfo.authInfo.params:{k1|
+                       $openbracket$
+                           "name" : "$k1$"
+                       $closebracket$
+                    }; separator=","$
+                ],
+                "referencesite" : "$widInfo.(k).serviceInfo.authInfo.referencesite$",
+            $endif$
         $endif$
         $if(widInfo.(k).parameters)$
             "parameters" : [

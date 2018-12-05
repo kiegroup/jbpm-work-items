@@ -27,13 +27,14 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 
 @Wid(widfile = "GoogleAddCalendarDefinitions.wid", name = "GoogleAddCalendar",
         displayName = "GoogleAddCalendar",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.google.calendar.AddCalendarWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.google.calendar.AddCalendarWorkitemHandler(\"appName\", \"clentSecret\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "CalendarSummary", required = true)
@@ -46,7 +47,10 @@ import org.kie.api.runtime.process.WorkItemManager;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "google,calendar,add",
-                action = @WidAction(title = "Add a new Google Calendar")
+                action = @WidAction(title = "Add a new Google Calendar"),
+                authinfo = @WidAuth(required = true, params = {"appName", "clentSecret"},
+                        paramsdescription = {"Google app name", "Google client secret"},
+                        referencesite = "https://developers.google.com/calendar/auth")
         ))
 public class AddCalendarWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 
@@ -85,7 +89,6 @@ public class AddCalendarWorkitemHandler extends AbstractLogOrThrowWorkItemHandle
         } catch (Exception e) {
             handleException(e);
         }
-
     }
 
     public Calendar addCalendar(com.google.api.services.calendar.Calendar client,

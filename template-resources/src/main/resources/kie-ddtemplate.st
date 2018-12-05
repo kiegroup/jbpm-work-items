@@ -13,7 +13,7 @@
     $widInfo:{k|
       <work-item-handler>
         <resolver>mvel</resolver>
-        <identifier>$widInfo.(k).defaultHandlerNoType$</identifier>
+        <identifier>$widInfo.(k).defaultHandlerNoTypeUnEscaped$</identifier>
         <parameters/>
         <name>$widInfo.(k).name$</name>
       </work-item-handler>

@@ -31,17 +31,24 @@ public class MavenEmbedderCommand implements Command {
     @Override
     public ExecutionResults execute(CommandContext ctx) throws Exception {
         try {
-            String goals = (String) getData(ctx, "Goals");
-            String commandLineOptions = (String) getData(ctx, "CLOptions");
-            String workDir = (String) getData(ctx, "WorkDirectory");
-            String projectRoot = (String) getData(ctx, "ProjectRoot");
+            String goals = (String) getData(ctx,
+                                            "Goals");
+            String commandLineOptions = (String) getData(ctx,
+                                                         "CLOptions");
+            String workDir = (String) getData(ctx,
+                                              "WorkDirectory");
+            String projectRoot = (String) getData(ctx,
+                                                  "ProjectRoot");
 
             if (goals == null || workDir == null || projectRoot == null) {
                 throw new IllegalArgumentException("Invalid command inputs.");
             }
 
             ExecutionResults results = new ExecutionResults();
-            logger.debug("About to execute maven {} with options {} with working directory {}", goals, commandLineOptions, workDir);
+            logger.debug("About to execute maven {} with options {} with working directory {}",
+                         goals,
+                         commandLineOptions,
+                         workDir);
             results.setData(MavenEmbedderUtils.executeMavenGoals(new KieMavenCli(projectRoot),
                                                                  RESULTS_VALUES,
                                                                  projectRoot,
@@ -53,19 +60,19 @@ public class MavenEmbedderCommand implements Command {
             throw new RuntimeException(e.getMessage());
         }
     }
-    
-    
-    protected Object getData(CommandContext ctx, String name) {
-    	WorkItem workItem = (WorkItem) ctx.getData("workItem");
-    	Object data = null;
-    	if (workItem != null) {
-    		data = workItem.getParameter(name);
-    	} 
-    	
-    	if (data == null){
-    		data = ctx.getData(name);
-    	}
-    	
-    	return data;
+
+    protected Object getData(CommandContext ctx,
+                             String name) {
+        WorkItem workItem = (WorkItem) ctx.getData("workItem");
+        Object data = null;
+        if (workItem != null) {
+            data = workItem.getParameter(name);
+        }
+
+        if (data == null) {
+            data = ctx.getData(name);
+        }
+
+        return data;
     }
 }

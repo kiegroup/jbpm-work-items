@@ -30,6 +30,7 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -38,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "RiotSummonerLastMatch.wid", name = "RiotSummonerLastMatch",
         displayName = "RiotSummonerLastMatch",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.riot.LastSummonerMatchWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.riot.LastSummonerMatchWorkitemHandler(\"apiKey\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "SummonerName", required = true),
@@ -52,7 +53,10 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "riot,league,legends,summoner,match,get,info",
-                action = @WidAction(title = "Get Summoner last match info")
+                action = @WidAction(title = "Get Summoner last match info"),
+                authinfo = @WidAuth(required = true, params = {"apiKey"},
+                        paramsdescription = {"Riot Games api key"},
+                        referencesite = "https://developer.riotgames.com/api-keys.html")
         ))
 public class LastSummonerMatchWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

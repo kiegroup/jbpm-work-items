@@ -24,22 +24,23 @@ import net.aksingh.owmjapis.core.OWM.Country;
 import net.aksingh.owmjapis.model.DailyWeatherForecast;
 import net.aksingh.owmjapis.model.param.ForecastData;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.jbpm.process.workitem.owm.DailyForecastData.DailyForecastDay;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 
 @Wid(widfile = "DailyForecastDefinitions.wid", name = "DailyForecast",
         displayName = "DailyForecast",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.owm.DailyForecastWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.owm.DailyForecastWorkitemHandler(\"apiKey\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "CityName", required = true),
@@ -53,7 +54,10 @@ import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "openweathermap,weather,daily,forecase",
-                action = @WidAction(title = "Get the weather daily forecast for a location")
+                action = @WidAction(title = "Get the weather daily forecast for a location"),
+                authinfo = @WidAuth(required = true, params = {"apiKey"},
+                        paramsdescription = {"OpenWeatherMap api key"},
+                        referencesite = "https://openweathermap.org/appid")
         ))
 public class DailyForecastWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 

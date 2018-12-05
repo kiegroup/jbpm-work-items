@@ -28,6 +28,7 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -36,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "GithubMergePullRequest.wid", name = "GithubMergePullRequest",
         displayName = "GithubMergePullRequest",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.github.MergePullRequestWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.github.MergePullRequestWorkitemHandler(\"userName\", \"password\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "RepoOwner", required = true),
@@ -52,7 +53,10 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "github,repo,repository,merge,pull,request,pullrequest,pr",
-                action = @WidAction(title = "Merget a pull request on GitHub")
+                action = @WidAction(title = "Merget a pull request on GitHub"),
+                authinfo = @WidAuth(required = true, params = {"userName", "password"},
+                        paramsdescription = {"Github username", "Github password"},
+                        referencesite = "https://github.com/")
         ))
 public class MergePullRequestWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 
@@ -96,13 +100,12 @@ public class MergePullRequestWorkitemHandler extends AbstractLogOrThrowWorkItemH
                                                        Integer.parseInt(pullRequestNum),
                                                        commitMessage);
 
-                if(mergeStatus != null && mergeStatus.isMerged()) {
+                if (mergeStatus != null && mergeStatus.isMerged()) {
                     results.put(RESULTS_VALUE,
                                 mergeStatus.isMerged());
                 } else {
                     throw new IllegalArgumentException("Unable to merget pull request: " + mergeStatus.getMessage());
                 }
-
             } else {
                 throw new IllegalArgumentException("Pull request " + pullRequestNum + " is not mergeable");
             }

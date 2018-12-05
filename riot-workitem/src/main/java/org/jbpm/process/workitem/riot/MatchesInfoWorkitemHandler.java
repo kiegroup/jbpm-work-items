@@ -33,16 +33,16 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.concurrent.TimeUnit;
 
 @Wid(widfile = "RiotMatchInfo.wid", name = "RiotMatchInfo",
         displayName = "RiotMatchInfo",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.riot.MatchesInfoWorkitemHandler()",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.riot.MatchesInfoWorkitemHandler(\"apiKey\")",
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "SummonerName", required = true),
@@ -57,7 +57,10 @@ import java.util.concurrent.TimeUnit;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "riot,league,legends,summoner,match,get,info",
-                action = @WidAction(title = "Get Match Info")
+                action = @WidAction(title = "Get Match Info"),
+                authinfo = @WidAuth(required = true, params = {"apiKey"},
+                        paramsdescription = {"Riot Games api key"},
+                        referencesite = "https://developer.riotgames.com/api-keys.html")
         ))
 public class MatchesInfoWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 
@@ -108,8 +111,8 @@ public class MatchesInfoWorkitemHandler extends AbstractLogOrThrowWorkItemHandle
                 MatchList matchList = riotApi.getMatchListByAccountId(platform,
                                                                       summoner.getAccountId());
 
-
-                List<MatchReference> matchReferenceList = RiotUtils.geNumberOfPlayedMatches(matchList.getMatches(), numOfMatches);
+                List<MatchReference> matchReferenceList = RiotUtils.geNumberOfPlayedMatches(matchList.getMatches(),
+                                                                                            numOfMatches);
 
                 for (MatchReference matchReference : matchReferenceList) {
 
