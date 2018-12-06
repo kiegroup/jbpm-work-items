@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.drive.MediaUploadWorkitemHandler(\"appName\", \"clentSecret\")",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "DocToUpload", required = true),
+                @WidParameter(name = "DocToUpload", required = true, runtimeType = "org.jbpm.document.Document"),
                 @WidParameter(name = "DocMimeType", required = true),
                 @WidParameter(name = "UploadPath", required = true)
         },

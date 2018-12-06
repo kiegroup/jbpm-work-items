@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "ColumnSeparator")
         },
         results = {
-                @WidResult(name = "Result")
+                @WidResult(name = "Result", runtimeType = "java.lang.Object")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

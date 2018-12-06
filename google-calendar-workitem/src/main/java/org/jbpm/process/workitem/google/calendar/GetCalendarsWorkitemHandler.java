@@ -19,6 +19,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.CalendarList;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
 import org.jbpm.process.workitem.core.util.Wid;
@@ -37,7 +38,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.calendar.GetCalendarsWorkitemHandler(\"appName\", \"clentSecret\")",
         documentation = "${artifactId}/index.html",
         results = {
-                @WidResult(name = "AllCalendars")
+                @WidResult(name = "AllCalendars", runtimeType = "com.google.api.services.calendar.model.CalendarList")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
@@ -68,8 +69,8 @@ public class GetCalendarsWorkitemHandler extends AbstractLogOrThrowWorkItemHandl
                                 WorkItemManager workItemManager) {
         Map<String, Object> results = new HashMap<String, Object>();
         try {
-            com.google.api.services.calendar.Calendar client = auth.getAuthorizedCalendar(appName,
-                                                                                          clientSecret);
+            Calendar client = auth.getAuthorizedCalendar(appName,
+                                                         clientSecret);
 
             results.put(RESULTS_ALL_CALENDARS,
                         getAllCalendars(client));

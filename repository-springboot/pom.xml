@@ -134,6 +134,7 @@
                     <include>**/*.jar</include>
                     <include>**/*.png</include>
                     <include>**/*.js</include>
+                    <include>**/*.bpmn2</include>
                   </includes>
                   <filtering>false</filtering>
                 </resource>

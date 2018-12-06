@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "CommitMessage")
         },
         results = {
-                @WidResult(name = "IsMerged")
+                @WidResult(name = "IsMerged", runtimeType = "java.lang.Boolean")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

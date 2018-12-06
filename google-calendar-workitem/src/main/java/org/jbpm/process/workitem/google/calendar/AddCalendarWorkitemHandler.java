@@ -40,7 +40,7 @@ import org.kie.api.runtime.process.WorkItemManager;
                 @WidParameter(name = "CalendarSummary", required = true)
         },
         results = {
-                @WidResult(name = "Calendar")
+                @WidResult(name = "Calendar", runtimeType = "com.google.api.services.calendar.model.Calendar")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

@@ -41,12 +41,12 @@ import org.kie.api.runtime.process.WorkItemManager;
         parameters = {
                 @WidParameter(name = "Class", required = true),
                 @WidParameter(name = "Method"),
-                @WidParameter(name = "Object"),
-                @WidParameter(name = "ParameterTypes"),
-                @WidParameter(name = "Parameters")
+                @WidParameter(name = "Object", runtimeType = "java.lang.Object"),
+                @WidParameter(name = "ParameterTypes", runtimeType = "java.util.List"),
+                @WidParameter(name = "Parameters", runtimeType = "java.util.List")
         },
         results = {
-                @WidResult(name = "Result")
+                @WidResult(name = "Result", runtimeType = "java.lang.Object")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

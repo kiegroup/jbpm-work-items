@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "Organization")
         },
         results = {
-                @WidResult(name = "ForkedRepoInfo")
+                @WidResult(name = "ForkedRepoInfo", runtimeType = "org.jbpm.process.workitem.github.RepositoryInfo")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

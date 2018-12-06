@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "DocumentPath", required = true)
         },
         results = {
-                @WidResult(name = "Document")
+                @WidResult(name = "Document", runtimeType = "org.jbpm.document.Document")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

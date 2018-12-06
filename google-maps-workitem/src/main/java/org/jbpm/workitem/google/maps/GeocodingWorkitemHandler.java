@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "LocationType")
         },
         results = {
-                @WidResult(name = "GeocodingResults")
+                @WidResult(name = "GeocodingResults", runtimeType = "com.google.maps.model.GeocodingResult")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

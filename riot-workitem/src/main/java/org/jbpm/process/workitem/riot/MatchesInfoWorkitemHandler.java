@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "SummonerPlatform")
         },
         results = {
-                @WidResult(name = "MatchesInfo")
+                @WidResult(name = "MatchesInfo", runtimeType = "java.util.List")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

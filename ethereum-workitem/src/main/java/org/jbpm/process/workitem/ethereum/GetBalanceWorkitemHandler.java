@@ -43,7 +43,7 @@ import org.web3j.protocol.http.HttpService;
                 @WidParameter(name = "ServiceURL", required = true)
         },
         results = {
-                @WidResult(name = "Balance")
+                @WidResult(name = "Balance", runtimeType = "java.math.BigDecimal")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
@@ -92,7 +92,7 @@ public class GetBalanceWorkitemHandler extends AbstractLogOrThrowWorkItemHandler
 
             String serviceURL = (String) workItem.getParameter("ServiceURL");
 
-            Map<String, Object> results = new HashMap<String, Object>();
+            Map<String, Object> results = new HashMap();
 
             if (web3j == null) {
                 web3j = Web3j.build(new HttpService(serviceURL));

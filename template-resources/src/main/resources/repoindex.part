@@ -12,6 +12,7 @@
             <a class="dropdown-item" href="\$$openbracket$artifactId$closebracket$/\$$openbracket$artifactId$closebracket$.json"><span class="fa fa-file">&nbsp;Workitem Definition JSON</span></a>
             <a class="dropdown-item" href="\$$openbracket$artifactId$closebracket$/kie-deployment-descriptor.xml"><span class="fa fa-file">&nbsp;Kie Deployment Descriptor</span></a>
             <a class="dropdown-item" href="\$$openbracket$artifactId$closebracket$/\$$openbracket$artifactId$closebracket$-\$$openbracket$version$closebracket$.jar"><span class="fa fa-file">&nbsp;Workitem Jar</span></a>
+            <a class="dropdown-item" href="\$$openbracket$artifactId$closebracket$/\$$openbracket$artifactId$closebracket$.bpmn2"><span class="fa fa-file">&nbsp;Sample BPMN2 Process</span></a>
         </div>
     </div>
     </td>

@@ -48,7 +48,7 @@ import org.kie.api.runtime.process.WorkItemManager;
                 @WidParameter(name = "Units")
         },
         results = {
-                @WidResult(name = "Directions")
+                @WidResult(name = "Directions", runtimeType = "com.google.maps.model.DirectionsResult")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

@@ -42,10 +42,10 @@ import org.web3j.protocol.http.HttpService;
                 @WidParameter(name = "ServiceURL", required = true),
                 @WidParameter(name = "ContractAddress", required = true),
                 @WidParameter(name = "EventName", required = true),
-                @WidParameter(name = "EventReturnType"),
-                @WidParameter(name = "EventIndexedParameter"),
-                @WidParameter(name = "EventNonIndexedParameter"),
                 @WidParameter(name = "SignalName", required = true),
+                @WidParameter(name = "EventReturnType"),
+                @WidParameter(name = "EventIndexedParameter", runtimeType = "java.util.List"),
+                @WidParameter(name = "EventNonIndexedParameter", runtimeType = "java.util.List"),
                 @WidParameter(name = "AbortOnUpdate")
         },
         mavenDepends = {

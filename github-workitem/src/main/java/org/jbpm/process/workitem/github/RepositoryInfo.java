@@ -15,9 +15,11 @@
  */
 package org.jbpm.process.workitem.github;
 
+import java.io.Serializable;
+
 import org.eclipse.egit.github.core.Repository;
 
-public class RepositoryInfo {
+public class RepositoryInfo implements Serializable {
 
     public long id;
     public String name;

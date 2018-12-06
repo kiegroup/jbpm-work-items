@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "Mode")
         },
         results = {
-                @WidResult(name = "MavenResults")
+                @WidResult(name = "MavenResults", runtimeType = "java.util.Map")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

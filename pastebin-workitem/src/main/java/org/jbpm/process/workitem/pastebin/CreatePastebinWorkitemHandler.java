@@ -42,13 +42,13 @@ import org.slf4j.LoggerFactory;
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "Title"),
-                @WidParameter(name = "Content", required = true),
+                @WidParameter(name = "Content", required = true, runtimeType = "java.lang.Object"),
                 @WidParameter(name = "Format"),
                 @WidParameter(name = "Visibility"),
                 @WidParameter(name = "Author")
         },
         results = {
-                @WidResult(name = "PasteURL")
+                @WidResult(name = "PasteURL", runtimeType = "java.net.URL")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

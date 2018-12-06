@@ -56,10 +56,10 @@ import org.kie.api.runtime.process.WorkItemManager;
                 @WidParameter(name = "From"),
                 @WidParameter(name = "Subject"),
                 @WidParameter(name = "BodyText"),
-                @WidParameter(name = "Attachment")
+                @WidParameter(name = "Attachment", runtimeType = "org.jbpm.document.Document")
         },
         results = {
-                @WidResult(name = "Message")
+                @WidResult(name = "Message", runtimeType = "com.google.api.services.gmail.model.Message")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

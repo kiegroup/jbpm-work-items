@@ -41,7 +41,7 @@ import org.kie.api.runtime.process.WorkItemManager;
                 @WidParameter(name = "PlaceIds", required = true)
         },
         results = {
-                @WidResult(name = "Speedlimits")
+                @WidResult(name = "Speedlimits", runtimeType = "com.google.maps.model.SpeedLimit")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

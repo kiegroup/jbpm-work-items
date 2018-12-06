@@ -49,7 +49,7 @@ import org.kie.api.runtime.process.WorkItemManager;
                 @WidParameter(name = "Markers")
         },
         results = {
-                @WidResult(name = "StaticMap")
+                @WidResult(name = "StaticMap", runtimeType = "com.google.maps.ImageResult")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

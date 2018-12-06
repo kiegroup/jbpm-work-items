@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "NumOfTasks", required = true)
         },
         results = {
-                @WidResult(name = "FoundTasks")
+                @WidResult(name = "FoundTasks", runtimeType = "java.util.List")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

@@ -41,10 +41,10 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.ftp.FTPUploadWorkItemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
+                @WidParameter(name = "File", required = true, runtimeType = "java.io.File"),
                 @WidParameter(name = "User"),
                 @WidParameter(name = "Password"),
-                @WidParameter(name = "FilePath"),
-                @WidParameter(name = "File", required = true)
+                @WidParameter(name = "FilePath")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

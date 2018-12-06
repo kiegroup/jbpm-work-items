@@ -47,10 +47,10 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.ibm.watson.DetectFacesWorkitemHandler(\"apiKey\")",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "ImageToDetect", required = true)
+                @WidParameter(name = "ImageToDetect", required = true, runtimeType = "org.jbpm.document.Document")
         },
         results = {
-                @WidResult(name = "Detection")
+                @WidResult(name = "Detection", runtimeType = "java.util.List")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

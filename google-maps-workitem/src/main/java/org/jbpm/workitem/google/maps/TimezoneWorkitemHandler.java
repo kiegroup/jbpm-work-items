@@ -42,7 +42,7 @@ import org.kie.api.runtime.process.WorkItemManager;
                 @WidParameter(name = "LatLong", required = true)
         },
         results = {
-                @WidResult(name = "TimezonResults")
+                @WidResult(name = "TimezonResults", runtimeType = "java.util.TimeZone")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
