@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "IssuesState")
         },
         results = {
-                @WidResult(name = "IssuesList")
+                @WidResult(name = "IssuesList", runtimeType = "java.util.List")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

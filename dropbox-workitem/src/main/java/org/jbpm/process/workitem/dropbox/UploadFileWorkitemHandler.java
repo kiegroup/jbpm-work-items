@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "Path", required = true),
-                @WidParameter(name = "Document", required = true)
+                @WidParameter(name = "Document", required = true, runtimeType = "org.jbpm.document.Document")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

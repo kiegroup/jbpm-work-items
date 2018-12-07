@@ -42,7 +42,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "Archive", required = true),
-                @WidParameter(name = "Files")
+                @WidParameter(name = "Files", runtimeType = "java.util.List")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

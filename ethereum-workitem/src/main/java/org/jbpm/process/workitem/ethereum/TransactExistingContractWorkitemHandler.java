@@ -48,12 +48,12 @@ import org.web3j.protocol.http.HttpService;
                 @WidParameter(name = "ServiceURL", required = true),
                 @WidParameter(name = "ContractAddress", required = true),
                 @WidParameter(name = "MethodName", required = true),
-                @WidParameter(name = "MethodInputType"),
+                @WidParameter(name = "MethodInputType", runtimeType = "org.web3j.abi.datatypes.Type"),
                 @WidParameter(name = "WaitForReceipt"),
                 @WidParameter(name = "DepositAmount"),
         },
         results = {
-                @WidResult(name = "Receipt")
+                @WidResult(name = "Receipt", runtimeType = "org.web3j.protocol.core.methods.response.TransactionReceipt")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

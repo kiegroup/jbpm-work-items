@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "User", required = true)
         },
         results = {
-                @WidResult(name = "RepoListInfo")
+                @WidResult(name = "RepoListInfo", runtimeType = "java.util.List")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

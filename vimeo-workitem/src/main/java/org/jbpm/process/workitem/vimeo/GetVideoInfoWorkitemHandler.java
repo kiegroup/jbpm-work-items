@@ -40,7 +40,7 @@ import org.kie.api.runtime.process.WorkItemManager;
                 @WidParameter(name = "VideoEndpoint", required = true)
         },
         results = {
-                @WidResult(name = "VideoInfo")
+                @WidResult(name = "VideoInfo", runtimeType = "org.jbpm.process.workitem.vimeo.SerializableVimeoResponse")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

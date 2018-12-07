@@ -50,7 +50,7 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
                 @WidParameter(name = "PDFName")
         },
         results = {
-                @WidResult(name = "PDFDocument")
+                @WidResult(name = "PDFDocument", runtimeType = "org.jbpm.document.Document")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

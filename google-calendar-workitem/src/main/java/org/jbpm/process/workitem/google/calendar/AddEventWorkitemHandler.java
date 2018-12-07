@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "EventCreator")
         },
         results = {
-                @WidResult(name = "Event")
+                @WidResult(name = "Event", runtimeType = "com.google.api.services.calendar.model.Event")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

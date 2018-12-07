@@ -38,11 +38,11 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.transform.TransformWorkItemHandler()",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "InputObject", required = true),
+                @WidParameter(name = "InputObject", required = true, runtimeType = "java.lang.Object"),
                 @WidParameter(name = "OutputType", required = true)
         },
         results = {
-                @WidResult(name = "OutputObject")
+                @WidResult(name = "OutputObject", runtimeType = "java.lang.Object")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

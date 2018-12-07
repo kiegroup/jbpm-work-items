@@ -48,10 +48,10 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.ibm.watson.ClassifyImageWorkitemHandler(\"apiKey\")",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "ImageToClassify", required = true)
+                @WidParameter(name = "ImageToClassify", required = true, runtimeType = "org.jbpm.document.Document")
         },
         results = {
-                @WidResult(name = "Classification")
+                @WidResult(name = "Classification", runtimeType = "java.util.List")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

@@ -49,7 +49,7 @@ import org.web3j.protocol.http.HttpService;
                 @WidParameter(name = "MethodOutputType")
         },
         results = {
-                @WidResult(name = "Result")
+                @WidResult(name = "Result", runtimeType = "java.lang.Object")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

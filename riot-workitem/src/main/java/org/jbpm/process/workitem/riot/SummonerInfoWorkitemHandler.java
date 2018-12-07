@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "SummonerPlatform")
         },
         results = {
-                @WidResult(name = "SummonerInfo")
+                @WidResult(name = "SummonerInfo", runtimeType = "net.rithms.riot.api.endpoints.summoner.dto.Summoner")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

@@ -40,7 +40,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "Command", required = true),
-                @WidParameter(name = "Arguments")
+                @WidParameter(name = "Arguments", runtimeType = "java.util.List")
         },
         results = {
                 @WidResult(name = "Output")

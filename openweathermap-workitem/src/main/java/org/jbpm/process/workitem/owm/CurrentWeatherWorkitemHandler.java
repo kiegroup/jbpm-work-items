@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "CountryCode")
         },
         results = {
-                @WidResult(name = "CurrentWeatherData")
+                @WidResult(name = "CurrentWeatherData", runtimeType = "org.jbpm.process.workitem.owm.CurrentWeatherData")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

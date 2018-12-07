@@ -40,7 +40,7 @@ import twitter4j.Twitter;
         documentation = "${artifactId}/index.html",
         parameters = {
                 @WidParameter(name = "StatusUpdate", required = true),
-                @WidParameter(name = "Media"),
+                @WidParameter(name = "Media", runtimeType = "org.jbpm.document.Document"),
                 @WidParameter(name = "DebugEnabled")
         },
         mavenDepends = {

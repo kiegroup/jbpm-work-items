@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.CalendarList;
 import com.google.api.services.calendar.model.CalendarListEntry;
 import com.google.api.services.calendar.model.Events;
@@ -46,7 +47,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "CalendarSummary", required = true)
         },
         results = {
-                @WidResult(name = "AllEvents")
+                @WidResult(name = "AllEvents", runtimeType = "com.google.api.services.calendar.model.Events")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
@@ -84,8 +85,8 @@ public class GetEventsWorkitemHandler extends AbstractLogOrThrowWorkItemHandler 
             RequiredParameterValidator.validate(this.getClass(),
                                                 workItem);
 
-            com.google.api.services.calendar.Calendar client = auth.getAuthorizedCalendar(appName,
-                                                                                          clientSecret);
+            Calendar client = auth.getAuthorizedCalendar(appName,
+                                                         clientSecret);
 
             results.put(RESULTS_ALL_EVENTS,
                         getAllEvents(client,

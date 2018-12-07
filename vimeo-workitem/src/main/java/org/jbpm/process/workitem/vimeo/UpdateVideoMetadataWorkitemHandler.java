@@ -46,7 +46,7 @@ import org.kie.api.runtime.process.WorkItemManager;
                 @WidParameter(name = "ReviewLink")
         },
         results = {
-                @WidResult(name = "ResponseStatusCode")
+                @WidResult(name = "ResponseStatusCode", runtimeType = "java.lang.Integer")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

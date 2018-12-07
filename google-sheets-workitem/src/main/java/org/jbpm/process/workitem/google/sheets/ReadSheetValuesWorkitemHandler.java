@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "Range", required = true),
         },
         results = {
-                @WidResult(name = "SheetValues")
+                @WidResult(name = "SheetValues", runtimeType = "java.util.List")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

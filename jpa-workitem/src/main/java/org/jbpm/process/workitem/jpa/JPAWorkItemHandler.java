@@ -69,16 +69,16 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.jpa.JPAWorkItemHandler(\"persistenceUnit\", \"classloader\")",
         documentation = "${artifactId}/index.html",
         parameters = {
-                @WidParameter(name = "Type"),
-                @WidParameter(name = "Id"),
-                @WidParameter(name = "Entity"),
-                @WidParameter(name = "Action", required = true),
-                @WidParameter(name = "Query"),
-                @WidParameter(name = "QueryParameters"),
-                @WidParameter(name = "QueryResults")
+                @WidParameter(name = "Type", runtimeType = "java.lang.Object"),
+                @WidParameter(name = "Id", runtimeType = "java.lang.Object"),
+                @WidParameter(name = "Entity", runtimeType = "java.lang.Object"),
+                @WidParameter(name = "Action", required = true, runtimeType = "java.lang.Object"),
+                @WidParameter(name = "Query", runtimeType = "java.lang.Object"),
+                @WidParameter(name = "QueryParameters", runtimeType = "java.lang.Object"),
+                @WidParameter(name = "QueryResults", runtimeType = "java.lang.Object")
         },
         results = {
-                @WidResult(name = "Result")
+                @WidResult(name = "Result", runtimeType = "java.util.Map")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

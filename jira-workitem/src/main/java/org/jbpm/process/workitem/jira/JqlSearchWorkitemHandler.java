@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "SearchQuery", required = true)
         },
         results = {
-                @WidResult(name = "SearchResults")
+                @WidResult(name = "SearchResults", runtimeType = "java.util.Map")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")

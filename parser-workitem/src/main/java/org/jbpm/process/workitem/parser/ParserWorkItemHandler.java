@@ -66,7 +66,7 @@ import org.kie.api.runtime.process.WorkItemManager;
                 @WidParameter(name = "Input")
         },
         results = {
-                @WidResult(name = "Result")
+                @WidResult(name = "Result", runtimeType = "java.lang.Object")
         },
         mavenDepends = {
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
