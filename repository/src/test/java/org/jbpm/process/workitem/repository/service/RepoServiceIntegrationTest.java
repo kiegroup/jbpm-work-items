@@ -30,11 +30,11 @@ public class RepoServiceIntegrationTest {
     private static String jsonInput;
     private static RepoService repoService;
 
-    // update this when new workitems are added
-    private static int TOTAL_MODULES = 33;
+    // update this when new workitem is added
+    private static int TOTAL_MODULES = 34;
 
-    // update this when new workitems are added
-    private static int TOTAL_SERVICES = 74;
+    // update this when new workitem handlers are added
+    private static int TOTAL_SERVICES = 79;
 
     @BeforeClass
     public static void init() throws Exception {

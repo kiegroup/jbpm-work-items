@@ -76,6 +76,7 @@
     <version.org.ops4j.pax.exam>4.11.0</version.org.ops4j.pax.exam>
     <version.org.apache.servicemix.bundles.javax-inject>1_2</version.org.apache.servicemix.bundles.javax-inject>
     <version.google.maps>0.9.0</version.google.maps>
+    <version.okta>1.3.0</version.okta>
 
     <!-- Failsafe plugin-related properties -->
     <failsafe.arg.line>
@@ -352,6 +353,23 @@
         <groupId>org</groupId>
         <artifactId>jpastebin</artifactId>
         <version>${version.jpastebin}</version>
+      </dependency>
+
+
+      <dependency>
+        <groupId>com.okta.sdk</groupId>
+        <artifactId>okta-sdk-api</artifactId>
+        <version>${version.okta}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.okta.sdk</groupId>
+        <artifactId>okta-sdk-impl</artifactId>
+        <version>${version.okta}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.okta.sdk</groupId>
+        <artifactId>okta-sdk-httpclient</artifactId>
+        <version>${version.okta}</version>
       </dependency>
 
       <!-- test depends -->
@@ -658,6 +676,11 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
+        <artifactId>okta-workitem</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
         <artifactId>repository</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -864,6 +887,12 @@
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
         <artifactId>google-maps-workitem</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>okta-workitem</artifactId>
         <version>${project.version}</version>
         <type>zip</type>
       </dependency>
@@ -1091,6 +1120,7 @@
         <module>vimeo-workitem</module>
         <module>kafka-workitem</module>
         <module>google-maps-workitem</module>
+        <module>okta-workitem</module>
         <module>repository</module>
         <module>repository-springboot</module>
         <module>repository-wildfly</module>

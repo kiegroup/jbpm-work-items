@@ -54,7 +54,7 @@ public class HostedRepositoryIntegrationTest {
     private static String DEFAULT_HOST = "localhost";
 
     // update this when new workitems are added
-    private static int TOTAL_WORKITEM_HANDLERS = 74;
+    private static int TOTAL_WORKITEM_HANDLERS = 79;
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -104,8 +104,7 @@ public class HostedRepositoryIntegrationTest {
         URI uri = toServerURI(connector);
         Map<String, WorkDefinitionImpl> repoResults = WorkItemRepository.getWorkDefinitions(uri.toString());
         assertNotNull(repoResults);
-        assertEquals(TOTAL_WORKITEM_HANDLERS,
-                     repoResults.size());
+        assertEquals(TOTAL_WORKITEM_HANDLERS, repoResults.size());
     }
 
     private URI toServerURI(ServerConnector connector) throws URISyntaxException {
