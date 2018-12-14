@@ -4,6 +4,8 @@ $openbracket$
         "displayName" : "$widInfo.(k).displayName$",
         "defaultHandler" : "$widInfo.(k).defaultHandler$",
         "documentation" : "$widInfo.(k).documentation$",
+        "module" : "$widInfo.(k).module$",
+        "version" : "$widInfo.(k).version$",
         "icon" : "$widInfo.(k).icon$",
         $if(widInfo.(k).serviceInfo)$
             "category" : "$widInfo.(k).serviceInfo.category$",
@@ -30,7 +32,7 @@ $openbracket$
                        $closebracket$
                     }; separator=","$
                 ],
-                "referencesite" : "$widInfo.(k).serviceInfo.authInfo.referencesite$",
+                "authreferencesite" : "$widInfo.(k).serviceInfo.authInfo.referencesite$",
             $endif$
         $endif$
         $if(widInfo.(k).parameters)$

@@ -39,6 +39,7 @@ import org.web3j.protocol.http.HttpService;
         displayName = "EthereumDeployContract",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ethereum.DeployContractWorkitemHandler(\"walletPassword\", \"walletPath\")",
         documentation = "${artifactId}/index.html",
+        module = "${artifactId}", version = "${version}",
         parameters = {
                 @WidParameter(name = "ServiceURL", required = true),
                 @WidParameter(name = "ContractPath", required = true),

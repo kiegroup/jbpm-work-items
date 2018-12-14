@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
         displayName = "ExecuteSQL",
         defaultHandler = "mvel: new org.jbpm.process.workitem.executesql.ExecuteSqlWorkItemHandler(\"dataSourceName\")",
         documentation = "${artifactId}/index.html",
+        module = "${artifactId}", version = "${version}",
         parameters = {
                 @WidParameter(name = "SQLStatement", required = true),
                 @WidParameter(name = "MaxResults"),

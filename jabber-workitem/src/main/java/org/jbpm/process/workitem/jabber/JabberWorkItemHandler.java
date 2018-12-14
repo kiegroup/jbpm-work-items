@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
         displayName = "Jabber",
         defaultHandler = "mvel: new org.jbpm.process.workitem.jabber.JabberWorkItemHandler()",
         documentation = "${artifactId}/index.html",
+        module = "${artifactId}", version = "${version}",
         parameters = {
                 @WidParameter(name = "User"),
                 @WidParameter(name = "Password"),

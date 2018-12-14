@@ -42,6 +42,7 @@ import org.web3j.protocol.http.HttpService;
         displayName = "EthereumQueryExistingContract",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ethereum.QueryExistingContractWorkitemHandler(\"walletPassword\", \"walletPath\")",
         documentation = "${artifactId}/index.html",
+        module = "${artifactId}", version = "${version}",
         parameters = {
                 @WidParameter(name = "ServiceURL", required = true),
                 @WidParameter(name = "ContractAddress", required = true),

@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
         displayName = "FTP",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ftp.FTPUploadWorkItemHandler()",
         documentation = "${artifactId}/index.html",
+        module = "${artifactId}", version = "${version}",
         parameters = {
                 @WidParameter(name = "File", required = true, runtimeType = "java.io.File"),
                 @WidParameter(name = "User"),

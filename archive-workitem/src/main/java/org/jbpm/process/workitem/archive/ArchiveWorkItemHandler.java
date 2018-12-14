@@ -40,6 +40,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         displayName = "Archive",
         defaultHandler = "mvel: new org.jbpm.process.workitem.archive.ArchiveWorkItemHandler()",
         documentation = "${artifactId}/index.html",
+        module = "${artifactId}", version = "${version}",
         parameters = {
                 @WidParameter(name = "Archive", required = true),
                 @WidParameter(name = "Files", runtimeType = "java.util.List")

@@ -60,6 +60,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         displayName = "Parser",
         defaultHandler = "mvel: new org.jbpm.process.workitem.parser.ParserWorkItemHandler()",
         documentation = "${artifactId}/index.html",
+        module = "${artifactId}", version = "${version}",
         parameters = {
                 @WidParameter(name = "Format", required = true),
                 @WidParameter(name = "Type"),

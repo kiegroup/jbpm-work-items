@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
         displayName = "IFTTTCall",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ifttt.IFTTTWorkitemHandler(\"key\")",
         documentation = "${artifactId}/index.html",
+        module = "${artifactId}", version = "${version}",
         parameters = {
                 @WidParameter(name = "Trigger", required = true),
                 @WidParameter(name = "Value1"),

@@ -29,6 +29,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         displayName = "SlackAddReminder",
         defaultHandler = "mvel: new org.jbpm.process.workitem.slack.AddReminderWorkitemHandler(\"accessToken\")",
         documentation = "${artifactId}/index.html",
+        module = "${artifactId}", version = "${version}",
         parameters = {
                 @WidParameter(name = "ReminderText", required = true),
                 @WidParameter(name = "ReminderTime", required = true)

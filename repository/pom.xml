@@ -102,6 +102,52 @@
               <goal>run</goal>
             </goals>
           </execution>
+          <execution>
+            <id>create test wid service info</id>
+            <phase>package</phase>
+            <configuration>
+              <target>
+                <concat fixlastline="yes" destfile="${project.build.testOutputDirectory}/serviceinfo.js">
+                  <fileset file="${project.build.directory}/classes/serviceinfoheader.js"/>
+                  <fileset dir="${project.build.directory}/${project.artifactId}-${project.version}" includes="**/serviceinfo.json"/>
+                  <fileset file="${project.build.directory}/classes/serviceinfofooter.js"/>
+                </concat>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-kafka-workitem-resources</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <encoding>UTF-8</encoding>
+              <resources>
+                <resource>
+                  <directory>target/${artifactId}-${version}/kafka-workitem</directory>
+                  <includes>
+                    <include>*.wid</include>
+                    <include>*.bpmn2</include>
+                    <include>*.jar</include>
+                    <include>*.xml</include>
+                    <include>*.png</include>
+                  </includes>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>
+              <outputDirectory>target/test-classes/kafka-workitem</outputDirectory>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
     </plugins>

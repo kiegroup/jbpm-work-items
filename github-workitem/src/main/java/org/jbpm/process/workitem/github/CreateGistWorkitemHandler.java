@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
         displayName = "GithubCreateGist",
         defaultHandler = "mvel: new org.jbpm.process.workitem.github.CreateGistWorkitemHandler(\"userName\", \"password\")",
         documentation = "${artifactId}/index.html",
+        module = "${artifactId}", version = "${version}",
         parameters = {
                 @WidParameter(name = "Content", required = true, runtimeType = "org.jbpm.document.Document"),
                 @WidParameter(name = "Description"),

@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
         displayName = "JiraAddComment",
         defaultHandler = "mvel: new org.jbpm.process.workitem.jira.AddCommentOnIssueWorkitemHandler(\"userName\", \"password\", \"repoURI\")",
         documentation = "${artifactId}/index.html",
+        module = "${artifactId}", version = "${version}",
         parameters = {
                 @WidParameter(name = "IssueKey", required = true),
                 @WidParameter(name = "Comment", required = true),

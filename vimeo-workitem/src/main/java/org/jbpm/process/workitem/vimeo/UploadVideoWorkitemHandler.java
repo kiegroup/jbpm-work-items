@@ -36,6 +36,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         displayName = "UploadVimeo",
         defaultHandler = "mvel: new org.jbpm.process.workitem.vimeo.UploadVideoWorkitemHandler(\"accessToken\")",
         documentation = "${artifactId}/index.html",
+        module = "${artifactId}", version = "${version}",
         parameters = {
                 @WidParameter(name = "VideoFile", required = true, runtimeType = "java.io.File")
         },

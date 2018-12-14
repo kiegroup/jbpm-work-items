@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
         displayName = "GithubFetchIssues",
         defaultHandler = "mvel: new org.jbpm.process.workitem.github.FetchIssuesWorkitemHandler(\"userName\", \"password\")",
         documentation = "${artifactId}/index.html",
+        module = "${artifactId}", version = "${version}",
         parameters = {
                 @WidParameter(name = "User", required = true),
                 @WidParameter(name = "RepoName", required = true),

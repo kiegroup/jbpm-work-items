@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
         displayName = "MavenEmbedder",
         defaultHandler = "mvel: new org.jbpm.process.workitem.mavenembedder.MavenEmbedderWorkItemHandler()",
         documentation = "${artifactId}/index.html",
+        module = "${artifactId}", version = "${version}",
         parameters = {
                 @WidParameter(name = "Goals", required = true),
                 @WidParameter(name = "CLOptions"), // command line options

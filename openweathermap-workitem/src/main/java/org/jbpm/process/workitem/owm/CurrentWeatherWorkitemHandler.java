@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
         displayName = "CurrentWeather",
         defaultHandler = "mvel: new org.jbpm.process.workitem.owm.CurrentWeatherWorkitemHandler(\"apiKey\")",
         documentation = "${artifactId}/index.html",
+        module = "${artifactId}", version = "${version}",
         parameters = {
                 @WidParameter(name = "CityName", required = true),
                 @WidParameter(name = "CountryCode")

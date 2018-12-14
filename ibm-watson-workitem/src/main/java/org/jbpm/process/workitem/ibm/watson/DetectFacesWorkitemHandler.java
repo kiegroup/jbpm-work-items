@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
         displayName = "IBMWatsonDetectFaces",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ibm.watson.DetectFacesWorkitemHandler(\"apiKey\")",
         documentation = "${artifactId}/index.html",
+        module = "${artifactId}", version = "${version}",
         parameters = {
                 @WidParameter(name = "ImageToDetect", required = true, runtimeType = "org.jbpm.document.Document")
         },
