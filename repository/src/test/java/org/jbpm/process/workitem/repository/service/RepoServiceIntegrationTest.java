@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+package org.jbpm.process.workitem.repository.service;
+
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -40,7 +42,7 @@ public class RepoServiceIntegrationTest {
 
     @BeforeClass
     public static void init() throws Exception {
-        jsonInput = IOUtils.toString(RepoServiceIntegrationTest.class.getResourceAsStream("serviceinfo.js"),
+        jsonInput = IOUtils.toString(RepoServiceIntegrationTest.class.getResourceAsStream("/serviceinfo.js"),
                                      StandardCharsets.UTF_8);
         repoService = new RepoService(jsonInput);
     }
@@ -106,14 +108,14 @@ public class RepoServiceIntegrationTest {
 
         // install module
         String moduleName = repoService.getModules().get(0).getName();
-        repoService.installModule(moduleName);
+        repoService.installModule(moduleName, "project A");
         installeddRepoModules = repoService.getInstalledModules();
         assertNotNull(installeddRepoModules);
         assertEquals(1,
                      installeddRepoModules.size());
 
         // uninstall it again
-        repoService.uninstallModule(moduleName);
+        repoService.uninstallModule(moduleName, "project A");
         installeddRepoModules = repoService.getInstalledModules();
         assertNotNull(installeddRepoModules);
         assertEquals(0,

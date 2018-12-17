@@ -16,7 +16,6 @@
 package org.jbpm.process.workitem.repository.service;
 
 import java.util.List;
-import java.util.UUID;
 
 public class RepoData {
 
@@ -45,8 +44,7 @@ public class RepoData {
     private boolean enabled;
     private boolean installed;
 
-    public RepoData() {
-        this.id = UUID.randomUUID().toString();
+    public RepoData() {        
         this.enabled = true;
         this.installed = false;
     }
@@ -233,5 +231,35 @@ public class RepoData {
 
     public void setInstalled(boolean installed) {
         this.installed = installed;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        RepoData other = (RepoData) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "RepoData [id=" + id + ", name=" + name + ", category=" + category + ", description=" + description + ", actiontitle=" + actiontitle + ", enabled=" + enabled + ", installed=" + installed + "]";
     }
 }

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+package org.jbpm.process.workitem.repository;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
