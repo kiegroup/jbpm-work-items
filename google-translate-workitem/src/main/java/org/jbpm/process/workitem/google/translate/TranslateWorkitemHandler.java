@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
         displayName = "GoogleTranslate",
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.translate.TranslateWorkitemHandler(\"apiKey\")",
         documentation = "${artifactId}/index.html",
-        module = "${artifactId}", version = "${version}",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "ToTranslate", required = true),
                 @WidParameter(name = "SourceLang", required = true),

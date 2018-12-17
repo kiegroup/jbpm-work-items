@@ -20,7 +20,6 @@ import java.util.List;
 
 public class RepoModule {
     private String name;
-    private String version;
     private boolean enabled;
     private boolean installed;
 
@@ -37,14 +36,6 @@ public class RepoModule {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
     }
 
     public List<RepoData> getRepoData() {

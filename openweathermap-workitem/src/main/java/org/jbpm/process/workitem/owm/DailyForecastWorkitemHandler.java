@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
         displayName = "DailyForecast",
         defaultHandler = "mvel: new org.jbpm.process.workitem.owm.DailyForecastWorkitemHandler(\"apiKey\")",
         documentation = "${artifactId}/index.html",
-        module = "${artifactId}", version = "${version}",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "CityName", required = true),
                 @WidParameter(name = "CountryCode")

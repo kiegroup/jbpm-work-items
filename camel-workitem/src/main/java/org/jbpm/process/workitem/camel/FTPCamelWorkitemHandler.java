@@ -29,7 +29,7 @@ import org.jbpm.process.workitem.core.util.service.WidService;
         displayName = "CamelFTPConnector",
         defaultHandler = "mvel: new org.jbpm.process.workitem.camel.FTPCamelWorkitemHandler()",
         documentation = "${artifactId}/index.html",
-        module = "${artifactId}", version = "${version}",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "payload"),
                 @WidParameter(name = "hostname", required = true),

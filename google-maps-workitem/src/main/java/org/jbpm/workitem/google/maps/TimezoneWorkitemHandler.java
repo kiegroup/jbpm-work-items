@@ -38,7 +38,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         displayName = "GoogleMapsTimezone",
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.maps.TimezoneWorkitemHandler(\"apiKey\")",
         documentation = "${artifactId}/index.html",
-        module = "${artifactId}", version = "${version}",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "LatLong", required = true)
         },

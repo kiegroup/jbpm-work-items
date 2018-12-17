@@ -31,7 +31,7 @@ import org.jbpm.process.workitem.core.util.service.WidService;
         displayName = "CamelXSLTConnector",
         defaultHandler = "mvel: new org.jbpm.process.workitem.camel.XSLTCamelWorkitemHandler()",
         documentation = "${artifactId}/index.html",
-        module = "${artifactId}", version = "${version}",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "payload", required = true),
                 @WidParameter(name = "templateName", required = true)

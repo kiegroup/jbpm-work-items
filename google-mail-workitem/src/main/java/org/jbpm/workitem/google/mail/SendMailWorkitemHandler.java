@@ -51,7 +51,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         displayName = "GoogleSendMail",
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.mail.SendMailWorkitemHandler(\"appName\", \"clentSecret\")",
         documentation = "${artifactId}/index.html",
-        module = "${artifactId}", version = "${version}",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "To"),
                 @WidParameter(name = "From"),

@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
         displayName = "JiraJqlSearch",
         defaultHandler = "mvel: new org.jbpm.process.workitem.jira.JqlSearchWorkitemHandler(\"userName\", \"password\", \"repoURI\")",
         documentation = "${artifactId}/index.html",
-        module = "${artifactId}", version = "${version}",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "SearchQuery", required = true)
         },

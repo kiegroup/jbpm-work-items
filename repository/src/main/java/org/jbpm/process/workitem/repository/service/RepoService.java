@@ -16,9 +16,7 @@
 package org.jbpm.process.workitem.repository.service;
 
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,6 +25,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.io.IOUtils;
 import org.jbpm.process.workitem.repository.RepositoryEventListener;
 import org.jbpm.process.workitem.repository.RepositoryStorage;
@@ -35,16 +37,6 @@ import org.jbpm.process.workitem.repository.storage.InMemoryRepositoryStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
-/**
- * Note:
- * 1) "services" are equivalent to "workitem handlers"
- * 2) "modules" are equivalent to "workitem groups", one workitem group can include many workitem handlers
- */
 public class RepoService {
 
     private static final Logger logger = LoggerFactory.getLogger(RepoService.class);
@@ -52,9 +44,9 @@ public class RepoService {
     private String serviceInfoVarDeclaration = "var serviceinfo = ";
     private List<RepoData> services;
     private List<RepoModule> modules = new ArrayList<>();
-    
+
     private RepositoryStorage storage = new InMemoryRepositoryStorage();
-    
+
     private Set<RepositoryEventListener> listeners = new LinkedHashSet<>();
 
     public RepoService() {
@@ -64,8 +56,9 @@ public class RepoService {
     public RepoService(String jsonInput) {
         loadServices(jsonInput);
     }
-    
-    public RepoService(RepositoryStorage storage, RepositoryEventListener...eventListeners) {
+
+    public RepoService(RepositoryStorage storage,
+                       RepositoryEventListener... eventListeners) {
         this.storage = storage;
         this.listeners.addAll(Arrays.asList(eventListeners));
         loadServices(null);
@@ -95,8 +88,8 @@ public class RepoService {
                              true);
 
             List<RepoData> currentServices = mapper.readValue(jsonInput,
-                                        new TypeReference<List<RepoData>>() {
-                                        });
+                                                              new TypeReference<List<RepoData>>() {
+                                                              });
             // remove all nulls from list if any (can happen due to trailing commas in json)
             currentServices.removeAll(Collections.singleton(null));
             // synchronize with the storage to make sure all services are up to date
@@ -114,7 +107,6 @@ public class RepoService {
             for (RepoModule repoModule : modules) {
                 if (repoModule.getName().equals(repoData.getModule())) {
                     repoModule.addRepoData(repoData);
-                    repoModule.setVersion(repoData.getVersion());
                     found = true;
                 }
             }
@@ -122,7 +114,6 @@ public class RepoService {
             if (!found) {
                 RepoModule repoModule = new RepoModule();
                 repoModule.setName(repoData.getModule());
-                repoModule.setVersion(repoData.getVersion());
                 repoModule.addRepoData(repoData);
                 modules.add(repoModule);
             }
@@ -134,27 +125,29 @@ public class RepoService {
      */
 
     public List<RepoData> getServices() {
-        return storage.loadServices(0, 100);
+        return storage.loadServices(0,
+                                    100);
     }
 
+    public RepoData getServiceByName(String name) {
+        List<RepoData> servicesByName = storage.loadServices((service) -> service.getName().equalsIgnoreCase(name),
+                                                             0,
+                                                             100);
 
-    public RepoData getServiceByName(String name) {        
-        List<RepoData> servicesByName = storage.loadServices((service) -> service.getName().equalsIgnoreCase(name), 0, 100);
-        
         if (servicesByName.isEmpty()) {
             return null;
         }
-        
+
         return servicesByName.get(0);
     }
-    
+
     public void enableService(String serviceId) {
         for (RepoData service : services) {
             if (service.getId().equals(serviceId)) {
                 service.setEnabled(true);
 
                 storage.onEnabled(service);
-                
+
                 listeners.forEach(listener -> listener.onServiceTaskEnabled(service));
                 return;
             }
@@ -166,58 +159,70 @@ public class RepoService {
         for (RepoData service : services) {
             if (service.getId().equals(serviceId)) {
                 service.setEnabled(false);
-                
+
                 storage.onDisabled(service);
-                
+
                 listeners.forEach(listener -> listener.onServiceTaskDisabled(service));
                 return;
             }
         }
-        
+
         throw new ServiceTaskNotFoundException("Service with id " + serviceId + " was not found");
     }
-    
-    public void installService(String serviceId, String target) {
+
+    public void installService(String serviceId,
+                               String target) {
         for (RepoData service : services) {
             if (service.getId().equals(serviceId)) {
                 service.setEnabled(true);
 
-                storage.onInstalled(service, target);
-                listeners.forEach(listener -> listener.onServiceTaskInstalled(service, target));
+                storage.onInstalled(service,
+                                    target);
+                listeners.forEach(listener -> listener.onServiceTaskInstalled(service,
+                                                                              target));
                 return;
             }
         }
-        
+
         throw new ServiceTaskNotFoundException("Service with id " + serviceId + " was not found");
     }
 
-    public void uninstallService(String serviceId, String target) {
+    public void uninstallService(String serviceId,
+                                 String target) {
         for (RepoData service : services) {
             if (service.getId().equals(serviceId)) {
                 service.setInstalled(false);
-                
-                storage.onUninstalled(service, target);
-                listeners.forEach(listener -> listener.onServiceTaskUninstalled(service, target));
+
+                storage.onUninstalled(service,
+                                      target);
+                listeners.forEach(listener -> listener.onServiceTaskUninstalled(service,
+                                                                                target));
                 return;
             }
         }
-        
+
         throw new ServiceTaskNotFoundException("Service with id " + serviceId + " was not found");
     }
-    
+
     public List<RepoData> getServicesByCategory(String category) {
-        
-        return storage.loadServices((service) -> service.getCategory().equalsIgnoreCase(category), 0, 100);
+
+        return storage.loadServices((service) -> service.getCategory().equalsIgnoreCase(category),
+                                    0,
+                                    100);
     }
 
     public List<RepoData> getTriggerServices() {
-        
-        return storage.loadServices((service) -> service.getIstrigger().equalsIgnoreCase("true"), 0, 100);
+
+        return storage.loadServices((service) -> service.getIstrigger().equalsIgnoreCase("true"),
+                                    0,
+                                    100);
     }
 
     public List<RepoData> getActionServices() {
-     
-        return storage.loadServices((service) -> service.getIsaction().equalsIgnoreCase("true"), 0, 100);
+
+        return storage.loadServices((service) -> service.getIsaction().equalsIgnoreCase("true"),
+                                    0,
+                                    100);
     }
     
     /*
@@ -227,7 +232,7 @@ public class RepoService {
     public List<RepoModule> getModules() {
         return modules;
     }
-    
+
     public RepoModule getModuleByName(String name) {
         for (RepoModule repoModule : this.modules) {
             if (repoModule != null && repoModule.getName() != null && repoModule.getName().equals(name)) {
@@ -294,154 +299,31 @@ public class RepoService {
         return retList;
     }
 
-    public void installModule(String moduleName, String target) {
+    public void installModule(String moduleName,
+                              String target) {
         modules.stream().forEach(rm -> {
             if (rm.getName().equals(moduleName)) {
                 rm.setInstalled(true);
                 // set all services in module as installed as well
                 for (RepoData rd : rm.getRepoData()) {
-                    installService(rd.getId(), target);
+                    installService(rd.getId(),
+                                   target);
                 }
             }
         });
     }
 
-    public void uninstallModule(String moduleName, String target) {
+    public void uninstallModule(String moduleName,
+                                String target) {
         modules.stream().forEach(rm -> {
             if (rm.getName().equals(moduleName)) {
                 rm.setInstalled(false);
                 // set all services in module as uninstalled as well
                 for (RepoData rd : rm.getRepoData()) {
-                    uninstallService(rd.getId(), target);
+                    uninstallService(rd.getId(),
+                                     target);
                 }
             }
         });
-    }
-
-    public URL getModuleDefaultBPMN2URL(String moduleName) {
-        RepoModule repoModule = getModuleByName(moduleName);
-
-        if (repoModule == null) {
-            return null;
-        }
-
-        return Thread.currentThread().getContextClassLoader().getResource(repoModule.getName() +
-                                                                                  FileSystems.getDefault().getSeparator() +
-                                                                                  repoModule.getName() + ".bpmn2");
-    }
-
-    public URL getModuleDefaultBPMN2URL(String moduleName,
-                                        ClassLoader classLoader) {
-        RepoModule repoModule = getModuleByName(moduleName);
-
-        if (repoModule == null) {
-            return null;
-        }
-
-        return classLoader.getResource(repoModule.getName() +
-                                               FileSystems.getDefault().getSeparator() +
-                                               repoModule.getName() + ".bpmn2");
-    }
-
-    public URL getModuleWidURL(String moduleName) {
-        RepoModule repoModule = getModuleByName(moduleName);
-
-        if (repoModule == null) {
-            return null;
-        }
-
-        return Thread.currentThread().getContextClassLoader().getResource(repoModule.getName() +
-                                                                                  FileSystems.getDefault().getSeparator() +
-                                                                                  repoModule.getName() + ".wid");
-    }
-
-    public URL getModuleWidURL(String moduleName,
-                               ClassLoader classLoader) {
-        RepoModule repoModule = getModuleByName(moduleName);
-
-        if (repoModule == null) {
-            return null;
-        }
-
-        return classLoader.getResource(repoModule.getName() +
-                                               FileSystems.getDefault().getSeparator() +
-                                               repoModule.getName() + ".wid");
-    }
-
-    public URL getModuleJarURL(String moduleName) {
-        RepoModule repoModule = getModuleByName(moduleName);
-
-        if (repoModule == null) {
-            return null;
-        }
-
-        return Thread.currentThread().getContextClassLoader().getResource(repoModule.getName() +
-                                                                                  FileSystems.getDefault().getSeparator() +
-                                                                                  repoModule.getName() + "-" +
-                                                                                  repoModule.getVersion() + ".jar");
-    }
-
-    public URL getModuleJarURL(String moduleName,
-                               ClassLoader classLoader) {
-        RepoModule repoModule = getModuleByName(moduleName);
-
-        if (repoModule == null) {
-            return null;
-        }
-
-        return classLoader.getResource(repoModule.getName() +
-                                               FileSystems.getDefault().getSeparator() +
-                                               repoModule.getName() + "-" +
-                                               repoModule.getVersion() + ".jar");
-    }
-
-    public URL getModuleIconURL(String moduleName) {
-        RepoModule repoModule = getModuleByName(moduleName);
-
-        if (repoModule == null) {
-            return null;
-        }
-
-        return Thread.currentThread().getContextClassLoader().getResource(repoModule.getName() +
-                                                                                  FileSystems.getDefault().getSeparator() +
-                                                                                  "icon.png");
-    }
-
-    public URL getModuleIconURL(String moduleName,
-                                ClassLoader classLoader) {
-        RepoModule repoModule = getModuleByName(moduleName);
-
-        if (repoModule == null) {
-            return null;
-        }
-
-        return classLoader.getResource(repoModule.getName() +
-                                               FileSystems.getDefault().getSeparator() +
-                                               "icon.png");
-    }
-
-    public URL getModuleDeploymentDescriptorURL(String moduleName) {
-        RepoModule repoModule = getModuleByName(moduleName);
-
-        if (repoModule == null) {
-            return null;
-        }
-
-        return Thread.currentThread().getContextClassLoader().getResource(repoModule.getName() +
-                                                                                  FileSystems.getDefault().getSeparator() +
-                                                                                  "kie-deployment-descriptor.xml");
-    }
-
-    public URL getModuleDeploymentDescriptorURL(String moduleName,
-                                                ClassLoader classLoader) {
-        RepoModule repoModule = getModuleByName(moduleName);
-
-        if (repoModule == null) {
-            return null;
-        }
-
-        return classLoader.getResource(repoModule.getName() +
-                                               FileSystems.getDefault().getSeparator() +
-                                               "kie-deployment-descriptor.xml");
     }
 }

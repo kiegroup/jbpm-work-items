@@ -16,14 +16,10 @@
 
 package org.jbpm.process.workitem.repository.service;
 
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.jbpm.process.workitem.repository.service.RepoData;
-import org.jbpm.process.workitem.repository.service.RepoModule;
-import org.jbpm.process.workitem.repository.service.RepoService;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -77,7 +73,8 @@ public class RepoServiceIntegrationTest {
         // by default no modules are disabled
         List<RepoModule> disabledModules = repoService.getDisabledModules();
         assertNotNull(disabledModules);
-        assertEquals(0, disabledModules.size());
+        assertEquals(0,
+                     disabledModules.size());
 
         // disable a module
         String moduleName = enabledRepoModules.get(0).getName();
@@ -89,13 +86,15 @@ public class RepoServiceIntegrationTest {
 
         disabledModules = repoService.getDisabledModules();
         assertNotNull(disabledModules);
-        assertEquals(1, disabledModules.size());
+        assertEquals(1,
+                     disabledModules.size());
 
         // not enable it again
         repoService.enableModule(moduleName);
         disabledModules = repoService.getDisabledModules();
         assertNotNull(disabledModules);
-        assertEquals(0, disabledModules.size());
+        assertEquals(0,
+                     disabledModules.size());
     }
 
     @Test
@@ -108,47 +107,19 @@ public class RepoServiceIntegrationTest {
 
         // install module
         String moduleName = repoService.getModules().get(0).getName();
-        repoService.installModule(moduleName, "project A");
+        repoService.installModule(moduleName,
+                                  "project A");
         installeddRepoModules = repoService.getInstalledModules();
         assertNotNull(installeddRepoModules);
         assertEquals(1,
                      installeddRepoModules.size());
 
         // uninstall it again
-        repoService.uninstallModule(moduleName, "project A");
+        repoService.uninstallModule(moduleName,
+                                    "project A");
         installeddRepoModules = repoService.getInstalledModules();
         assertNotNull(installeddRepoModules);
         assertEquals(0,
                      installeddRepoModules.size());
-    }
-
-    @Test
-    public void testGetModuleIcon() throws Exception {
-        URL url = repoService.getModuleIconURL("kafka-workitem", this.getClass().getClassLoader());
-        assertNotNull(url);
-    }
-
-    @Test
-    public void testGetModuleJar() throws Exception {
-        URL url = repoService.getModuleJarURL("kafka-workitem", this.getClass().getClassLoader());
-        assertNotNull(url);
-    }
-
-    @Test
-    public void testGetModuleBpmn2() throws Exception {
-        URL url = repoService.getModuleDefaultBPMN2URL("kafka-workitem", this.getClass().getClassLoader());
-        assertNotNull(url);
-    }
-
-    @Test
-    public void testGetModuleWid() throws Exception {
-        URL url = repoService.getModuleWidURL("kafka-workitem", this.getClass().getClassLoader());
-        assertNotNull(url);
-    }
-
-    @Test
-    public void testGetModuleDeploymentDescriptor() throws Exception {
-        URL url = repoService.getModuleDeploymentDescriptorURL("kafka-workitem", this.getClass().getClassLoader());
-        assertNotNull(url);
     }
 }

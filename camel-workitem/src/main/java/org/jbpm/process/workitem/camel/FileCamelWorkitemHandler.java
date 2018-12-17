@@ -31,7 +31,7 @@ import org.jbpm.process.workitem.core.util.service.WidService;
         displayName = "CamelFileConnector",
         defaultHandler = "mvel: new org.jbpm.process.workitem.camel.FileCamelWorkitemHandler()",
         documentation = "${artifactId}/index.html",
-        module = "${artifactId}", version = "${version}",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "path", required = true),
                 @WidParameter(name = "payload", required = true),

@@ -36,7 +36,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         displayName = "UpdateVimeo",
         defaultHandler = "mvel: new org.jbpm.process.workitem.vimeo.UpdateVideoMetadataWorkitemHandler(\"accessToken\")",
         documentation = "${artifactId}/index.html",
-        module = "${artifactId}", version = "${version}",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "VideoEndpoint", required = true),
                 @WidParameter(name = "Name"),

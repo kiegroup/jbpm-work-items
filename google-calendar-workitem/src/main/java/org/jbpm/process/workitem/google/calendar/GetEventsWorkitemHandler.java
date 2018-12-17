@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
         displayName = "GoogleGetEvents",
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.calendar.GetEventsWorkitemHandler(\"appName\", \"clentSecret\")",
         documentation = "${artifactId}/index.html",
-        module = "${artifactId}", version = "${version}",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "CalendarSummary", required = true)
         },

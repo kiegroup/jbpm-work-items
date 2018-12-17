@@ -45,7 +45,7 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
         displayName = "GeneratePDF",
         defaultHandler = "mvel: new org.jbpm.process.workitem.pdf.GeneratePDFWorkitemHandler()",
         documentation = "${artifactId}/index.html",
-        module = "${artifactId}", version = "${version}",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "TemplateXHTML", required = true),
                 @WidParameter(name = "PDFName")

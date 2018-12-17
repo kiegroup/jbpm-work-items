@@ -38,7 +38,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         displayName = "JavaInvocation",
         defaultHandler = "mvel: new org.jbpm.process.workitem.java.JavaInvocationWorkItemHandler()",
         documentation = "${artifactId}/index.html",
-        module = "${artifactId}", version = "${version}",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "Class", required = true),
                 @WidParameter(name = "Method"),

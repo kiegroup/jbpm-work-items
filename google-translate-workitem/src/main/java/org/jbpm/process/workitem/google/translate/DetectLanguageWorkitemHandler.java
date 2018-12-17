@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
         displayName = "GoogleDetectLanguage",
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.translate.DetectLanguageWorkitemHandler(\"apiKey\")",
         documentation = "${artifactId}/index.html",
-        module = "${artifactId}", version = "${version}",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "ToDetectText", required = true)
         },

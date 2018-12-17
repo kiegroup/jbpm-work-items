@@ -120,7 +120,7 @@
         <executions>
           <execution>
             <id>copy-repository-resources</id>
-            <phase>prepare-package</phase>
+            <phase>compile</phase>
             <goals>
               <goal>copy-resources</goal>
             </goals>

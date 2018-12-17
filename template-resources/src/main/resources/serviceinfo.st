@@ -4,8 +4,7 @@ $openbracket$
         "displayName" : "$widInfo.(k).displayName$",
         "defaultHandler" : "$widInfo.(k).defaultHandler$",
         "documentation" : "$widInfo.(k).documentation$",
-        "module" : "$widInfo.(k).module$",
-        "version" : "$widInfo.(k).version$",
+        "module" : "$widInfo.(k).category$",
         "icon" : "$widInfo.(k).icon$",
         $if(widInfo.(k).serviceInfo)$
             "category" : "$widInfo.(k).serviceInfo.category$",

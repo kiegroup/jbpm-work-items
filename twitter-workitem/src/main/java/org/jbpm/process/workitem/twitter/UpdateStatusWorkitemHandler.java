@@ -38,7 +38,7 @@ import twitter4j.Twitter;
         displayName = "TwitterUpdateStatus",
         defaultHandler = "mvel: new org.jbpm.process.workitem.twitter.UpdateStatusWorkitemHandler(\"consumerKey\", \"consumerSecret\", \"accessKey\", \"accessSecret\")",
         documentation = "${artifactId}/index.html",
-        module = "${artifactId}", version = "${version}",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "StatusUpdate", required = true),
                 @WidParameter(name = "Media", runtimeType = "org.jbpm.document.Document"),

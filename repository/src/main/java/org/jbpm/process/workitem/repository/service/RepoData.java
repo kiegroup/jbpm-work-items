@@ -25,7 +25,6 @@ public class RepoData {
     private String defaultHandler;
     private String documentation;
     private String module;
-    private String version;
     private String icon;
     private String category;
     private String description;
@@ -207,14 +206,6 @@ public class RepoData {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
     }
 
     public boolean isEnabled() {

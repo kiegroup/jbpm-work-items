@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
         displayName = "DropboxDownloadFile",
         defaultHandler = "mvel: new org.jbpm.process.workitem.dropbox.DownloadFileWorkitemHandler(\"clientIdentifier\", \"accessToken\")",
         documentation = "${artifactId}/index.html",
-        module = "${artifactId}", version = "${version}",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "DocumentPath", required = true)
         },

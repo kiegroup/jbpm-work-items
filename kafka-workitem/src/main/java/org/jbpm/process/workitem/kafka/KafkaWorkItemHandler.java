@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
         displayName = "KafkaPublishMessages",
         defaultHandler = "mvel: new org.jbpm.process.workitem.kafka.KafkaWorkItemHandler(\"bootstrapServers\", \"clientId\", \"keySerializerClass\", \"valueSerializerClass\")",
         documentation = "${artifactId}/index.html",
-        module = "${artifactId}", version = "${version}",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "Topic", required = true),
                 @WidParameter(name = "Key", required = true),

@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
         displayName = "GoogleMapsGeocoding",
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.maps.GeocodingWorkitemHandler(\"apiKey\")",
         documentation = "${artifactId}/index.html",
-        module = "${artifactId}", version = "${version}",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "SearchType", required = true),
                 @WidParameter(name = "SearchLocation", required = true),

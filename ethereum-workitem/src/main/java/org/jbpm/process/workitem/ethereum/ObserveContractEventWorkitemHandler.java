@@ -38,7 +38,7 @@ import org.web3j.protocol.http.HttpService;
         displayName = "EthereumObserveContractEvent",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ethereum.ObserveContractEventWorkitemHandler()",
         documentation = "${artifactId}/index.html",
-        module = "${artifactId}", version = "${version}",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "ServiceURL", required = true),
                 @WidParameter(name = "ContractAddress", required = true),

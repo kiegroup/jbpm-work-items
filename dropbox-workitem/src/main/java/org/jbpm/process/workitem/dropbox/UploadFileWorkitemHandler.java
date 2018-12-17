@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
         displayName = "DropboxUploadFile",
         defaultHandler = "mvel: new org.jbpm.process.workitem.dropbox.UploadFileWorkitemHandler(\"clientIdentifier\", \"accessToken\")",
         documentation = "${artifactId}/index.html",
-        module = "${artifactId}", version = "${version}",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "Path", required = true),
                 @WidParameter(name = "Document", required = true, runtimeType = "org.jbpm.document.Document")
