@@ -218,7 +218,7 @@
         <executions>
           <execution>
             <id>copy-repository-resources</id>
-            <phase>package</phase>
+            <phase>compile</phase>
             <goals>
               <goal>copy-resources</goal>
             </goals>
@@ -228,7 +228,7 @@
                 <resource>
                   <directory>target/generated-sources/annotations</directory>
                   <includes>
-                    <include>*.part</include>
+                    <include>repoindex.html</include>
                   </includes>
                   <filtering>true</filtering>
                 </resource>

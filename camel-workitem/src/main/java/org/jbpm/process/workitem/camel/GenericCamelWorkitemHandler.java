@@ -31,6 +31,7 @@ import org.jbpm.process.workitem.core.util.service.WidService;
         displayName = "CamelGenericConnector",
         defaultHandler = "mvel: new org.jbpm.process.workitem.camel.GenericCamelWorkitemHandler()",
         documentation = "${artifactId}/index.html",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "path"),
                 @WidParameter(name = "payload")

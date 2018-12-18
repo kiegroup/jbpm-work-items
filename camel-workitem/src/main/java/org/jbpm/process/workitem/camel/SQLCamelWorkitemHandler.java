@@ -32,6 +32,7 @@ import org.jbpm.process.workitem.core.util.service.WidService;
         displayName = "CamelSQLConnector",
         defaultHandler = "mvel: new org.jbpm.process.workitem.camel.SQLCamelWorkitemHandler()",
         documentation = "${artifactId}/index.html",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "payload"),
                 @WidParameter(name = "query", required = true)

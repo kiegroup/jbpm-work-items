@@ -43,6 +43,7 @@ import org.web3j.tx.Transfer;
         displayName = "EthereumSendEther",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ethereum.SendEtherWorkitemHandler(\"walletPassword\", \"walletPath\")",
         documentation = "${artifactId}/index.html",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "ServiceURL", required = true),
                 @WidParameter(name = "Amount", required = true),

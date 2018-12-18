@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
         displayName = "GoogleReadSheetValues",
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.sheets.ReadSheetValuesWorkitemHandler(\"appName\", \"clentSecret\")",
         documentation = "${artifactId}/index.html",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "SheetId", required = true),
                 @WidParameter(name = "Range", required = true),

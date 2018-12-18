@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
         displayName = "GetPastebin",
         defaultHandler = "mvel: new org.jbpm.process.workitem.pastebin.GetExistingPastebinWorkitemHandler(\"develKey\")",
         documentation = "${artifactId}/index.html",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "PastebinKey", required = true)
         },

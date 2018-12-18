@@ -39,6 +39,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         displayName = "GoogleMapsStaticMaps",
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.maps.StaticMapsWorkitemHandler(\"apiKey\")",
         documentation = "${artifactId}/index.html",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "Width", required = true),
                 @WidParameter(name = "Height", required = true),

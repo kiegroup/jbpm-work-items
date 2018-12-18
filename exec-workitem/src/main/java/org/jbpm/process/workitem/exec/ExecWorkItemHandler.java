@@ -38,6 +38,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         displayName = "Exec",
         defaultHandler = "mvel: new org.jbpm.process.workitem.exec.ExecWorkItemHandler()",
         documentation = "${artifactId}/index.html",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "Command", required = true),
                 @WidParameter(name = "Arguments", runtimeType = "java.util.List")

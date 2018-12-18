@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
         displayName = "JiraResolveIssue",
         defaultHandler = "mvel: new org.jbpm.process.workitem.jira.ResolveIssueWorkitemHandler(\"userName\", \"password\", \"repoURI\")",
         documentation = "${artifactId}/index.html",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "IssueKey", required = true),
                 @WidParameter(name = "Resolution", required = true),

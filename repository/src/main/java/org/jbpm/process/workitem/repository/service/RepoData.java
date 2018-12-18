@@ -19,21 +19,34 @@ import java.util.List;
 
 public class RepoData {
 
+    private String id;
     private String name;
     private String displayName;
     private String defaultHandler;
     private String documentation;
+    private String module;
     private String icon;
     private String category;
     private String description;
     private List<String> keywords;
     private String isaction;
+    private String requiresauth;
+    private String authreferencesite;
     private String istrigger;
     private String actiontitle;
     private String triggertitle;
     private List<RepoParameter> parameters;
     private List<RepoResult> results;
     private List<RepoMavenDepend> mavenDependencies;
+    private List<RepoAuthParameter> authparams;
+
+    private boolean enabled;
+    private boolean installed;
+
+    public RepoData() {        
+        this.enabled = true;
+        this.installed = false;
+    }
 
     public String getName() {
         return name;
@@ -153,5 +166,91 @@ public class RepoData {
 
     public void setTriggertitle(String triggertitle) {
         this.triggertitle = triggertitle;
+    }
+
+    public String getRequiresauth() {
+        return requiresauth;
+    }
+
+    public void setRequiresauth(String requiresauth) {
+        this.requiresauth = requiresauth;
+    }
+
+    public List<RepoAuthParameter> getAuthparams() {
+        return authparams;
+    }
+
+    public void setAuthparams(List<RepoAuthParameter> authparams) {
+        this.authparams = authparams;
+    }
+
+    public String getAuthreferencesite() {
+        return authreferencesite;
+    }
+
+    public void setAuthreferencesite(String authreferencesite) {
+        this.authreferencesite = authreferencesite;
+    }
+
+    public String getModule() {
+        return module;
+    }
+
+    public void setModule(String module) {
+        this.module = module;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isInstalled() {
+        return installed;
+    }
+
+    public void setInstalled(boolean installed) {
+        this.installed = installed;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        RepoData other = (RepoData) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "RepoData [id=" + id + ", name=" + name + ", category=" + category + ", description=" + description + ", actiontitle=" + actiontitle + ", enabled=" + enabled + ", installed=" + installed + "]";
     }
 }

@@ -37,6 +37,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         displayName = "RSS",
         defaultHandler = "mvel: new org.jbpm.process.workitem.rss.RSSWorkItemHandler()",
         documentation = "${artifactId}/index.html",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "URL", required = true)
         },

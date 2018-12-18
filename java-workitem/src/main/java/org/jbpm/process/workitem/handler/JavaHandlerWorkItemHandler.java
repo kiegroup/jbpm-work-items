@@ -36,6 +36,7 @@ import org.kie.api.runtime.process.WorkflowProcessInstance;
         displayName = "Java",
         defaultHandler = "mvel: new org.jbpm.process.workitem.java.JavaHandlerWorkItemHandler(\"ksession\")",
         documentation = "${artifactId}/index.html",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "Class", required = true)
         },

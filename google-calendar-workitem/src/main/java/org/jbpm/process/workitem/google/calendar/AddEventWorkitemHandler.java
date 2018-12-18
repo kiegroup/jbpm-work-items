@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
         displayName = "GoogleAddEvent",
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.calendar.AddEventWorkitemHandler(\"appName\", \"clentSecret\")",
         documentation = "${artifactId}/index.html",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "CalendarSummary", required = true),
                 @WidParameter(name = "EventSummary", required = true),

@@ -31,6 +31,7 @@ import org.jbpm.process.workitem.core.util.service.WidService;
         displayName = "CamelJMSConnector",
         defaultHandler = "mvel: new org.jbpm.process.workitem.camel.JMSCamelWorkitemHandler()",
         documentation = "${artifactId}/index.html",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "payload", required = true),
                 @WidParameter(name = "destinationName", required = true)

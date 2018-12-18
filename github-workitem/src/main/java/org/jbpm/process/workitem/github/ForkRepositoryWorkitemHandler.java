@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
         displayName = "GithubForkRepository",
         defaultHandler = "mvel: new org.jbpm.process.workitem.github.ForkRepositoryWorkitemHandler(\"userName\", \"password\")",
         documentation = "${artifactId}/index.html",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "RepoOwner", required = true),
                 @WidParameter(name = "RepoName", required = true),

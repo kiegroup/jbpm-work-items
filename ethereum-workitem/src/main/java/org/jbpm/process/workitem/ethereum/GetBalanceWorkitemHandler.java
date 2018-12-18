@@ -39,6 +39,7 @@ import org.web3j.protocol.http.HttpService;
         displayName = "EthereumGetBalance",
         defaultHandler = "mvel: new org.jbpm.process.workitem.ethereum.GetBalanceWorkitemHandler(\"walletPassword\", \"walletPath\")",
         documentation = "${artifactId}/index.html",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "ServiceURL", required = true)
         },

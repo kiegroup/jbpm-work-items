@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
         displayName = "GoogleGetTasks",
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.tasks.GetTasksWorkitemHandler(\"appName\", \"clentSecret\")",
         documentation = "${artifactId}/index.html",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "NumOfTasks", required = true)
         },

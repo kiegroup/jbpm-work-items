@@ -36,6 +36,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         displayName = "GoogleAddCalendar",
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.calendar.AddCalendarWorkitemHandler(\"appName\", \"clentSecret\")",
         documentation = "${artifactId}/index.html",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "CalendarSummary", required = true)
         },

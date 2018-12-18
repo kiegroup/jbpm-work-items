@@ -34,6 +34,7 @@ import twitter4j.Twitter;
         displayName = "TwitterSendDirectMessage",
         defaultHandler = "mvel: new org.jbpm.process.workitem.twitter.SendDirectMessageWorkitemHandler(\"consumerKey\", \"consumerSecret\", \"accessKey\", \"accessSecret\")",
         documentation = "${artifactId}/index.html",
+        category = "${artifactId}",
         parameters = {
                 @WidParameter(name = "Message", required = true),
                 @WidParameter(name = "ScreenName", required = true),
