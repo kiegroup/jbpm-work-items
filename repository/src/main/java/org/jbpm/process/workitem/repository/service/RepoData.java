@@ -15,7 +15,9 @@
  */
 package org.jbpm.process.workitem.repository.service;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class RepoData {
 
@@ -41,11 +43,12 @@ public class RepoData {
     private List<RepoAuthParameter> authparams;
 
     private boolean enabled;
-    private boolean installed;
+    
+    
+    private Set<String> installedOn = new LinkedHashSet<>();
 
     public RepoData() {        
         this.enabled = true;
-        this.installed = false;
     }
 
     public String getName() {
@@ -216,12 +219,22 @@ public class RepoData {
         this.enabled = enabled;
     }
 
-    public boolean isInstalled() {
-        return installed;
+    public void install(String target) {
+        this.installedOn.add(target);
+    }
+    
+    public void uninstall(String target) {
+        this.installedOn.remove(target);
     }
 
-    public void setInstalled(boolean installed) {
-        this.installed = installed;
+    
+    public Set<String> getInstalledOn() {
+        return installedOn;
+    }
+
+    
+    public void setInstalledOn(Set<String> installedOn) {
+        this.installedOn = installedOn;
     }
 
     @Override
@@ -251,6 +264,6 @@ public class RepoData {
 
     @Override
     public String toString() {
-        return "RepoData [id=" + id + ", name=" + name + ", category=" + category + ", description=" + description + ", actiontitle=" + actiontitle + ", enabled=" + enabled + ", installed=" + installed + "]";
+        return "RepoData [id=" + id + ", name=" + name + ", category=" + category + ", description=" + description + ", actiontitle=" + actiontitle + ", enabled=" + enabled + "]";
     }
 }

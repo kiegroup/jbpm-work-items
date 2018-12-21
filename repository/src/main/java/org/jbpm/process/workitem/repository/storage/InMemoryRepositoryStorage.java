@@ -26,7 +26,7 @@ import org.jbpm.process.workitem.repository.RepositoryStorage;
 import org.jbpm.process.workitem.repository.service.RepoData;
 
 
-public class InMemoryRepositoryStorage implements RepositoryStorage {
+public class InMemoryRepositoryStorage<T> implements RepositoryStorage<T> {
 
     protected List<RepoData> services;
     
@@ -78,6 +78,18 @@ public class InMemoryRepositoryStorage implements RepositoryStorage {
             } catch (UnsupportedEncodingException e) {                
             }
         }
+    }
+
+    @Override
+    public T loadConfiguration() {
+        // no-op
+        return null;
+    }
+
+    @Override
+    public void storeConfiguration(T configuration) {
+        // no-op
+        
     }
 
 }
