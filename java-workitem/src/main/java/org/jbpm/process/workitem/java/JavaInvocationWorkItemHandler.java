@@ -39,6 +39,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         defaultHandler = "mvel: new org.jbpm.process.workitem.java.JavaInvocationWorkItemHandler()",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "icon.png",
         parameters = {
                 @WidParameter(name = "Class", required = true),
                 @WidParameter(name = "Method"),

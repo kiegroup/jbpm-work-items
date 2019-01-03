@@ -69,6 +69,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.jpa.JPAWorkItemHandler(\"persistenceUnit\", \"classloader\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "icon.png",
         parameters = {
                 @WidParameter(name = "Type", runtimeType = "java.lang.Object"),
                 @WidParameter(name = "Id", runtimeType = "java.lang.Object"),

@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.sheets.ReadSheetValuesWorkitemHandler(\"appName\", \"clentSecret\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "icon.png",
         parameters = {
                 @WidParameter(name = "SheetId", required = true),
                 @WidParameter(name = "Range", required = true),

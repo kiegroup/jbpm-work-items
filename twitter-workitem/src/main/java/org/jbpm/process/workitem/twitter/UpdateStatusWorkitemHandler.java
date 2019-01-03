@@ -39,6 +39,7 @@ import twitter4j.Twitter;
         defaultHandler = "mvel: new org.jbpm.process.workitem.twitter.UpdateStatusWorkitemHandler(\"consumerKey\", \"consumerSecret\", \"accessKey\", \"accessSecret\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "icon.png",
         parameters = {
                 @WidParameter(name = "StatusUpdate", required = true),
                 @WidParameter(name = "Media", runtimeType = "org.jbpm.document.Document"),

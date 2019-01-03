@@ -41,6 +41,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         defaultHandler = "mvel: new org.jbpm.process.workitem.okta.GetUsersWorkitemHandler(\"apiToken\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "icon.png",
         parameters = {
                 @WidParameter(name = "UserIds")
         },

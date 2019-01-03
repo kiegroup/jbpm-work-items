@@ -40,6 +40,7 @@ import org.web3j.protocol.http.HttpService;
         defaultHandler = "mvel: new org.jbpm.process.workitem.ethereum.DeployContractWorkitemHandler(\"walletPassword\", \"walletPath\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "icon.png",
         parameters = {
                 @WidParameter(name = "ServiceURL", required = true),
                 @WidParameter(name = "ContractPath", required = true),

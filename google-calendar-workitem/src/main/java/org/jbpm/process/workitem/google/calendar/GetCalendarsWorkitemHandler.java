@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.calendar.GetCalendarsWorkitemHandler(\"appName\", \"clentSecret\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "icon.png",
         results = {
                 @WidResult(name = "AllCalendars", runtimeType = "com.google.api.services.calendar.model.CalendarList")
         },

@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.dropbox.UploadFileWorkitemHandler(\"clientIdentifier\", \"accessToken\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "icon.png",
         parameters = {
                 @WidParameter(name = "Path", required = true),
                 @WidParameter(name = "Document", required = true, runtimeType = "org.jbpm.document.Document")

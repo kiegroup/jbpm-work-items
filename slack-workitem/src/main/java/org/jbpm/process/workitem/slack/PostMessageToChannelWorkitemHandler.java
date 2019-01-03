@@ -34,6 +34,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         defaultHandler = "mvel: new org.jbpm.process.workitem.slack.PostMessageToChannelWorkitemHandler(\"accessToken\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "icon.png",
         parameters = {
                 @WidParameter(name = "ChannelName", required = true),
                 @WidParameter(name = "Message", required = true)

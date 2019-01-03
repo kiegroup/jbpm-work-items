@@ -9,7 +9,6 @@
       </button>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton-\$$openbracket$artifactId$closebracket$">
             <a class="dropdown-item" href="\$$openbracket$artifactId$closebracket$/\$$openbracket$artifactId$closebracket$.wid"><span class="fa fa-file">&nbsp;Workitem Definition MVEL</span></a>
-            <a class="dropdown-item" href="\$$openbracket$artifactId$closebracket$/\$$openbracket$artifactId$closebracket$.json"><span class="fa fa-file">&nbsp;Workitem Definition JSON</span></a>
             <a class="dropdown-item" href="\$$openbracket$artifactId$closebracket$/kie-deployment-descriptor.xml"><span class="fa fa-file">&nbsp;Kie Deployment Descriptor</span></a>
             <a class="dropdown-item" href="\$$openbracket$artifactId$closebracket$/\$$openbracket$artifactId$closebracket$-\$$openbracket$version$closebracket$.jar"><span class="fa fa-file">&nbsp;Workitem Jar</span></a>
             <a class="dropdown-item" href="\$$openbracket$artifactId$closebracket$/\$$openbracket$artifactId$closebracket$.bpmn2"><span class="fa fa-file">&nbsp;Sample BPMN2 Process</span></a>
@@ -40,18 +39,19 @@
                   <th scope="col">#</th>
                   <th scope="col">Name</th>
                   <th scope="col">Handler</th>
+                  <th scope="col">Wid</th>
                   <th scope="col">Auth Required</th>
                   <th scope="col">Docs</th>
                 </tr>
               </thead>
               <tbody>
-
            $widInfo:{k|
 
                 <tr>
                       <th scope="row">$i$</th>
                       <td>$widInfo.(k).name$</td>
                       <td>$widInfo.(k).defaultHandlerUnEscaped$</td>
+                      <td><a href="\$$openbracket$artifactId$closebracket$/$widInfo.(k).name$.wid">$widInfo.(k).name$.wid</a></td>
                       <td>$widInfo.(k).serviceInfo.authInfo.required$</td>
                       <td><a href="\$$openbracket$artifactId$closebracket$/index.html#$widInfo.(k).name$" class="btn btn-secondary btn-sm" role="button" aria-disabled="true"><span class="fa fa-eye">&nbsp;View</span></a></td>
                     </tr>

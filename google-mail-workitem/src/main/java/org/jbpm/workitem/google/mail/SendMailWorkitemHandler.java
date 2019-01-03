@@ -52,6 +52,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.mail.SendMailWorkitemHandler(\"appName\", \"clentSecret\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "icon.png",
         parameters = {
                 @WidParameter(name = "To"),
                 @WidParameter(name = "From"),

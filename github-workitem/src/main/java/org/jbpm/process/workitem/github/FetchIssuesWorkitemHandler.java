@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.github.FetchIssuesWorkitemHandler(\"userName\", \"password\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "icon.png",
         parameters = {
                 @WidParameter(name = "User", required = true),
                 @WidParameter(name = "RepoName", required = true),
