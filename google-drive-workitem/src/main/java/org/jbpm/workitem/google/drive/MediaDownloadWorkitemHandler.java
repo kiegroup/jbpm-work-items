@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.drive.MediaDownloadWorkitemHandler(\"appName\", \"clentSecret\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "GoogleDownloadFromDrive.png",
         parameters = {
                 @WidParameter(name = "DocumentPath", required = true)
         },

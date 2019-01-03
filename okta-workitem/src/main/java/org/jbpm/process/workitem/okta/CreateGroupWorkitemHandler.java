@@ -38,6 +38,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         defaultHandler = "mvel: new org.jbpm.process.workitem.okta.CreateGroupWorkitemHandler(\"apiToken\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "OktaCreateGroup.png",
         parameters = {
                 @WidParameter(name = "GroupName", required = true),
                 @WidParameter(name = "GroupDescription", required = true)

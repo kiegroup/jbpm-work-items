@@ -32,6 +32,7 @@ import org.jbpm.process.workitem.core.util.service.WidService;
         defaultHandler = "mvel: new org.jbpm.process.workitem.camel.FileCamelWorkitemHandler()",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "CamelFileConnector.png",
         parameters = {
                 @WidParameter(name = "path", required = true),
                 @WidParameter(name = "payload", required = true),

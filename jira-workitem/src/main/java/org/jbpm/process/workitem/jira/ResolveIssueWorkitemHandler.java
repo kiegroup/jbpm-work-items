@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.jira.ResolveIssueWorkitemHandler(\"userName\", \"password\", \"repoURI\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "JiraResolveIssue.png",
         parameters = {
                 @WidParameter(name = "IssueKey", required = true),
                 @WidParameter(name = "Resolution", required = true),
@@ -142,4 +143,3 @@ public class ResolveIssueWorkitemHandler extends AbstractLogOrThrowWorkItemHandl
         this.auth = auth;
     }
 }
-

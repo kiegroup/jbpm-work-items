@@ -24,6 +24,7 @@
       <useProjectArtifact>true</useProjectArtifact>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <outputDirectory>${artifact.artifactId}</outputDirectory>
+      <scope>provided</scope>
       <includes>
         <include>${project.groupId}:*:zip</include>
       </includes>

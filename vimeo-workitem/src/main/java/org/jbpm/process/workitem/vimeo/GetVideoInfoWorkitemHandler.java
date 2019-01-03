@@ -37,6 +37,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         defaultHandler = "mvel: new org.jbpm.process.workitem.vimeo.GetVideoInfoWorkitemHandler(\"accessToken\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "GetInfoVimeo.png",
         parameters = {
                 @WidParameter(name = "VideoEndpoint", required = true)
         },

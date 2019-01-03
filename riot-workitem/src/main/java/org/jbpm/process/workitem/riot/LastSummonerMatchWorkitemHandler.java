@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.riot.LastSummonerMatchWorkitemHandler(\"apiKey\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "RiotSummonerLastMatch.png",
         parameters = {
                 @WidParameter(name = "SummonerName", required = true),
                 @WidParameter(name = "SummonerPlatform")

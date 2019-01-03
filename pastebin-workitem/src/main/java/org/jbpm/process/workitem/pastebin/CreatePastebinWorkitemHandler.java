@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.pastebin.CreatePastebinWorkitemHandler(\"develKey\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "CreatePastebin.png",
         parameters = {
                 @WidParameter(name = "Title"),
                 @WidParameter(name = "Content", required = true, runtimeType = "java.lang.Object"),

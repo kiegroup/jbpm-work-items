@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.kafka.KafkaWorkItemHandler(\"bootstrapServers\", \"clientId\", \"keySerializerClass\", \"valueSerializerClass\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "KafkaPublishMessages.png",
         parameters = {
                 @WidParameter(name = "Topic", required = true),
                 @WidParameter(name = "Key", required = true),
