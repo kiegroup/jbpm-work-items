@@ -16,6 +16,10 @@
       <includes>
         <include>*.jar</include>
       </includes>
+      <excludes>
+        <exclude>*sources.jar</exclude>
+        <exclude>*tests.jar</exclude>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>target/generated-sources/annotations</directory>
@@ -34,7 +38,7 @@
       <includes>
         <include>repoconf.part</include>
         <include>repoindex.html</include>
-        <include>icon.png</include>
+        <include>*.png</include>
         <include>*.bpmn2</include>
       </includes>
     </fileSet>

@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.transform.TransformWorkItemHandler()",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "Transform.png",
         parameters = {
                 @WidParameter(name = "InputObject", required = true, runtimeType = "java.lang.Object"),
                 @WidParameter(name = "OutputType", required = true)

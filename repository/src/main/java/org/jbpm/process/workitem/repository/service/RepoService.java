@@ -25,10 +25,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.io.IOUtils;
 import org.jbpm.process.workitem.repository.RepositoryEventListener;
 import org.jbpm.process.workitem.repository.RepositoryStorage;
@@ -36,6 +32,11 @@ import org.jbpm.process.workitem.repository.ServiceTaskNotFoundException;
 import org.jbpm.process.workitem.repository.storage.InMemoryRepositoryStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class RepoService {
 
@@ -45,7 +46,7 @@ public class RepoService {
     private List<RepoData> services;
     private List<RepoModule> modules = new ArrayList<>();
 
-    private RepositoryStorage storage = new InMemoryRepositoryStorage();
+    private RepositoryStorage<?> storage = new InMemoryRepositoryStorage();
 
     private Set<RepositoryEventListener> listeners = new LinkedHashSet<>();
 
@@ -57,7 +58,7 @@ public class RepoService {
         loadServices(jsonInput);
     }
 
-    public RepoService(RepositoryStorage storage,
+    public RepoService(RepositoryStorage<?> storage,
                        RepositoryEventListener... eventListeners) {
         this.storage = storage;
         this.listeners.addAll(Arrays.asList(eventListeners));
@@ -174,7 +175,7 @@ public class RepoService {
                                String target) {
         for (RepoData service : services) {
             if (service.getId().equals(serviceId)) {
-                service.setEnabled(true);
+                service.install(target);
 
                 storage.onInstalled(service,
                                     target);
@@ -191,7 +192,7 @@ public class RepoService {
                                  String target) {
         for (RepoData service : services) {
             if (service.getId().equals(serviceId)) {
-                service.setInstalled(false);
+                service.uninstall(target);
 
                 storage.onUninstalled(service,
                                       target);

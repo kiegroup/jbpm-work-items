@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.github.MergePullRequestWorkitemHandler(\"userName\", \"password\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "GithubMergePullRequest.png",
         parameters = {
                 @WidParameter(name = "RepoOwner", required = true),
                 @WidParameter(name = "RepoName", required = true),

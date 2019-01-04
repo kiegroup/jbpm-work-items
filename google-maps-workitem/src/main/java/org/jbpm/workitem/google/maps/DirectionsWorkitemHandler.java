@@ -41,6 +41,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.maps.DirectionsWorkitemHandler(\"apiKey\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "GoogleMapsDirections.png",
         parameters = {
                 @WidParameter(name = "Origin", required = true),
                 @WidParameter(name = "Destination", required = true),

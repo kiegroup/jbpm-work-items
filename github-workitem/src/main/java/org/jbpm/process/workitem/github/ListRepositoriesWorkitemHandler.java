@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.github.ListRepositoriesWorkitemHandler(\"userName\", \"password\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "GithubListRepositories.png",
         parameters = {
                 @WidParameter(name = "User", required = true)
         },

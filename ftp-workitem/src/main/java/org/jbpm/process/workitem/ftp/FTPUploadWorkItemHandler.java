@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
         defaultHandler = "mvel: new org.jbpm.process.workitem.ftp.FTPUploadWorkItemHandler()",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "FTP.png",
         parameters = {
                 @WidParameter(name = "File", required = true, runtimeType = "java.io.File"),
                 @WidParameter(name = "User"),
@@ -154,4 +155,3 @@ public class FTPUploadWorkItemHandler extends AbstractLogOrThrowWorkItemHandler 
         this.connection = connection;
     }
 }
-

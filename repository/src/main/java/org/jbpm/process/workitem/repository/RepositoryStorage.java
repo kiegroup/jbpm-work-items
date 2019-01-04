@@ -21,7 +21,7 @@ import java.util.function.Predicate;
 
 import org.jbpm.process.workitem.repository.service.RepoData;
 
-public interface RepositoryStorage {
+public interface RepositoryStorage<T> {
 
     /**
      * Responsible for synchronizing internal state of the storage with currently available services
@@ -76,4 +76,16 @@ public interface RepositoryStorage {
      * @param target component which the service was uninstalled from
      */
     void onUninstalled(RepoData service, String target);
+    
+    /**
+     * Loads service repository configuration of custom type
+     * @return returns loaded configuration
+     */
+    T loadConfiguration();
+    
+    /**
+     * Stores repository configuration of custom type
+     * @param configuration configuration to be stored
+     */
+    void storeConfiguration(T configuration);
 }

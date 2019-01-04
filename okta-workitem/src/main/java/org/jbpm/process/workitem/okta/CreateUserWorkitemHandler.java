@@ -40,6 +40,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         defaultHandler = "mvel: new org.jbpm.process.workitem.okta.CreateUserWorkitemHandler(\"apiToken\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "OktaCreateUser.png",
         parameters = {
                 @WidParameter(name = "UserEmail", required = true),
                 @WidParameter(name = "UserFirstName", required = true),

@@ -38,6 +38,7 @@ import org.kie.api.runtime.process.WorkItemManager;
         defaultHandler = "mvel: new org.jbpm.process.workitem.google.maps.SpeedLimitsWorkitemHandler(\"apiKey\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
+        icon = "GoogleMapsSpeedLimits.png",
         parameters = {
                 @WidParameter(name = "PlaceIds", required = true)
         },
