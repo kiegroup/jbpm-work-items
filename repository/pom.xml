@@ -214,6 +214,10 @@
                       <ignoreClass>javax.xml.stream.*</ignoreClass>
                       <ignoreClass>javax.xml.namespace.*</ignoreClass>
                       <ignoreClass>javax.ws.rs.*</ignoreClass>
+                      <ignoreClass>org.newsclub.net.*</ignoreClass>
+                      <ignoreClass>org.aopalliance.*</ignoreClass>
+                      <ignoreClass>javax.inject.*</ignoreClass>
+                      <ignoreClass>org.apache.http.*</ignoreClass>
                     </ignoreClasses>
                   </banDuplicateClasses>
                 </rules>
@@ -574,6 +578,12 @@
 	      <type>zip</type>
 	      <scope>provided</scope>
 	    </dependency>
+        <dependency>
+          <groupId>org.jbpm.contrib</groupId>
+          <artifactId>docker-workitem</artifactId>
+          <type>zip</type>
+          <scope>provided</scope>
+        </dependency>
       </dependencies>
     </profile>
     <profile>
