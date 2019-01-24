@@ -43,11 +43,11 @@ public class RepoData {
     private List<RepoAuthParameter> authparams;
 
     private boolean enabled;
-    private String gav;
-
+    
+    
     private Set<String> installedOn = new LinkedHashSet<>();
 
-    public RepoData() {
+    public RepoData() {        
         this.enabled = true;
     }
 
@@ -222,25 +222,19 @@ public class RepoData {
     public void install(String target) {
         this.installedOn.add(target);
     }
-
+    
     public void uninstall(String target) {
         this.installedOn.remove(target);
     }
 
+    
     public Set<String> getInstalledOn() {
         return installedOn;
     }
 
+    
     public void setInstalledOn(Set<String> installedOn) {
         this.installedOn = installedOn;
-    }
-
-    public String getGav() {
-        return gav;
-    }
-
-    public void setGav(String gav) {
-        this.gav = gav;
     }
 
     @Override
