@@ -52,6 +52,12 @@ public interface RepositoryStorage<T> {
     List<RepoData> loadServices(Predicate<RepoData> predicate, int start, int offset);
     
     /**
+     * Performs processing of newly added service
+     * @param service service that was added
+     */
+    void onAdded(RepoData service);
+    
+    /**
      * Performs processing of enabled service
      * @param service service that was enabled
      */

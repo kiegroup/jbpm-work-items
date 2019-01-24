@@ -124,6 +124,13 @@ public class RepoService {
     /*
      * Service related operations
      */
+    
+    public void addService(RepoData service) {        
+        services.add(service);
+        storage.onAdded(service);
+
+        listeners.forEach(listener -> listener.onServiceTaskAdded(service));
+    }
 
     public List<RepoData> getServices() {
         return storage.loadServices(0,
@@ -172,7 +179,8 @@ public class RepoService {
     }
 
     public void installService(String serviceId,
-                               String target) {
+                               String target,
+                               List<String> parameters) {
         for (RepoData service : services) {
             if (service.getId().equals(serviceId)) {
                 service.install(target);
@@ -180,7 +188,8 @@ public class RepoService {
                 storage.onInstalled(service,
                                     target);
                 listeners.forEach(listener -> listener.onServiceTaskInstalled(service,
-                                                                              target));
+                                                                              target,
+                                                                              parameters));
                 return;
             }
         }
@@ -308,7 +317,8 @@ public class RepoService {
                 // set all services in module as installed as well
                 for (RepoData rd : rm.getRepoData()) {
                     installService(rd.getId(),
-                                   target);
+                                   target,
+                                   null);
                 }
             }
         });

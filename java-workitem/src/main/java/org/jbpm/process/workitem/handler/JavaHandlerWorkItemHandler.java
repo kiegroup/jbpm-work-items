@@ -28,9 +28,13 @@ import org.jbpm.process.workitem.core.util.service.WidAction;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.manager.RuntimeEngine;
+import org.kie.api.runtime.manager.RuntimeManager;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
+import org.kie.internal.runtime.manager.RuntimeManagerRegistry;
+import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 
 @Wid(widfile = "JavaDefinitions.wid", name = "Java",
         displayName = "Java",
@@ -51,8 +55,11 @@ import org.kie.api.runtime.process.WorkflowProcessInstance;
 public class JavaHandlerWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     private KieSession ksession;
-
-    public JavaHandlerWorkItemHandler(KieSession ksession) {
+    
+    public JavaHandlerWorkItemHandler() {        
+    }
+    
+    public JavaHandlerWorkItemHandler(KieSession ksession) {  
         this.ksession = ksession;
     }
 
@@ -68,17 +75,32 @@ public class JavaHandlerWorkItemHandler extends AbstractLogOrThrowWorkItemHandle
 
             Class<JavaHandler> c = (Class<JavaHandler>) Class.forName(className);
             JavaHandler handler = c.newInstance();
-            ProcessContext kcontext = new ProcessContext(ksession);
-            WorkflowProcessInstance processInstance = (WorkflowProcessInstance)
-                    ksession.getProcessInstance(workItem.getProcessInstanceId());
-            kcontext.setProcessInstance(processInstance);
-            WorkItemNodeInstance nodeInstance = findNodeInstance(workItem.getId(),
-                                                                 processInstance);
-            kcontext.setNodeInstance(nodeInstance);
-            Map<String, Object> results = handler.execute(kcontext);
-
-            manager.completeWorkItem(workItem.getId(),
-                                     results);
+            
+            KieSession localksession = ksession;
+            RuntimeManager runtimeManager = null;
+            RuntimeEngine engine = null;
+            if (localksession == null) {
+                runtimeManager = RuntimeManagerRegistry.get().getManager(((org.drools.core.process.instance.WorkItem) workItem).getDeploymentId());
+                engine = runtimeManager.getRuntimeEngine(ProcessInstanceIdContext.get(workItem.getProcessInstanceId()));
+                localksession = engine.getKieSession();
+            }
+            ProcessContext kcontext = new ProcessContext(localksession);
+            try {
+                WorkflowProcessInstance processInstance = (WorkflowProcessInstance)
+                localksession.getProcessInstance(workItem.getProcessInstanceId());
+                kcontext.setProcessInstance(processInstance);
+                WorkItemNodeInstance nodeInstance = findNodeInstance(workItem.getId(),
+                                                                     processInstance);
+                kcontext.setNodeInstance(nodeInstance);
+                Map<String, Object> results = handler.execute(kcontext);
+    
+                manager.completeWorkItem(workItem.getId(),
+                                         results);
+            } finally {
+                if (engine != null) {
+                    runtimeManager.disposeRuntimeEngine(engine);
+                }
+            }
             return;
         } catch (Exception e) {
             handleException(e);

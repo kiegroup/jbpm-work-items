@@ -52,8 +52,8 @@ import org.slf4j.LoggerFactory;
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "jira,issue,add,comment",
                 action = @WidAction(title = "Add comment to an existing Jira issue"),
-                authinfo = @WidAuth(required = true, params = {"userName", "password"},
-                        paramsdescription = {"Jira user", "Jira password"},
+                authinfo = @WidAuth(required = true, params = {"userName", "password", "repoURI"},
+                        paramsdescription = {"Jira user", "Jira password", "Repository URI"},
                         referencesite = "https://www.atlassian.com/software/jira")
         ))
 public class AddCommentOnIssueWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
