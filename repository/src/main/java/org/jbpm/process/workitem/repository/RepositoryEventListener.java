@@ -15,21 +15,16 @@
  */
 package org.jbpm.process.workitem.repository;
 
-import java.util.List;
-
 import org.jbpm.process.workitem.repository.service.RepoData;
 
 public interface RepositoryEventListener {
 
-    void onServiceTaskAdded(RepoData service);
-    
     void onServiceTaskEnabled(RepoData service);
 
     void onServiceTaskDisabled(RepoData service);
 
     void onServiceTaskInstalled(RepoData service,
-                                String target,
-                                List<String> parameters);
+                                String target);
 
     void onServiceTaskUninstalled(RepoData service,
                                   String target);
