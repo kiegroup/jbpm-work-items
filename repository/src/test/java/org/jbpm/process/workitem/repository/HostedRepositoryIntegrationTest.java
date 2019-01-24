@@ -54,7 +54,7 @@ public class HostedRepositoryIntegrationTest {
     private static String DEFAULT_HOST = "localhost";
 
     // update this when new workitems are added
-    private static int TOTAL_WORKITEM_HANDLERS = 86;
+    private static int TOTAL_WORKITEM_HANDLERS = 92;
 
     @BeforeClass
     public static void setUp() throws Exception {

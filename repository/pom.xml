@@ -337,7 +337,7 @@
         </property>
       </activation>
       <dependencies>
-      	<!-- module dependencies -->
+        <!-- module dependencies -->
 	    <dependency>
 	      <groupId>org.jbpm.contrib</groupId>
 	      <artifactId>archive-workitem</artifactId>
@@ -584,6 +584,37 @@
           <type>zip</type>
           <scope>provided</scope>
         </dependency>
+        <!-- jbpm workitems dependencies -->
+        <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-workitems-bpmn2</artifactId>
+          <type>zip</type>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-workitems-email</artifactId>
+          <type>zip</type>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-workitems-jms</artifactId>
+          <type>zip</type>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-workitems-rest</artifactId>
+          <type>zip</type>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-workitems-webservice</artifactId>
+          <type>zip</type>
+          <scope>provided</scope>
+        </dependency>
       </dependencies>
     </profile>
     <profile>
@@ -601,7 +632,38 @@
 	      <artifactId>camel-workitem</artifactId>
 	      <type>zip</type>
 	      <scope>provided</scope>
-	    </dependency>	    
+	    </dependency>
+      <!-- jbpm workitems dependencies -->
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-workitems-bpmn2</artifactId>
+        <type>zip</type>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-workitems-email</artifactId>
+        <type>zip</type>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-workitems-jms</artifactId>
+        <type>zip</type>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-workitems-rest</artifactId>
+        <type>zip</type>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-workitems-webservice</artifactId>
+        <type>zip</type>
+        <scope>provided</scope>
+      </dependency>
       </dependencies>
     </profile>
   </profiles>

@@ -913,6 +913,37 @@
         <version>${project.version}</version>
         <type>zip</type>
       </dependency>
+      <!-- jbpm workitem zip depends -->
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-workitems-bpmn2</artifactId>
+        <version>${version.org.kie}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-workitems-email</artifactId>
+        <version>${version.org.kie}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-workitems-jms</artifactId>
+        <version>${version.org.kie}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-workitems-rest</artifactId>
+        <version>${version.org.kie}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-workitems-webservice</artifactId>
+        <version>${version.org.kie}</version>
+        <type>zip</type>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

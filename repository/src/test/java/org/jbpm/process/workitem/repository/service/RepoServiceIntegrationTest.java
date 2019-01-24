@@ -31,10 +31,10 @@ public class RepoServiceIntegrationTest {
     private static RepoService repoService;
 
     // update this when new workitem is added
-    private static int TOTAL_MODULES = 35;
+    private static int TOTAL_MODULES = 40;
 
     // update this when new workitem handlers are added
-    private static int TOTAL_SERVICES = 86;
+    private static int TOTAL_SERVICES = 92;
 
     @BeforeClass
     public static void init() throws Exception {
