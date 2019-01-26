@@ -27,9 +27,16 @@
       <scope>provided</scope>
       <includes>
         <include>${project.groupId}:*:zip</include>
+        <!-- include workitems that are in jbpm -->
+        <include>org.jbpm:jbpm-workitems-bpmn2:zip</include>
+        <include>org.jbpm:jbpm-workitems-email:zip</include>
+        <include>org.jbpm:jbpm-workitems-jms:zip</include>
+        <include>org.jbpm:jbpm-workitems-rest:zip</include>
+        <include>org.jbpm:jbpm-workitems-webservice:zip</include>
       </includes>
       <excludes>
         <exclude>${project.groupId}:repository-springboot</exclude>
+        <exclude>${project.groupId}:repository-wildfly</exclude>
       </excludes>
       <unpack>true</unpack>
       <unpackOptions>

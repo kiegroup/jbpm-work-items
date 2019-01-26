@@ -48,6 +48,12 @@ public class InMemoryRepositoryStorage<T> implements RepositoryStorage<T> {
     }
 
     @Override
+    public void onAdded(RepoData service) {
+        // no op
+
+    }
+    
+    @Override
     public void onEnabled(RepoData service) {
         // no op
 

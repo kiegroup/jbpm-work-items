@@ -26,8 +26,12 @@ import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.jbpm.process.workitem.core.util.service.WidTrigger;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.manager.RuntimeEngine;
+import org.kie.api.runtime.manager.RuntimeManager;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
+import org.kie.internal.runtime.manager.RuntimeManagerRegistry;
+import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.web3j.abi.TypeReference;
@@ -59,14 +63,18 @@ import org.web3j.protocol.http.HttpService;
         ))
 public class ObserveContractEventWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 
-    private Web3j web3j;
-    private KieSession kieSession;
+    private Web3j web3j;    
+    
+    private KieSession ksession;
 
     private static final String RESULTS = "ContractAddress";
     private static final Logger logger = LoggerFactory.getLogger(DeployContractWorkitemHandler.class);
 
-    public ObserveContractEventWorkitemHandler(KieSession kieSession) {
-        this.kieSession = kieSession;
+    public ObserveContractEventWorkitemHandler() {        
+    }
+    
+    public ObserveContractEventWorkitemHandler(KieSession ksession) {  
+        this.ksession = ksession;
     }
 
     public void executeWorkItem(WorkItem workItem,
@@ -98,17 +106,32 @@ public class ObserveContractEventWorkitemHandler extends AbstractLogOrThrowWorkI
                 web3j = Web3j.build(new HttpService(serviceURL));
             }
 
-            EthereumUtils.observeContractEvent(web3j,
-                                               eventName,
-                                               contractAddress,
-                                               eventIndexedParameter,
-                                               eventNonIndexedParameter,
-                                               eventReturnType,
-                                               kieSession,
-                                               signalName,
-                                               doAbortOnUpdate,
-                                               workItemManager,
-                                               workItem);
+            KieSession localksession = ksession;
+            RuntimeManager runtimeManager = null;
+            RuntimeEngine engine = null;
+            if (localksession == null) {
+                runtimeManager = RuntimeManagerRegistry.get().getManager(((org.drools.core.process.instance.WorkItem) workItem).getDeploymentId());
+                engine = runtimeManager.getRuntimeEngine(ProcessInstanceIdContext.get(workItem.getProcessInstanceId()));
+                localksession = engine.getKieSession();
+            }
+            try {
+                EthereumUtils.observeContractEvent(web3j,
+                                                   eventName,
+                                                   contractAddress,
+                                                   eventIndexedParameter,
+                                                   eventNonIndexedParameter,
+                                                   eventReturnType,
+                                                   localksession,
+                                                   signalName,
+                                                   doAbortOnUpdate,
+                                                   workItemManager,
+                                                   workItem);
+                
+            } finally {
+                if (engine != null) {
+                    runtimeManager.disposeRuntimeEngine(engine);
+                }
+            }
         } catch (Exception e) {
             logger.error("Error executing workitem: " + e.getMessage());
             handleException(e);

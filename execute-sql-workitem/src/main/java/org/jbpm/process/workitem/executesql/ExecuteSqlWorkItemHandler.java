@@ -35,6 +35,7 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -61,7 +62,9 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "database,fetch,sql,execute",
-                action = @WidAction(title = "Execute SQL statements")
+                action = @WidAction(title = "Execute SQL statements"),
+                authinfo = @WidAuth(required = true, params = {"Data source JNDI"},
+                        paramsdescription = {"Data source JNDI"})
         ))
 public class ExecuteSqlWorkItemHandler extends AbstractLogOrThrowWorkItemHandler implements Cacheable {
 
@@ -75,10 +78,14 @@ public class ExecuteSqlWorkItemHandler extends AbstractLogOrThrowWorkItemHandler
 
     public ExecuteSqlWorkItemHandler(String dataSourceName) {
         try {
-            ds = InitialContext.doLookup(dataSourceName);
+            this.ds = InitialContext.doLookup(dataSourceName);
         } catch (NamingException e) {
             throw new RuntimeException("Unable to look up data source: " + dataSourceName + " - " + e.getMessage());
         }
+    }
+    
+    public ExecuteSqlWorkItemHandler(DataSource ds) {
+        this.ds = ds;       
     }
 
     public void executeWorkItem(WorkItem workItem,

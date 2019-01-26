@@ -25,7 +25,7 @@ $openbracket$
             "requiresauth" : "$widInfo.(k).serviceInfo.authInfo.required$",
             $if(widInfo.(k).serviceInfo.authInfo.required)$
                 "authparams" : [
-                    $widInfo.(k).serviceInfo.authInfo.params:{k1|
+                    $widInfo.(k).serviceInfo.authInfo.paramsDescription:{k1|
                        $openbracket$
                            "name" : "$k1$"
                        $closebracket$

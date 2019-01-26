@@ -77,6 +77,11 @@ public class JabberWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
     private XMPPConnection connection;
 
     private List<String> toUsers = new ArrayList<String>();
+    
+    public JabberWorkItemHandler(String user, String password) {
+        this.user = user;
+        this.password = password;
+    }
 
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager manager) {

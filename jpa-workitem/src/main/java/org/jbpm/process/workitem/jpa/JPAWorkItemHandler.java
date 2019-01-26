@@ -32,6 +32,7 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -87,7 +88,10 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "jpa,query,named,entity",
-                action = @WidAction(title = "Perform a JPA operation")
+                action = @WidAction(title = "Perform a JPA operation"),
+                authinfo = @WidAuth(required = true, params = {"persistenceUnit"},
+                paramsdescription = {"Persistence Unit name"},
+                referencesite = "")
         ))
 public class JPAWorkItemHandler extends AbstractLogOrThrowWorkItemHandler
         implements Cacheable {
@@ -113,6 +117,10 @@ public class JPAWorkItemHandler extends AbstractLogOrThrowWorkItemHandler
     private EntityManagerFactory emf;
 
     private ClassLoader classloader;
+    
+    public JPAWorkItemHandler(String persistenceUnit) {
+        this(persistenceUnit, JPAWorkItemHandler.class.getClassLoader());
+    }
 
     public JPAWorkItemHandler(String persistenceUnit,
                               ClassLoader classloader) {

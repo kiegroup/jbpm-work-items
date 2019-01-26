@@ -27,6 +27,11 @@
       <artifactId>kie-api</artifactId>
       <scope>provided</scope>
     </dependency>
+        <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-internal</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-workitems-core</artifactId>
@@ -140,6 +145,7 @@
                   <directory>target/generated-sources/annotations</directory>
                   <includes>
                     <include>repoindex.html</include>
+                    <include>*.wid</include>
                   </includes>
                   <filtering>true</filtering>
                 </resource>

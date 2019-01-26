@@ -79,7 +79,7 @@ public class JabberWorkItemHandlerTest {
         workItem.setParameter("To",
                               "someperson");
 
-        JabberWorkItemHandler handler = new JabberWorkItemHandler();
+        JabberWorkItemHandler handler = new JabberWorkItemHandler("", "");
         handler.setConf(connectionConf);
         handler.setConnection(xmppConnection);
 
@@ -112,7 +112,7 @@ public class JabberWorkItemHandlerTest {
         TestWorkItemManager manager = new TestWorkItemManager();
         WorkItemImpl workItem = new WorkItemImpl();
 
-        JabberWorkItemHandler handler = new JabberWorkItemHandler();
+        JabberWorkItemHandler handler = new JabberWorkItemHandler("", "");
         handler.setConf(connectionConf);
         handler.setConnection(xmppConnection);
 
