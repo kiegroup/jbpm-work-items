@@ -625,46 +625,61 @@
           <value>true</value>
         </property>
       </activation>
-    <dependencies>
-      	<!-- module dependencies -->	    
-	    <dependency>
-	      <groupId>org.jbpm.contrib</groupId>
-	      <artifactId>camel-workitem</artifactId>
-	      <type>zip</type>
-	      <scope>provided</scope>
-	    </dependency>
-      <!-- jbpm workitems dependencies -->
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-workitems-bpmn2</artifactId>
-        <type>zip</type>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-workitems-email</artifactId>
-        <type>zip</type>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-workitems-jms</artifactId>
-        <type>zip</type>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-workitems-rest</artifactId>
-        <type>zip</type>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-workitems-webservice</artifactId>
-        <type>zip</type>
-        <scope>provided</scope>
-      </dependency>
+      <dependencies>
+        <!-- module dependencies -->
+        <dependency>
+          <groupId>org.jbpm.contrib</groupId>
+          <artifactId>camel-workitem</artifactId>
+          <type>zip</type>
+          <scope>provided</scope>
+        </dependency>
+        <!-- jbpm workitems dependencies -->
+        <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-workitems-bpmn2</artifactId>
+          <type>zip</type>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-workitems-email</artifactId>
+          <type>zip</type>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-workitems-jms</artifactId>
+          <type>zip</type>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-workitems-rest</artifactId>
+          <type>zip</type>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-workitems-webservice</artifactId>
+          <type>zip</type>
+          <scope>provided</scope>
+        </dependency>
       </dependencies>
+    
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <configuration>
+              <systemPropertyVariables>
+                <total.mod.count>6</total.mod.count>
+                <total.wi.count>15</total.wi.count>
+              </systemPropertyVariables>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 </project>
