@@ -327,7 +327,7 @@
 
   <profiles>
     <profile>
-      <id>fuse71</id>
+      <id>fuse7</id>
       <properties>
         <version.org.ops4j.pax.exam>4.11.0</version.org.ops4j.pax.exam>
       </properties>
