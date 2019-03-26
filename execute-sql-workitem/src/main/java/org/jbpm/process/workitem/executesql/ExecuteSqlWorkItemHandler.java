@@ -111,10 +111,15 @@ public class ExecuteSqlWorkItemHandler extends AbstractLogOrThrowWorkItemHandler
                 connection = ds.getConnection();
                 statement = connection.prepareStatement(sqlStatement);
                 statement.setMaxRows(maxResults);
-                resultSet = statement.executeQuery();
 
-                results.put(RESULT,
+		boolean containsResultSet = statement.execute();
+		if(containsResultSet){
+                	resultSet = statement.getResultSet();
+                	results.put(RESULT,
                             processResults(resultSet));
+		}else{
+			results.put(RESULT,statement.getUpdateCount());
+		}
                 workItemManager.completeWorkItem(workItem.getId(),
                                                  results);
             } finally {
