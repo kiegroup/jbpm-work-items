@@ -78,7 +78,7 @@ public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler impl
                                 String clientId,
                                 String keySerializerClass,
                                 String valueSerializerClass) {
-        Thread.currentThread().setContextClassLoader(null);
+        
             
         Properties config = new Properties();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
