@@ -115,13 +115,11 @@ public class ExecuteSqlWorkItemHandler extends AbstractLogOrThrowWorkItemHandler
 		boolean containsResultSet = statement.execute();
 		if(containsResultSet){
                 	resultSet = statement.getResultSet();
-                	results.put(RESULT,
-                            processResults(resultSet));
+                	results.put(RESULT,processResults(resultSet));
 		}else{
 			results.put(RESULT,statement.getUpdateCount());
 		}
-                workItemManager.completeWorkItem(workItem.getId(),
-                                                 results);
+                workItemManager.completeWorkItem(workItem.getId(),results);
             } finally {
                 try {
                     if (resultSet != null) {

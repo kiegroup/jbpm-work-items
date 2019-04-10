@@ -125,7 +125,6 @@ public class ExecuteSqlWorkItemHandlerTest {
         assertNotNull(resultLines);
         assertEquals(0,
                      resultLines.size());
-
     }
 
     @Test
@@ -135,11 +134,9 @@ public class ExecuteSqlWorkItemHandlerTest {
         workItem.setParameter("SQLStatement",
                               "update Person set age=4 where id = 3");
         ExecuteSqlWorkItemHandler handler = new ExecuteSqlWorkItemHandler(DS_NAME);
-        handler.executeWorkItem(workItem,
-                                manager);
+        handler.executeWorkItem(workItem,manager);
         assertNotNull(manager.getResults());
-        assertEquals(1,
-                     manager.getResults().size());
+        assertEquals(1,manager.getResults().size());
         assertTrue(manager.getResults().containsKey(workItem.getId()));
 
         int changes = (int) manager.getResults().get(workItem.getId()).get("Result");
