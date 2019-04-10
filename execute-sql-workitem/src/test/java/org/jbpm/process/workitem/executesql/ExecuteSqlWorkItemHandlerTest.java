@@ -127,6 +127,24 @@ public class ExecuteSqlWorkItemHandlerTest {
                      resultLines.size());
     }
 
+    @Test
+    public void testUpdate() throws Exception {
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+        workItem.setParameter("SQLStatement",
+                              "update Person set age=4 where id = 3");
+        ExecuteSqlWorkItemHandler handler = new ExecuteSqlWorkItemHandler(DS_NAME);
+        handler.executeWorkItem(workItem,manager);
+        assertNotNull(manager.getResults());
+        assertEquals(1,manager.getResults().size());
+        assertTrue(manager.getResults().containsKey(workItem.getId()));
+
+        int changes = (int) manager.getResults().get(workItem.getId()).get("Result");
+        assertEquals(1,changes);
+
+    }
+
+
     private static void insertData() throws Exception {
         DataSource ds = InitialContext.doLookup(DS_NAME);
 
