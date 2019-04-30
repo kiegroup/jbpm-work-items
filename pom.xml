@@ -1088,9 +1088,9 @@
     </repository>
 
     <repository>
-      <id>atlassian-public-repository</id>
-      <name>Atlassian Public Repository</name>
-      <url>https://maven.atlassian.com/content/repositories/atlassian-public/</url>
+      <id>spring-io-plugins</id>
+      <name>Spring IO Plugins Repository</name>
+      <url>http://repo.spring.io/plugins-release/</url>
       <layout>default</layout>
       <releases>
         <enabled>true</enabled>
