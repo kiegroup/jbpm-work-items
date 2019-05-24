@@ -48,6 +48,8 @@ public class RepoData {
     
     private Set<String> installedOn = new LinkedHashSet<>();
 
+    private Set<String> installedOnBranch = new LinkedHashSet<>();
+
     public RepoData() {        
         this.enabled = true;
     }
@@ -223,9 +225,30 @@ public class RepoData {
     public void install(String target) {
         this.installedOn.add(target);
     }
+
+    public void install(String target, String branchName) {
+        this.installedOn.add(target);
+        this.installedOnBranch.add(branchName);
+    }
     
     public void uninstall(String target) {
         this.installedOn.remove(target);
+    }
+
+    public void uninstall(String target, String branchName) {
+        //this.installedOn.remove(target);
+        this.installedOnBranch.remove(branchName);
+        // only remove installedOn if its uninstalled
+        // on all branches
+        if(this.installedOnBranch.isEmpty()) {
+            this.installedOn.remove(target);
+        }
+    }
+
+    public void updateInstalled(String newBranchName, String fromBranchName) {
+        if(this.installedOnBranch.contains(fromBranchName)) {
+            this.installedOnBranch.add(newBranchName);
+        }
     }
    
     public Set<String> getInstalledOn() {
@@ -235,7 +258,15 @@ public class RepoData {
     public void setInstalledOn(Set<String> installedOn) {
         this.installedOn = installedOn;
     }
-    
+
+    public Set<String> getInstalledOnBranch() {
+        return installedOnBranch;
+    }
+
+    public void setInstalledOnBranch(Set<String> installedOnBranch) {
+        this.installedOnBranch = installedOnBranch;
+    }
+
     public String getGav() {
         return gav;
     }

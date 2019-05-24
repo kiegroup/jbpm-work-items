@@ -180,16 +180,18 @@ public class RepoService {
 
     public void installService(String serviceId,
                                String target,
-                               List<String> parameters) {
+                               List<String> parameters,
+                               String branchName) {
         for (RepoData service : services) {
             if (service.getId().equals(serviceId)) {
-                service.install(target);
+                service.install(target, branchName);
 
                 storage.onInstalled(service,
                                     target);
                 listeners.forEach(listener -> listener.onServiceTaskInstalled(service,
                                                                               target,
-                                                                              parameters));
+                                                                              parameters,
+                                                                              branchName));
                 return;
             }
         }
@@ -198,15 +200,17 @@ public class RepoService {
     }
 
     public void uninstallService(String serviceId,
-                                 String target) {
+                                 String target,
+                                 String branchName) {
         for (RepoData service : services) {
             if (service.getId().equals(serviceId)) {
-                service.uninstall(target);
+                service.uninstall(target, branchName);
 
                 storage.onUninstalled(service,
                                       target);
                 listeners.forEach(listener -> listener.onServiceTaskUninstalled(service,
-                                                                                target));
+                                                                                target,
+                                                                                branchName));
                 return;
             }
         }
@@ -318,7 +322,7 @@ public class RepoService {
                 for (RepoData rd : rm.getRepoData()) {
                     installService(rd.getId(),
                                    target,
-                                   null);
+                                   null, null);
                 }
             }
         });
@@ -332,9 +336,15 @@ public class RepoService {
                 // set all services in module as uninstalled as well
                 for (RepoData rd : rm.getRepoData()) {
                     uninstallService(rd.getId(),
-                                     target);
+                                     target, null);
                 }
             }
         });
+    }
+
+    public void updateInstalled(String newBranchName, String fromBranchName) {
+        for (RepoData service : services) {
+            service.updateInstalled(newBranchName, fromBranchName);
+        }
     }
 }

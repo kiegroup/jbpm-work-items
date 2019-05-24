@@ -29,8 +29,10 @@ public interface RepositoryEventListener {
 
     void onServiceTaskInstalled(RepoData service,
                                 String target,
-                                List<String> parameters);
+                                List<String> parameters,
+                                String branchName);
 
     void onServiceTaskUninstalled(RepoData service,
-                                  String target);
+                                  String target,
+                                  String branchName);
 }
