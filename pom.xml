@@ -1086,21 +1086,6 @@
         <updatePolicy>daily</updatePolicy>
       </snapshots>
     </repository>
-
-    <repository>
-      <id>spring-io-plugins</id>
-      <name>Spring IO Plugins Repository</name>
-      <url>http://repo.spring.io/plugins-release/</url>
-      <layout>default</layout>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>daily</updatePolicy>
-      </snapshots>
-    </repository>
   </repositories>
 
   <scm>
