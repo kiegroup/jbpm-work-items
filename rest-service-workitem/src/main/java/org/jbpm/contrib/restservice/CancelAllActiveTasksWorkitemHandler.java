@@ -2,6 +2,10 @@ package org.jbpm.contrib.restservice;
 
 import org.jbpm.contrib.restservice.util.Helper;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.Wid;
+import org.jbpm.process.workitem.core.util.WidMavenDepends;
+import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidService;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.kie.api.runtime.manager.RuntimeManager;
@@ -21,6 +25,25 @@ import static org.jbpm.contrib.restservice.Constant.MAIN_PROCESS_INSTANCE_ID_VAR
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
  */
+@Wid(widfile="CancelTaskTimeout.wid", 
+name="CancelTaskTimeout",
+displayName="CancelTaskTimeout",
+defaultHandler="mvel: new org.jbpm.contrib.restservice.CancelAllActiveTasksWorkitemHandler(runtimeManager)",
+category="rest-service-workitem",
+documentation = "",
+parameters={
+},
+results={
+},
+mavenDepends={
+    @WidMavenDepends(group="org.jbpm.contrib", artifact="rest-service-workitem", version="7.23.0.Final"),
+    @WidMavenDepends(group="org.slf4j", artifact="slf4j-api")
+},
+serviceInfo = @WidService(category = "REST Task cancel service", description = "",
+    keywords = "rest",
+    action = @WidAction(title = "Execute a cancel on currently running REST service task.")
+)
+)
 public class CancelAllActiveTasksWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     private static Logger logger = LoggerFactory.getLogger(CancelAllActiveTasksWorkitemHandler.class);

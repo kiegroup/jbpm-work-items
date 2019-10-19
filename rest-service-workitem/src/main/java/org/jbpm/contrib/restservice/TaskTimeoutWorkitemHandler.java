@@ -2,6 +2,12 @@ package org.jbpm.contrib.restservice;
 
 import org.jbpm.contrib.restservice.util.Helper;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.Wid;
+import org.jbpm.process.workitem.core.util.WidMavenDepends;
+import org.jbpm.process.workitem.core.util.WidParameter;
+import org.jbpm.process.workitem.core.util.WidResult;
+import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.manager.RuntimeManager;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.WorkItem;
@@ -19,6 +25,25 @@ import static org.jbpm.contrib.restservice.Constant.TIMEOUT_NODE_INSTANCE_ID_VAR
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
  */
+@Wid(widfile="RestTaskTimeout.wid", 
+name="RestTaskTimeout",
+displayName="RestTaskTimeout",
+defaultHandler="mvel: new org.jbpm.contrib.restservice.TaskTimeoutWorkitemHandler(runtimeManager)",
+category="rest-service-workitem",
+documentation = "",
+parameters={
+},
+results={
+},
+mavenDepends={
+    @WidMavenDepends(group="org.jbpm.contrib", artifact="rest-service-workitem", version="7.23.0.Final"),
+    @WidMavenDepends(group="org.slf4j", artifact="slf4j-api")
+},
+serviceInfo = @WidService(category = "REST Task Timeout service", description = "",
+    keywords = "rest",
+    action = @WidAction(title = "Execute a timeout on currently running REST service task.")
+)
+)
 public class TaskTimeoutWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     private static Logger logger = LoggerFactory.getLogger(TaskTimeoutWorkitemHandler.class);

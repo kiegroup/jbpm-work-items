@@ -15,21 +15,8 @@
  */
 package org.jbpm.contrib.restservice;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import org.apache.http.HttpResponse;
-import org.drools.core.process.instance.impl.WorkItemImpl;
-import org.jbpm.contrib.restservice.util.StringPropertyReplacer;
-import org.jbpm.contrib.restservice.util.Helper;
-import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.manager.RuntimeManager;
-import org.kie.api.runtime.process.NodeInstance;
-import org.kie.api.runtime.process.ProcessContext;
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkItemManager;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.jbpm.contrib.restservice.util.Helper.getParameterNameCancelUrl;
+import static org.jbpm.contrib.restservice.util.Helper.getStringParameter;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -40,8 +27,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.jbpm.contrib.restservice.util.Helper.getParameterNameCancelUrl;
-import static org.jbpm.contrib.restservice.util.Helper.getStringParameter;
+import org.apache.http.HttpResponse;
+import org.drools.core.process.instance.impl.WorkItemImpl;
+import org.jbpm.contrib.restservice.util.Helper;
+import org.jbpm.contrib.restservice.util.StringPropertyReplacer;
+import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
+import org.jbpm.process.workitem.core.util.Wid;
+import org.jbpm.process.workitem.core.util.WidMavenDepends;
+import org.jbpm.process.workitem.core.util.WidParameter;
+import org.jbpm.process.workitem.core.util.WidResult;
+import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidService;
+import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.manager.RuntimeManager;
+import org.kie.api.runtime.process.NodeInstance;
+import org.kie.api.runtime.process.ProcessContext;
+import org.kie.api.runtime.process.WorkItem;
+import org.kie.api.runtime.process.WorkItemManager;
+import org.kie.api.runtime.process.WorkflowProcessInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * *PROCESS FLOW*
@@ -65,10 +72,12 @@ import static org.jbpm.contrib.restservice.util.Helper.getStringParameter;
  *
  *
  */
-/*
-@Wid(widfile="RestServiceDefinitions.wid", name="RestServiceDefinitions",
-        displayName="RestServiceDefinitions", icon="",
-        defaultHandler="mvel: new org.jbpm.contrib.RestServiceWorkItemHandler(runtimeManager)",
+
+@Wid(widfile="RestServiceDefinitions.wid", 
+        name="RestServiceDefinitions",
+        displayName="RestServiceDefinitions",
+        defaultHandler="mvel: new org.jbpm.contrib.restservice.RestServiceWorkItemHandler(runtimeManager)",
+        category="rest-service-workitem",
         documentation = "",
         parameters={
             @WidParameter(name="requestUrl", required = true),
@@ -81,13 +90,18 @@ import static org.jbpm.contrib.restservice.util.Helper.getStringParameter;
             @WidParameter(name="mustRunAfter", required = false),
             @WidParameter(name="successCondition", required = false)
         },
-//        results={
-//            @WidResult(name="as defined by ResultParamName")
-//        },
+        results={
+            @WidResult(name="result")
+        },
         mavenDepends={
-            @WidMavenDepends(group="org.jbpm.contrib", artifact="rest-service-workitem", version="7.9.0.Final")
-        })
-*/
+            @WidMavenDepends(group="org.jbpm.contrib", artifact="rest-service-workitem", version="7.23.0.Final"),
+            @WidMavenDepends(group="org.slf4j", artifact="slf4j-api")
+        },
+        serviceInfo = @WidService(category = "REST service", description = "",
+            keywords = "rest",
+            action = @WidAction(title = "Execute a REST service")
+        )
+)
 public class RestServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     public static final String TASK_NAME = "taskName";
