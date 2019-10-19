@@ -89,6 +89,10 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
     
     protected static WorkItemManager currentWorkItemManager;
 
+    public RestServiceWorkitemIntegrationTest() {
+        super(true, true);
+    }
+
     @BeforeClass
     public static void mainSetUp() throws Exception {
         bootUpServices();
