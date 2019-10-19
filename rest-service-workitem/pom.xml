@@ -6,16 +6,17 @@
   <parent>
     <groupId>org.jbpm.contrib</groupId>
     <artifactId>workitems</artifactId>
-    <version>7.9.0.Final</version>
+    <version>7.23.0.Final</version>
   </parent>
 
   <artifactId>rest-service-workitem</artifactId>
-  <version>7.9.0.Final</version>
-  <name>REST Service</name>
-  <description>Workitem Desciption</description>
-  <organization>
-    <name>organization</name>
-  </organization>
+  <name>RestServiceWorkitems</name>
+  <description>RESTs</description>
+  
+    <properties>
+    <enforcer.skip>true</enforcer.skip>
+    <checkstyle.skip>true</checkstyle.skip>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -115,11 +116,6 @@
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-servlet</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-servlets</artifactId>
       <scope>test</scope>
     </dependency>
@@ -184,6 +180,34 @@
         </includes>
       </resource>
     </resources>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>ban-duplicated-classes</id>
+              <phase>validate</phase>
+              <goals>
+                <goal>enforce</goal>
+              </goals>
+              <configuration>
+                <rules>
+                  <banDuplicateClasses>
+                    <ignoreClasses combine.children="append">
+                      <ignoreClass>javax.xml.*</ignoreClass>
+                      <ignoreClass>javax.xml.stream.*</ignoreClass>
+                      <ignoreClass>javax.xml.namespace.*</ignoreClass>
+                    </ignoreClasses>
+                  </banDuplicateClasses>
+                </rules>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -225,7 +249,7 @@
         <executions>
           <execution>
             <id>copy-repository-resources</id>
-            <phase>prepare-package</phase>
+            <phase>compile</phase>
             <goals>
               <goal>copy-resources</goal>
             </goals>
@@ -236,6 +260,7 @@
                   <directory>target/generated-sources/annotations</directory>
                   <includes>
                     <include>repoindex.html</include>
+                    <include>*.wid</include>
                   </includes>
                   <filtering>true</filtering>
                 </resource>
