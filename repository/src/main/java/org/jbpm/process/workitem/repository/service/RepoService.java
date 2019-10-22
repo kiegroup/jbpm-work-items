@@ -124,12 +124,33 @@ public class RepoService {
     /*
      * Service related operations
      */
-    
-    public void addService(RepoData service) {        
+
+    public void addService(RepoData service) {
+        removeOldTimeStampService(service);
         services.add(service);
         storage.onAdded(service);
 
         listeners.forEach(listener -> listener.onServiceTaskAdded(service));
+    }
+
+    private void removeOldTimeStampService(RepoData service) {
+        List<RepoData> oldTimeStampServices = services.stream().filter(s -> compareByGAV(s, service)).collect(Collectors.toList());
+        oldTimeStampServices.forEach(oldTimeStampService -> services.remove(oldTimeStampService));
+    }
+
+    private boolean compareByGAV(RepoData oldService, RepoData newService) {
+        if (oldService.getGav() != null && !oldService.getGav().isEmpty() && newService.getGav() != null && !newService.getGav().isEmpty()) {
+            return oldService.getGav().equals(newService.getGav());
+        }
+
+        if (oldService.getMavenDependencies().size() > 0 && newService.getMavenDependencies().size() > 0) {
+            RepoMavenDepend oldRepoMavenDepend = oldService.getMavenDependencies().get(0);
+            RepoMavenDepend newRepoMavenDepend = newService.getMavenDependencies().get(0);
+            return oldRepoMavenDepend.getVersion().equals(newRepoMavenDepend.getVersion())
+                    && oldRepoMavenDepend.getArtifactId().equals(newRepoMavenDepend.getArtifactId())
+                    && oldRepoMavenDepend.getGroupId().equals(newRepoMavenDepend.getGroupId());
+        }
+        return false;
     }
 
     public List<RepoData> getServices() {

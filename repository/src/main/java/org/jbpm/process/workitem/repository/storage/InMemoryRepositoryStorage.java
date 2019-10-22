@@ -17,6 +17,7 @@
 package org.jbpm.process.workitem.repository.storage;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 
 import org.jbpm.process.workitem.repository.RepositoryStorage;
 import org.jbpm.process.workitem.repository.service.RepoData;
-
+import org.jbpm.process.workitem.repository.service.RepoMavenDepend;
 
 public class InMemoryRepositoryStorage<T> implements RepositoryStorage<T> {
 
@@ -76,14 +77,27 @@ public class InMemoryRepositoryStorage<T> implements RepositoryStorage<T> {
         // no op
 
     }
-    
+
     protected void enforceId(RepoData service) {
         if (service.getId() == null) {
             try {
-                service.setId(UUID.nameUUIDFromBytes(service.getName().getBytes("UTF-8")).toString());
-            } catch (UnsupportedEncodingException e) {                
+                service.setId(UUID.nameUUIDFromBytes(generateServiceId(service)).toString());
+            } catch (UnsupportedEncodingException e) {
             }
         }
+    }
+
+    private byte[] generateServiceId(RepoData service) throws UnsupportedEncodingException {
+        if (service.getGav() != null) {
+            return (service.getGav().toString() + ":" + service.getName()).getBytes(StandardCharsets.UTF_8);
+        }
+
+        if (service.getMavenDependencies().size() > 0) {
+            RepoMavenDepend repoMavenDepend = service.getMavenDependencies().get(0);
+            String id = repoMavenDepend.getGroupId() + ":" + repoMavenDepend.getArtifactId() + ":" + repoMavenDepend.getVersion() + ":" + service.getName();
+            return id.getBytes(StandardCharsets.UTF_8);
+        }
+        return null;
     }
 
     @Override

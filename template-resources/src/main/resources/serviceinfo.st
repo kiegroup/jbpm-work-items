@@ -6,6 +6,11 @@ $openbracket$
         "documentation" : "$widInfo.(k).documentation$",
         "module" : "$widInfo.(k).category$",
         "icon" : "$widInfo.(k).icon$",
+        $if(widInfo.(k).mavenDepends)$
+            $widInfo.(k).mavenDepends:{k1|
+                "gav" : "$widInfo.(k).mavenDepends.(k1).group$:$widInfo.(k).mavenDepends.(k1).artifact$:$widInfo.(k).mavenDepends.(k1).version$",
+            }$
+        $endif$
         $if(widInfo.(k).serviceInfo)$
             "category" : "$widInfo.(k).serviceInfo.category$",
             "description" : "$widInfo.(k).serviceInfo.description$",
