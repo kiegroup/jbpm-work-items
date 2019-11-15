@@ -17,7 +17,11 @@
 package org.jbpm.process.workitem.repository.service;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.BeforeClass;
@@ -27,6 +31,9 @@ import static org.junit.Assert.*;
 
 public class RepoServiceIntegrationTest {
 
+    private static final String VIMEO_NEW = "Vimeo-new";
+    private static final String SERVICE_TASK_NAME_ONE = "Archive";
+    private static final String SERVICE_TASK_NAME_TWO = "CamelGenericConnector";
     private static String jsonInput;
     private static RepoService repoService;
 
@@ -121,5 +128,75 @@ public class RepoServiceIntegrationTest {
         assertNotNull(installeddRepoModules);
         assertEquals(0,
                      installeddRepoModules.size());
+    }
+
+    @Test
+    public void testAddServiceTask(){
+        RepoData addService = initRepoData(VIMEO_NEW, "7.29.0-SNAPSHOT");
+        HashMap<String, List<String>> resultMap = new HashMap<>();
+        repoService.addService(addService, resultMap);
+        addService.setId(UUID.randomUUID().toString());
+        assertNull(resultMap.get(RepoService.SKIPPED));
+        assertEquals(VIMEO_NEW, resultMap.get(RepoService.CREATED).get(0));
+
+
+        RepoData updateService = initRepoData(VIMEO_NEW, "7.30.0-SNAPSHOT");
+        resultMap.clear();
+        updateService.setId(UUID.randomUUID().toString());
+        repoService.addService(updateService, resultMap);
+
+        assertNull(resultMap.get(RepoService.CREATED));
+        assertEquals(VIMEO_NEW, resultMap.get(RepoService.SKIPPED).get(0));
+    }
+
+    @Test
+    public void testRemoveServiceTask() {
+        Optional<RepoData> beforeRemoveOne = repoService.getServices().stream().filter(s -> s.getName().equals(SERVICE_TASK_NAME_ONE)).findFirst();
+        assertTrue(beforeRemoveOne.isPresent());
+        String serviceTaskOneId = beforeRemoveOne.get().getId();
+
+        repoService.removeServiceTask(serviceTaskOneId);
+        Optional<RepoData> afterRemoveOne = repoService.getServices().stream().filter(s -> s.getName().equals(SERVICE_TASK_NAME_ONE)).findFirst();
+        assertFalse(afterRemoveOne.isPresent());
+
+        Optional<RepoData> beforeRemoveTwo = repoService.getServices().stream().filter(s -> s.getName().equals(SERVICE_TASK_NAME_TWO)).findFirst();
+        assertTrue(beforeRemoveTwo.isPresent());
+        String serviceTaskTwoId = beforeRemoveTwo.get().getId();
+        beforeRemoveTwo.get().setEnabled(true);
+
+        repoService.removeServiceTask(serviceTaskTwoId);
+        Optional<RepoData> afterRemoveTwo = repoService.getServices().stream().filter(s -> s.getName().equals(SERVICE_TASK_NAME_TWO)).findFirst();
+        assertFalse(afterRemoveTwo.isPresent());
+    }
+
+    private RepoData initRepoData(String name, String version) {
+        RepoData service = new RepoData();
+        service.setGav(null);
+        service.setActiontitle("Delete an existing video");
+        service.setAuthparams(null);
+        service.setAuthreferencesite("https://developer.vimeo.com/api/authentication");
+        service.setCategory("Vimeo");
+        service.setDescription("Interact with videos on Vimeo");
+        service.setDisplayName(name);
+        service.setDefaultHandler("mvel: new org.jbpm.process.workitem.vimeo.DeleteVideoWorkitemHandler(\\\"accessToken\\\")");
+        service.setDocumentation("vimeo-workitem/index.html");
+        service.setEnabled(false);
+        service.setIcon("DeleteVimeo.png");
+        service.setIsaction(null);
+        service.setIstrigger(null);
+        service.setKeywords(null);
+        RepoMavenDepend repoMavenDepend = new RepoMavenDepend();
+        repoMavenDepend.setGroupId("org.jbpm.contrib");
+        repoMavenDepend.setArtifactId("org.jbpm.contrib");
+        repoMavenDepend.setVersion(version);
+        service.setMavenDependencies(Collections.singletonList(repoMavenDepend));
+
+        service.setModule(repoMavenDepend.getArtifactId());
+        service.setName(name);
+        service.setParameters(null);
+        service.setRequiresauth("true");
+        service.setResults(null);
+
+        return service;
     }
 }
