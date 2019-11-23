@@ -17,7 +17,6 @@
   </organization>
 
   <properties>
-    <version.org.springboot>1.5.10.RELEASE</version.org.springboot>
     <heroku.appName>${project.artifactId}</heroku.appName>
   </properties>
 
@@ -27,7 +26,7 @@
         <!-- Import dependency management from Spring Boot -->
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
-        <version>${version.org.springboot}</version>
+        <version>${version.org.springframework.boot}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -184,7 +183,7 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-        <version>${version.org.springboot}</version>
+        <version>${version.org.springframework.boot}</version>
         <configuration>
           <mainClass>org.jbpm.process.workitem.repositoryspringboot.RepositorySpringBootApplication</mainClass>
         </configuration>
