@@ -17,7 +17,7 @@ package org.jbpm.process.workitem.repositoryspringboot.advice;
 
 import java.util.Optional;
 
-import org.springframework.hateoas.VndErrors;
+import org.springframework.hateoas.mediatype.vnderrors.VndErrors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
