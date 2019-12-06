@@ -74,7 +74,7 @@ public class TransformWorkItemHandler extends AbstractLogOrThrowWorkItemHandler 
 
             Object in = workItem.getParameter(INPUT_KEY);
             String outputType = (String) workItem.getParameter(OUTPUT_TYPE_KEY);
-            Object output = Class.forName(outputType).newInstance();
+            Object output = Class.forName(outputType).getDeclaredConstructor().newInstance();
             Method txMethod = this.findTransform(output.getClass(),
                                                  in.getClass());
 
