@@ -32,8 +32,6 @@ import static org.junit.Assert.*;
 public class RepoServiceIntegrationTest {
 
     private static final String VIMEO_NEW = "Vimeo-new";
-    private static final String SERVICE_TASK_NAME_ONE = "Archive";
-    private static final String SERVICE_TASK_NAME_TWO = "CamelGenericConnector";
     private static String jsonInput;
     private static RepoService repoService;
 
@@ -48,6 +46,10 @@ public class RepoServiceIntegrationTest {
         jsonInput = IOUtils.toString(RepoServiceIntegrationTest.class.getResourceAsStream("/serviceinfo.js"),
                                      StandardCharsets.UTF_8);
         repoService = new RepoService(jsonInput);
+    }
+
+    private List<RepoData> getInitRepoDataList(){
+        return repoService.getServices();
     }
 
     @Test
@@ -151,21 +153,24 @@ public class RepoServiceIntegrationTest {
 
     @Test
     public void testRemoveServiceTask() {
-        Optional<RepoData> beforeRemoveOne = repoService.getServices().stream().filter(s -> s.getName().equals(SERVICE_TASK_NAME_ONE)).findFirst();
+        assertTrue(getInitRepoDataList().size() > 2);
+        String serviceTaskNameOne = getInitRepoDataList().get(0).getName();
+        String serviceTaskNameTwo = getInitRepoDataList().get(1).getName();
+        Optional<RepoData> beforeRemoveOne = repoService.getServices().stream().filter(s -> s.getName().equals(serviceTaskNameOne)).findFirst();
         assertTrue(beforeRemoveOne.isPresent());
         String serviceTaskOneId = beforeRemoveOne.get().getId();
 
         repoService.removeServiceTask(serviceTaskOneId);
-        Optional<RepoData> afterRemoveOne = repoService.getServices().stream().filter(s -> s.getName().equals(SERVICE_TASK_NAME_ONE)).findFirst();
+        Optional<RepoData> afterRemoveOne = repoService.getServices().stream().filter(s -> s.getName().equals(serviceTaskNameOne)).findFirst();
         assertFalse(afterRemoveOne.isPresent());
 
-        Optional<RepoData> beforeRemoveTwo = repoService.getServices().stream().filter(s -> s.getName().equals(SERVICE_TASK_NAME_TWO)).findFirst();
+        Optional<RepoData> beforeRemoveTwo = repoService.getServices().stream().filter(s -> s.getName().equals(serviceTaskNameTwo)).findFirst();
         assertTrue(beforeRemoveTwo.isPresent());
         String serviceTaskTwoId = beforeRemoveTwo.get().getId();
         beforeRemoveTwo.get().setEnabled(true);
 
         repoService.removeServiceTask(serviceTaskTwoId);
-        Optional<RepoData> afterRemoveTwo = repoService.getServices().stream().filter(s -> s.getName().equals(SERVICE_TASK_NAME_TWO)).findFirst();
+        Optional<RepoData> afterRemoveTwo = repoService.getServices().stream().filter(s -> s.getName().equals(serviceTaskNameTwo)).findFirst();
         assertFalse(afterRemoveTwo.isPresent());
     }
 
