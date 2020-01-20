@@ -182,7 +182,7 @@ public class AbstractKarafIntegrationTest {
         }
         options.add(editConfigurationFilePut("etc/org.ops4j.pax.url.mvn.cfg",
                                              "org.ops4j.pax.url.mvn.repositories",
-                                             "http://repo1.maven.org/maven2@id=central," +
+                                             "https://repo1.maven.org/maven2@id=central," +
                                                      "https://repository.jboss.org/nexus/content/groups/public@snapshots@id=jboss-public" +
                                                      additionalMavenRepositories
         ));
