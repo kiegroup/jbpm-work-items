@@ -32,6 +32,7 @@ import org.kie.api.runtime.manager.RuntimeManager;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.internal.runtime.manager.RuntimeManagerRegistry;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -40,6 +41,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(RuntimeManagerRegistry.class)
+@PowerMockIgnore({"javax.net.ssl.*","javax.security.*"})
 public class MavenEmbedderWorkitemHandlerTest extends AbstractBaseTest {
 
     @Before
