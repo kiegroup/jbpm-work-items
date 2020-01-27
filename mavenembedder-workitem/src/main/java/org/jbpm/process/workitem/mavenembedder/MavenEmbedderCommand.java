@@ -37,7 +37,7 @@ public class MavenEmbedderCommand implements Command {
             String cliData = (String) getData(ctx,
                                              "CLOptions");
 
-            String commandLineOptions = cliData == null ? "-X" : cliData;
+            String commandLineOptions = cliData == null ? "-X -o" : cliData;
 
             String workDir = (String) getData(ctx,
                                               "WorkDirectory");
