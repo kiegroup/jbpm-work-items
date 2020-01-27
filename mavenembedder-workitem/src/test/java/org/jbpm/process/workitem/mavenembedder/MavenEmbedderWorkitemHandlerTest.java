@@ -70,8 +70,6 @@ public class MavenEmbedderWorkitemHandlerTest extends AbstractBaseTest {
         WorkItemImpl workItem = new WorkItemImpl();
         workItem.setParameter("Goals",
                               "clean install");
-        workItem.setParameter("CLOptions",
-                              "-DskipTests -X");
         workItem.setParameter("WorkDirectory",
                               simpleTestProjectDir.getAbsolutePath());
         workItem.setParameter("ProjectRoot",
@@ -162,8 +160,6 @@ public class MavenEmbedderWorkitemHandlerTest extends AbstractBaseTest {
         WorkItemImpl workItem = new WorkItemImpl();
         workItem.setParameter("Goals",
                               "clean install");
-        workItem.setParameter("CLOptions",
-                              "-DskipTests -X");
         workItem.setParameter("WorkDirectory",
                               simpleTestProjectDir.getAbsolutePath());
         workItem.setParameter("ProjectRoot",
@@ -216,8 +212,6 @@ public class MavenEmbedderWorkitemHandlerTest extends AbstractBaseTest {
         WorkItemImpl workItem = new WorkItemImpl();
         workItem.setParameter("Goals",
                               "clean install");
-        workItem.setParameter("CLOptions",
-                              "-DskipTests -X");
         workItem.setParameter("WorkDirectory",
                               simpleTestProjectDir.getAbsolutePath());
         workItem.setParameter("ProjectRoot",

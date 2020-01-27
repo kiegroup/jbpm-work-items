@@ -33,8 +33,12 @@ public class MavenEmbedderCommand implements Command {
         try {
             String goals = (String) getData(ctx,
                                             "Goals");
-            String commandLineOptions = (String) getData(ctx,
-                                                         "CLOptions");
+
+            String cliData = (String) getData(ctx,
+                                             "CLOptions");
+
+            String commandLineOptions = cliData == null ? "-X" : cliData;
+
             String workDir = (String) getData(ctx,
                                               "WorkDirectory");
             String projectRoot = (String) getData(ctx,

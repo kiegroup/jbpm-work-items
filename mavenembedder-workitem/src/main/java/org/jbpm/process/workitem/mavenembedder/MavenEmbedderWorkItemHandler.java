@@ -73,7 +73,9 @@ public class MavenEmbedderWorkItemHandler extends AbstractLogOrThrowWorkItemHand
                                                 workItem);
 
             String goals = (String) workItem.getParameter("Goals");
-            String commandLineOptions = (String) workItem.getParameter("CLOptions");
+            String cliOptionsParam = (String) workItem.getParameter("CLOptions");
+            String commandLineOptions = cliOptionsParam == null ? "-X" : cliOptionsParam;
+
             String workDir = (String) workItem.getParameter("WorkDirectory");
             String projectRoot = (String) workItem.getParameter("ProjectRoot");
             String modeStr = (String) workItem.getParameter("Mode");

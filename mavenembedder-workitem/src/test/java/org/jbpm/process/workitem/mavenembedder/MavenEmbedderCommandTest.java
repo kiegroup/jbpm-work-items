@@ -83,8 +83,6 @@ public class MavenEmbedderCommandTest {
         Map<String, Object> commandContextData = new HashMap<>();
         commandContextData.put("Goals",
                                "clean install");
-        commandContextData.put("CLOptions",
-                               "-DskipTests -X");
         commandContextData.put("WorkDirectory",
                                simpleTestProjectDir.getAbsolutePath());
         commandContextData.put("ProjectRoot",
