@@ -138,6 +138,7 @@ public class MavenEmbedderWorkItemHandler extends AbstractLogOrThrowWorkItemHand
             }
         } catch (Exception e) {
             logger.error(e.getMessage());
+
             handleException(e);
         }
     }
