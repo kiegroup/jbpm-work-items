@@ -23,6 +23,7 @@ import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 import org.jbpm.process.workitem.core.TestWorkItemManager;
 import org.jbpm.test.AbstractBaseTest;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.api.runtime.KieSession;
@@ -63,6 +64,7 @@ public class MavenEmbedderWorkitemHandlerTest extends AbstractBaseTest {
     }
 
     @Test
+    @Ignore("4092")
     public void testCleanInstallSimpleProjectSync() {
         TestWorkItemManager manager = new TestWorkItemManager();
         File simpleTestProjectDir = new File("src/test/resources/simple");
@@ -113,6 +115,7 @@ public class MavenEmbedderWorkitemHandlerTest extends AbstractBaseTest {
     }
 
     @Test
+    @Ignore("4092")
     public void testCleanInstallSimpleProjectAsync() throws Exception {
         TestWorkItemManager manager = new TestWorkItemManager();
         File simpleTestProjectDir = new File("src/test/resources/simple");
@@ -153,6 +156,7 @@ public class MavenEmbedderWorkitemHandlerTest extends AbstractBaseTest {
     }
 
     @Test
+    @Ignore("4092")
     public void testCleanInstallSimpleProjecSynctWithCLOptions() {
         TestWorkItemManager manager = new TestWorkItemManager();
         File simpleTestProjectDir = new File("src/test/resources/simple");
@@ -207,6 +211,7 @@ public class MavenEmbedderWorkitemHandlerTest extends AbstractBaseTest {
     }
 
     @Test
+    @Ignore("4092")
     public void testCleanInstallSimpleProjecAsynctWithCLOptions() throws Exception {
         TestWorkItemManager manager = new TestWorkItemManager();
         File simpleTestProjectDir = new File("src/test/resources/simple");
@@ -249,6 +254,7 @@ public class MavenEmbedderWorkitemHandlerTest extends AbstractBaseTest {
     }
 
     @Test(expected = WorkItemHandlerRuntimeException.class)
+    @Ignore("4092")
     public void testCleanInstallSimpleProjectWithInvalidParams() {
         TestWorkItemManager manager = new TestWorkItemManager();
 
