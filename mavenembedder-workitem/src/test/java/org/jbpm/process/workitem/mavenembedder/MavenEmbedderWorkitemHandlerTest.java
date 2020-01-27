@@ -41,7 +41,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(RuntimeManagerRegistry.class)
-@PowerMockIgnore({"javax.net.ssl.*","javax.security.*"})
+@PowerMockIgnore({"org.apache.http.conn.ssl.*", "javax.net.ssl.*", "javax.security.*"})
 public class MavenEmbedderWorkitemHandlerTest extends AbstractBaseTest {
 
     @Before
