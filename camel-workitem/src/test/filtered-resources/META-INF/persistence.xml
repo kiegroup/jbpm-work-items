@@ -7,6 +7,14 @@
   <persistence-unit name="org.jbpm.contrib.camel-workitem" transaction-type="JTA">
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     <jta-data-source>jdbc/testDS1</jta-data-source>
+    <mapping-file>META-INF/JBPMorm.xml</mapping-file>
+
+    <class>org.drools.persistence.info.SessionInfo</class>
+    <class>org.jbpm.persistence.processinstance.ProcessInstanceInfo</class>
+    <class>org.drools.persistence.info.WorkItemInfo</class>
+    <class>org.jbpm.test.persistence.processinstance.objects.NonSerializableClass</class>
+    <class>org.jbpm.persistence.correlation.CorrelationKeyInfo</class>
+    <class>org.jbpm.persistence.correlation.CorrelationPropertyInfo</class>
 
     <properties>
       <property name="hibernate.max_fetch_depth" value="3"/>
@@ -14,11 +22,6 @@
       <property name="hibernate.show_sql" value="false"/>
 
       <property name="hibernate.dialect" value="${maven.hibernate.dialect}"/>
-
-      <property name="hibernate.connection.driver_class" value="${maven.jdbc.driver.class}"/>
-      <property name="hibernate.connection.url" value="${maven.jdbc.url}"/>
-      <property name="hibernate.connection.username" value="${maven.jdbc.username}"/>
-      <property name="hibernate.connection.password" value="${maven.jdbc.password}"/>
       <property name="hibernate.default_schema" value="${maven.jdbc.schema}"/>
 
       <!-- BZ 841786: AS7/EAP 6/Hib 4 uses new (sequence) generators which seem to cause problems -->
@@ -26,6 +29,7 @@
 
       <!-- The following line is what's used in Hibernate 4 instead of a TransactionManagerLookup class -->
       <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.JBossStandAloneJtaPlatform"/>
+      <property name="hibernate.connection.handling_mode" value="DELAYED_ACQUISITION_AND_RELEASE_AFTER_TRANSACTION"/>
     </properties>
   </persistence-unit>
 

@@ -21,14 +21,12 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
-import javax.sql.DataSource;
 
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.SimpleRegistry;
 import org.h2.tools.DeleteDbFiles;
 import org.h2.tools.RunScript;
-import org.jbpm.persistence.util.PersistenceUtil;
+import org.jbpm.test.persistence.util.PersistenceUtil;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.junit.After;
 import org.junit.Assert;
@@ -43,11 +41,10 @@ import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.persistence.jpa.JPAKnowledgeService;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
-import org.kie.test.util.db.PoolingDataSourceWrapper;
 
-import static org.jbpm.persistence.util.PersistenceUtil.JBPM_PERSISTENCE_UNIT_NAME;
-import static org.jbpm.persistence.util.PersistenceUtil.createEnvironment;
-import static org.jbpm.persistence.util.PersistenceUtil.setupWithPoolingDataSource;
+import static org.jbpm.test.persistence.util.PersistenceUtil.DATASOURCE;
+import static org.jbpm.test.persistence.util.PersistenceUtil.createEnvironment;
+import static org.jbpm.test.persistence.util.PersistenceUtil.setupWithPoolingDataSource;
 import static org.junit.Assert.*;
 
 public class CamelSqlTest {
@@ -56,7 +53,6 @@ public class CamelSqlTest {
 
     private SQLCamelWorkitemHandler handler;
     private HashMap<String, Object> context;
-    private PoolingDataSourceWrapper pds;
 
     @Before
     public void setup() throws Exception {
@@ -66,19 +62,18 @@ public class CamelSqlTest {
 
         setupDb();
 
-        DataSource ds = setupDataSource();
+        context = setupWithPoolingDataSource("org.jbpm.contrib.camel-workitem");
 
         SimpleRegistry simpleRegistry = new SimpleRegistry();
         simpleRegistry.put("jdbc/testDS1",
-                           ds);
+                           context.get(DATASOURCE));
 
         handler = new SQLCamelWorkitemHandler("queryResult",
                                               new DefaultCamelContext(simpleRegistry));
-        context = setupWithPoolingDataSource(JBPM_PERSISTENCE_UNIT_NAME);
     }
 
     @After
-    public void cleanup() throws Exception {
+    public void cleanup() {
         PersistenceUtil.cleanUp(context);
         DeleteDbFiles.execute("~",
                               "jbpm-db-test",
@@ -98,43 +93,8 @@ public class CamelSqlTest {
                           false);
     }
 
-    public PoolingDataSourceWrapper setupDataSource() {
-        pds = PersistenceUtil.setupPoolingDataSource(getDefaultDSProperties(),
-                                                     "jdbc/jbpm-ds");
-        return pds;
-    }
-
-    private static Properties getDefaultDSProperties() {
-        Properties defaultProperties = new Properties();
-        String[] keyArr = {
-                "serverName", "portNumber", "databaseName",
-                "url",
-                "user", "password",
-                "driverClassName",
-                "className",
-                "maxPoolSize",
-                "allowLocalTransactions"};
-        String[] defaultPropArr = {
-                "", "", "",
-                "jdbc:h2:mem:jbpm-db;MVCC=true",
-                "sa", "",
-                "org.h2.Driver",
-                "org.h2.jdbcx.JdbcDataSource",
-                "16",
-                "true"};
-        Assert.assertTrue("Unequal number of keys for default properties",
-                          keyArr.length == defaultPropArr.length);
-        for (int i = 0; i < keyArr.length; ++i) {
-            defaultProperties.put(keyArr[i],
-                                  defaultPropArr[i]);
-        }
-        return defaultProperties;
-    }
-
     @Test
-    public void testSelect() throws Exception {
-
-        HashMap<String, Object> context = setupWithPoolingDataSource(JBPM_PERSISTENCE_UNIT_NAME);
+    public void testSelect() {
         Environment env = createEnvironment(context);
 
         KieBase kbase = createBase();
