@@ -443,12 +443,6 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-persistence-jpa</artifactId>
-        <type>test-jar</type>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-query-jpa</artifactId>
         <type>test-jar</type>
         <version>${version.org.kie}</version>

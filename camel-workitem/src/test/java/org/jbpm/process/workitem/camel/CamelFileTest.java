@@ -17,6 +17,7 @@ package org.jbpm.process.workitem.camel;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -43,9 +44,8 @@ import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.persistence.jpa.JPAKnowledgeService;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
 
-import static org.jbpm.persistence.util.PersistenceUtil.JBPM_PERSISTENCE_UNIT_NAME;
-import static org.jbpm.persistence.util.PersistenceUtil.createEnvironment;
-import static org.jbpm.persistence.util.PersistenceUtil.setupWithPoolingDataSource;
+import static org.jbpm.test.persistence.util.PersistenceUtil.createEnvironment;
+import static org.jbpm.test.persistence.util.PersistenceUtil.setupWithPoolingDataSource;
 
 public class CamelFileTest extends AbstractBaseTest {
 
@@ -74,7 +74,7 @@ public class CamelFileTest extends AbstractBaseTest {
     public void testSingleFileProcess() throws IOException {
         final String testData = "test-data";
 
-        HashMap<String, Object> context = setupWithPoolingDataSource(JBPM_PERSISTENCE_UNIT_NAME);
+        HashMap<String, Object> context = setupWithPoolingDataSource("org.jbpm.contrib.camel-workitem");
         Environment env = createEnvironment(context);
 
         KieBase kbase = createBase();
@@ -102,7 +102,7 @@ public class CamelFileTest extends AbstractBaseTest {
         Assert.assertTrue("Expected file does not exist.",
                           testFile.exists());
 
-        String resultText = FileUtils.readFileToString(testFile);
+        String resultText = FileUtils.readFileToString(testFile, StandardCharsets.UTF_8);
         Assert.assertEquals(resultText,
                             testData);
     }
@@ -130,7 +130,7 @@ public class CamelFileTest extends AbstractBaseTest {
         Assert.assertTrue("Expected file does not exist.",
                           testFile.exists());
 
-        String resultText = FileUtils.readFileToString(testFile);
+        String resultText = FileUtils.readFileToString(testFile, StandardCharsets.UTF_8);
         Assert.assertEquals(resultText,
                             testData);
     }
