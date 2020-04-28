@@ -15,6 +15,7 @@
  */
 package org.jbpm.contrib.restservice;
 
+import static org.jbpm.contrib.restservice.util.Helper.getKsession;
 import static org.jbpm.contrib.restservice.util.Helper.getParameterNameCancelUrl;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ import org.apache.http.HttpResponse;
 import org.drools.core.process.instance.impl.WorkItemImpl;
 import org.jbpm.contrib.restservice.util.Helper;
 import org.jbpm.contrib.restservice.util.StringPropertyReplacer;
+import org.jbpm.contrib.restservice.util.Strings;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -109,10 +111,13 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
             logger.info("Started nodeInstance.name {}, nodeInstance.id {}.", nodeName, nodeInstanceId);
 
             String cancelUrlJsonPointer = Helper.getStringParameter(workItem, CANCEL_URL_JSON_POINTER_VARIABLE);
-
             String requestUrl = Helper.getStringParameter(workItem,"requestUrl");
             String requestMethod = Helper.getStringParameter(workItem,"requestMethod");
             String requestBody = Helper.getStringParameter(workItem,"requestBody");
+            String requestHeaders = Helper.getStringParameter(workItem,"Headers");
+
+            //TODO use ksession.getEnvironment().get() ?
+            String callbackKieRestBase = Helper.getStringParameter(workItem,"callbackKieRestBaseUrl");
 
             //TODO get without parameters
             String containerId = (String) processInstance.getVariable("containerId");
@@ -132,7 +137,9 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
                         requestBody,
                         nodeName,
                         containerId,
-                        cancelUrlJsonPointer);
+                        cancelUrlJsonPointer,
+                        requestHeaders,
+                        callbackKieRestBase);
                 if (!invoked) {
                     logger.warn("Invalid remote service response. ProcessInstanceId {}.", processInstanceId);
                     Helper.cancelAll(processInstance);
@@ -145,16 +152,9 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
             }
         } catch(Throwable cause) {
             //TODO: removal of AbstractLogOrThrowWorkItemHandler: handleException(cause);
+            //for now throw RuntimeException rather than just swallow it
+            throw new RuntimeException(cause);
         }
-    }
-
-    private boolean checkRunAfter(List<String> runAfterTasks, long processInstanceId) {
-        for (String runAfterTask : runAfterTasks) {
-            if (checkTaskCompletedSuccessfully(runAfterTask, processInstanceId)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private boolean checkTaskCompletedSuccessfully(String nodeName, long processInstanceId) {
@@ -171,30 +171,32 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
             WorkItemManager manager,
             WorkItem workItem,
             String requestUrl,
-            String requestMethod,
+            String httpMethod,
             String requestBody,
             String nodeInstanceName,
             String containerId,
-            String cancelUrlJsonPointer) throws IOException {
+            String cancelUrlJsonPointer,
+            String requestHeaders,
+            String callbackKieRestBase) throws IOException {
 
         WorkflowProcessInstance processInstance = Helper.getProcessInstance(runtimeManager, workItem.getProcessInstanceId());
         
         Properties properties = new Properties();
         String host = "localhost:8080"; //TODO
-        properties.put("handler.callback.url", 
-                "http://" + host + "/kie-server/services/rest/server/containers/" + containerId +
+        properties.put("handler.callback.url",
+                Strings.addEndingSlash(callbackKieRestBase) + "server/containers/" + containerId +
                 "/processes/instances/"+processInstance.getId()+"/signal/RESTResponded");
         
         String requestBodyReplaced = StringPropertyReplacer.replaceProperties(
                 requestBody, properties);
 
-        String loginToken = ""; //TODO
-
+        Map<String, String> requestHeadersMap = Strings.toMap(requestHeaders);
         HttpResponse httpResponse = Helper.httpRequest(
                 requestUrl,
                 requestBodyReplaced,
-                loginToken,
-                5000,
+                httpMethod,
+                requestHeadersMap,
+                5000, //TODO configurable
                 5000,
                 5000);
 

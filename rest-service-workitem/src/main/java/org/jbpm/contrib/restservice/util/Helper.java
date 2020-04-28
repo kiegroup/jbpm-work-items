@@ -5,6 +5,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -65,7 +66,8 @@ public class Helper {
     public static HttpResponse httpRequest(
             String url,
             String jsonContent,
-            String loginToken,
+            String httpMethod,
+            Map<String,String> requestHeaders,
             int readTimeout,
             int connectTimeout,
             int requestTimeout) throws IOException {
@@ -80,18 +82,20 @@ public class Helper {
 
         HttpClient httpClient = clientBuilder.build();
 
-        HttpPost request = new HttpPost(url); //TODO
+        RequestBuilder requestBuilder = RequestBuilder.create(httpMethod).setUri(url);
 
-        request.setHeader("Content-Type","application/json");
-        request.setHeader("Authorization", "Bearer " + loginToken);
+        requestBuilder.addHeader("Content-Type","application/json");
+        if (requestHeaders != null) {
+            requestHeaders.forEach((k,v) -> requestBuilder.addHeader(k,v));
+        }
 
         StringEntity entity = new StringEntity(jsonContent, ContentType.APPLICATION_JSON);
 
-        request.setEntity(entity);
+        requestBuilder.setEntity(entity);
 
         logger.info("Invoking remote endpoint {} with data: {}.", url, jsonContent);
 
-        return httpClient.execute(request);
+        return httpClient.execute(requestBuilder.build());
     }
 
     public static long getLongParameter(WorkItem workItem, String parameterName) {

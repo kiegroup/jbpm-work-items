@@ -247,7 +247,8 @@ public class RestServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHandle
         HttpResponse httpResponse = Helper.httpRequest(
                 requestUrl,
                 requestBodyReplaced,
-                loginToken,
+                null,
+                null,
                 5000,
                 5000,
                 5000);
