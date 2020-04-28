@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,14 +81,15 @@ public class CancelTaskOperation {
     }
 
     private boolean remoteCancelRequest(String cancelUrl) {
-        String loginToken = ""; //TODO
+        Map<String, String> headers = Collections.emptyMap(); //TODO
 
         HttpResponse httpResponse;
         try {
             httpResponse = Helper.httpRequest(
                     cancelUrl,
                     "",
-                    loginToken,
+                    "POST", //TODO
+                    headers,
                     5000,
                     5000,
                     5000);
