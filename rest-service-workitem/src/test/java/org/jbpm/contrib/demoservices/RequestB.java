@@ -6,6 +6,8 @@ package org.jbpm.contrib.demoservices;
 public class RequestB {
 
     private String callbackUrl;
+    
+    private String callbackMethod;
 
     private String nameFromA;
 
@@ -34,4 +36,14 @@ public class RequestB {
     public void setSurname(String surname) {
         this.surname = surname;
     }
+
+    public String getCallbackMethod() {
+        return callbackMethod;
+    }
+
+    public void setCallbackMethod(String callbackMethod) {
+        this.callbackMethod = callbackMethod;
+    }
+    
+    
 }

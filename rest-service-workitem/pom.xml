@@ -3,17 +3,20 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
     xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
+  
   <parent>
     <groupId>org.jbpm.contrib</groupId>
     <artifactId>workitems</artifactId>
     <version>7.23.0.Final</version>
   </parent>
-
+  
   <artifactId>rest-service-workitem</artifactId>
+  <groupId>org.jbpm.contrib</groupId>
+  <version>7.23.0.Final</version>
   <name>RestServiceWorkitems</name>
   <description>RESTs</description>
   
-    <properties>
+  <properties>
     <enforcer.skip>true</enforcer.skip>
     <checkstyle.skip>true</checkstyle.skip>
   </properties>
@@ -29,6 +32,12 @@
       <artifactId>jbpm-workitems-core</artifactId>
       <scope>provided</scope>
     </dependency>
+<!--    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-workitems-rest</artifactId>
+      <scope>provided</scope>
+      <version>${project.parent.version}</version>
+    </dependency> -->
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-document</artifactId>
@@ -40,6 +49,13 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
+<!--    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-workitems-rest</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+      <version>${project.parent.version}</version>
+    </dependency> -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -68,6 +84,8 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
+      <version>1.7.26</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -78,11 +96,39 @@
           <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
+      <scope>provided</scope>
     </dependency>
+
+<!-- This dependency is to enforce same jackson version as the one used by 
+     jersey 2.27 later. Otherwise maven gets lost in various versions that
+     other dependencies here also refer for fasterxml. Later this would cause
+     issues in tests. --> 
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
+      <version>2.8.10</version>
+      <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>2.8.10</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>2.8.0</version>
+      <scope>provided</scope>
+    </dependency> 
+    <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-jaxb-annotations</artifactId>
+      <version>2.8.10</version>
+      <scope>provided</scope>
+    </dependency>
+
+
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>template-resources</artifactId>
@@ -91,6 +137,7 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-servlet</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.spec.javax.ws.rs</groupId>
@@ -147,11 +194,13 @@
       <groupId>org.glassfish.jersey.core</groupId>
       <artifactId>jersey-common</artifactId>
       <version>2.27</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.inject</groupId>
       <artifactId>jersey-hk2</artifactId>
       <version>2.27</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.media</groupId>

@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -50,6 +51,21 @@ public class WorkItems {
     {
         logger.info("Completing workitem id: {}, result: {}.", taskId, result);
         RestServiceWorkitemIntegrationTest.completeWorkItem(taskId, result);
+
+        Map<String, Object> response = new HashMap<>();
+        return Response.status(200).entity(response).build();
+
+    }
+    
+    @POST
+    @Path("{instanceId}/signal/{signalName}")
+    public Response signalProcess(
+            @PathParam("signalName") String signalName,
+            @PathParam("instanceId") long instanceId,
+            Map<String, Object> result)
+    {
+        logger.info("Sending {} signal to process id: {}, result: {}.", signalName, instanceId, result);
+        RestServiceWorkitemIntegrationTest.sendSignalToProcess(instanceId, signalName, result);
 
         Map<String, Object> response = new HashMap<>();
         return Response.status(200).entity(response).build();

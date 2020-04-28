@@ -15,19 +15,19 @@
  */
 package org.jbpm.contrib.demoservices;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.HttpClientBuilder;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -39,21 +39,29 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.hibernate.cfg.NotYetImplementedException;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
+ * @author Ryszard Kozmik
  */
 @Path("/service")
 @Produces(MediaType.APPLICATION_JSON)
@@ -92,7 +100,7 @@ public class Service {
         Map<String, Object> result = new HashMap<>();
         result.put("person", person);
 
-        int jobId = scheduleCallback(callbackUrl, callbackDelay, result);
+        int jobId = scheduleCallback(callbackUrl, request.getCallbackMethod(),request.getCallbackParamsAsNameValuePairList(),callbackDelay, result);
 
         String cancelUrl = "http://localhost:8080/demo-service/service/cancel/" + jobId;
         cancelUrl += "?delay=" + cancelDelay;
@@ -116,7 +124,7 @@ public class Service {
         Map<String, Object> result = new HashMap<>();
         result.put("fullName", request.getNameFromA() + " " + request.getSurname());
 
-        int jobId = scheduleCallback(callbackUrl, callbackDelay, result);
+        int jobId = scheduleCallback(callbackUrl,request.getCallbackMethod(),null, callbackDelay, result);
 
         String cancelUrl = "http://localhost:8080/demo-service/service/cancel/" + jobId;
         Map<String, Object> response = new HashMap<>();
@@ -137,13 +145,13 @@ public class Service {
         Map<String, Object> result = new HashMap<>();
         result.put("canceled", "true");
 
-        scheduleCallback(runningJob.callbackUrl, delay, result);
+        scheduleCallback(runningJob.callbackUrl,"PUT",null, delay, result);
 
         return Response.status(200).entity(null).build();
     }
 
-    private int scheduleCallback(String callbackUrl, int delay, Map<String, Object> result) {
-        ScheduledFuture<?> future = executorService.schedule(() -> executeCallback(callbackUrl, result), delay, TimeUnit.SECONDS);
+    private int scheduleCallback(String callbackUrl, String callbackMethod, List<NameValuePair> callbackParams, int delay, Map<String, Object> result) {
+        ScheduledFuture<?> future = executorService.schedule(() -> executeCallback(callbackUrl, callbackMethod, callbackParams, result), delay, TimeUnit.SECONDS);
         int id = sequence.getAndIncrement();
         runningJobs.put(id, new RunningJob(future, callbackUrl));
         return id;
@@ -159,7 +167,7 @@ public class Service {
         }
     }
 
-    private void executeCallback(String callbackUrl, Map<String, Object> result) {
+    private void executeCallback(String callbackUrl,String callbackMethod, List<NameValuePair> callbackParams, Map<String, Object> result) {
 
         RequestConfig config = RequestConfig.custom()
                 .setSocketTimeout(5000)
@@ -185,8 +193,19 @@ public class Service {
                     .setDefaultCredentialsProvider(credsProvider);
 
             HttpClient httpClient = clientBuilder.build();
-            HttpPut request = new HttpPut(requestUri);
-
+            HttpEntityEnclosingRequestBase request = null;
+            if(callbackMethod==null || callbackMethod.contentEquals(HttpPut.METHOD_NAME)) {
+                request = new HttpPut(requestUri);
+            } else if(callbackMethod.contentEquals(HttpPost.METHOD_NAME)) {
+                request = new HttpPost(requestUri);
+            } else {
+                throw new NotYetImplementedException("This callback HTTP method is not implemented yet in this dummy service handler: "+callbackMethod);
+            }
+            
+//            URIBuilder newBuilder = new URIBuilder(request.getURI());
+//            List<NameValuePair> params = newBuilder.getQueryParams();
+//            params.addAll(callbackParams);
+            
             request.setHeader("Content-Type","application/json");
 
             System.out.println(">>> Calling back to: " + requestUri);

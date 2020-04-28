@@ -1,0 +1,19 @@
+[
+        [
+            "name" : "CancelTaskTimeout",
+            "displayName" : "CancelTaskTimeout",
+            "category" : "rest-service-workitem",
+            "description" : "",
+            "defaultHandler" : "mvel: new org.jbpm.contrib.restservice.CancelAllActiveTasksWorkitemHandler(runtimeManager)",
+            "documentation" : "",
+
+            "mavenDependencies" : [
+                                 "org.jbpm.contrib:rest-service-workitem:7.23.0.Final"
+                ,"org.slf4j:slf4j-api:"
+
+            ],
+            "icon" : ""
+
+        ]
+
+]
