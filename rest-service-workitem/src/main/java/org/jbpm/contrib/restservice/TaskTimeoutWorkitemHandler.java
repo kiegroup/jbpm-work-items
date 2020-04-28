@@ -36,12 +36,12 @@ parameters={
 results={
 },
 mavenDepends={
-    @WidMavenDepends(group="org.jbpm.contrib", artifact="rest-service-workitem", version="7.23.0.Final"),
-    @WidMavenDepends(group="org.slf4j", artifact="slf4j-api")
+    @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}"),
+//    @WidMavenDepends(group="org.slf4j", artifact="slf4j-api")
 },
 serviceInfo = @WidService(category = "REST Task Timeout service", description = "",
     keywords = "rest",
-    action = @WidAction(title = "Execute a timeout on currently running REST service task.")
+    action = @WidAction(title = "Execute a timeout on currently running REST service task. ver. ${version}")
 )
 )
 public class TaskTimeoutWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {

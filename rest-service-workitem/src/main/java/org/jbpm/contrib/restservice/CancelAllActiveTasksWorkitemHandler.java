@@ -36,12 +36,12 @@ parameters={
 results={
 },
 mavenDepends={
-    @WidMavenDepends(group="org.jbpm.contrib", artifact="rest-service-workitem", version="7.23.0.Final"),
-    @WidMavenDepends(group="org.slf4j", artifact="slf4j-api")
+    @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}"),
+//    @WidMavenDepends(group="org.slf4j", artifact="slf4j-api")
 },
 serviceInfo = @WidService(category = "REST Task cancel service", description = "",
     keywords = "rest",
-    action = @WidAction(title = "Execute a cancel on currently running REST service task.")
+    action = @WidAction(title = "Execute a cancel on currently running REST service task. ver. ${version}")
 )
 )
 public class CancelAllActiveTasksWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {

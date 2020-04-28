@@ -41,6 +41,7 @@ import org.jbpm.contrib.restservice.CancelAllActiveTasksWorkitemHandler;
 import org.jbpm.contrib.restservice.Constant;
 import org.jbpm.contrib.restservice.RestServiceProcessEventListener;
 import org.jbpm.contrib.restservice.RestServiceWorkItemHandler;
+import org.jbpm.contrib.restservice.SimpleRestServiceWorkItemHandler;
 import org.jbpm.contrib.restservice.TaskTimeoutWorkitemHandler;
 import org.jbpm.process.instance.event.DefaultSignalManagerFactory;
 import org.jbpm.process.instance.impl.DefaultProcessInstanceManagerFactory;
@@ -57,7 +58,9 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.kie.api.event.process.DefaultProcessEventListener;
+import org.kie.api.event.process.ProcessCompletedEvent;
 import org.kie.api.event.process.ProcessEventListener;
+import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.api.event.process.ProcessVariableChangedEvent;
 import org.kie.api.event.rule.AgendaEventListener;
 import org.kie.api.io.ResourceType;
@@ -87,7 +90,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
 
     ExecutorService executor = Executors.newSingleThreadExecutor();
     
-    protected static WorkItemManager currentWorkItemManager;
+    protected static KieSession currentKieSession;
 
     public RestServiceWorkitemIntegrationTest() {
         super(true, true);
@@ -114,7 +117,8 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
                 "service-orchestration-test.bpmn",
                 "timeout-test.bpmn2",
                 "timeout-test-cancel-timeouts.bpmn",
-                "invalid-service-url-test.bpmn");
+                "invalid-service-url-test.bpmn",
+                "execute-rest.bpmn2");
         RuntimeEngine runtimeEngine = getRuntimeEngine();
         
         KieSession kieSession = runtimeEngine.getKieSession();
@@ -122,19 +126,26 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
 
         WorkItemManager workItemManager = kieSession.getWorkItemManager();
         workItemManager.registerWorkItemHandler("RestServiceWorkItemHandler", new RestServiceWorkItemHandler(manager));
+        workItemManager.registerWorkItemHandler("SimpleRestServiceWorkItemHandler", new SimpleRestServiceWorkItemHandler(manager));
         workItemManager.registerWorkItemHandler("CancelAllActiveTasksWorkitemHandler", new CancelAllActiveTasksWorkitemHandler(manager));
         workItemManager.registerWorkItemHandler("TaskTimeoutWorkitemHandler", new TaskTimeoutWorkitemHandler(manager));
         
-        currentWorkItemManager = kieSession.getWorkItemManager();
+        currentKieSession = kieSession;
     }
     
     @After
     public void postTestTeardown() {
-        currentWorkItemManager=null;
+        currentKieSession=null;
     }
     
+    // TODO: This is a bit of a hack. It works but such sharing of tested instance through static field is questionable.
     public static void completeWorkItem( int workItemId, Map<String, Object> result ) {
-        currentWorkItemManager.completeWorkItem(workItemId, result);
+        currentKieSession.getWorkItemManager().completeWorkItem(workItemId, result);
+    }
+    
+    // TODO: This is a bit of a hack. It works but such sharing of tested instance through static field is questionable.
+    public static void sendSignalToProcess( long processId, String signalName, Map<String, Object> result ) {
+        currentKieSession.signalEvent(signalName, result, processId);
     }
     
     private static void bootUpServices() throws Exception {
@@ -325,7 +336,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         parameters.put("containerId", "mock");
         ProcessInstance processInstance = (ProcessInstance)kieSession.startProcess("service-orchestration-test", parameters);
 
-        nodeACompleted.tryAcquire(30, TimeUnit.SECONDS);
+        nodeACompleted.tryAcquire(300, TimeUnit.SECONDS);
 
         kieSession.removeEventListener(processEventListener);
 
@@ -608,6 +619,54 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         Assert.assertEquals("{\"remote-cancel-failed\":true}", resultTimeout.get());
 
         kieSession.removeEventListener(processEventListener);
+    }
+    
+    @Test
+    public void testWrappedWorkitem() throws InterruptedException {
+        
+        KieSession kieSession = getRuntimeEngine().getKieSession();
+        
+        // Semaphore for process completed event
+        final Semaphore processFinished = new Semaphore(0);
+        
+        ProcessEventListener processEventListener = new DefaultProcessEventListener() {
+            
+            @Override
+            public void beforeNodeTriggered(ProcessNodeTriggeredEvent event) {
+                logger.info("Event ID: {}, event node ID: {}, event node name: {}", event.getNodeInstance().getId(), event.getNodeInstance().getNodeId(), event.getNodeInstance().getNodeName());
+            }
+            
+            public void afterProcessCompleted(ProcessCompletedEvent event) {
+                logger.info("Process completed, unblocking test.");
+                processFinished.release();
+            }
+            
+        };
+        kieSession.addEventListener(processEventListener);
+        
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("containerId", "mock");
+        parameters.put("cancel", false);
+        parameters.put("requestUrl", "http://localhost:8080/demo-service/service/A?callbackDelay=3");
+        parameters.put("requestBody", ""
+                + "{\"callbackUrl\":\"${handler.callback.url}\","
+                + "\"callbackMethod\":\"POST\","
+                + "\"name\":\"Matej\"}");
+        parameters.put("requestMethod", "POST" );
+        parameters.put("taskTimeout", 10);
+        parameters.put("cancelTimeout", 10);
+        parameters.put("cancelUrlJsonPointer", "/cancelUrl");
+        
+        ProcessInstance processInstance = (ProcessInstance) kieSession.startProcess("execute-rest", parameters);
+
+        boolean completed = processFinished.tryAcquire(30, TimeUnit.SECONDS);
+        if (!completed) {
+            Assert.fail("Failed to complete the process.");
+        }
+        
+        kieSession.removeEventListener(processEventListener);
+        assertProcessInstanceCompleted(processInstance.getId());
+        
     }
 
     @Test @Ignore

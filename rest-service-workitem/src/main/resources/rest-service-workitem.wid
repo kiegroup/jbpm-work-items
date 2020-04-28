@@ -1,0 +1,67 @@
+[
+        [
+            "name" : "RestTaskTimeout",
+            "displayName" : "RestTaskTimeout",
+            "category" : "rest-service-workitem",
+            "description" : "",
+            "defaultHandler" : "mvel: new org.jbpm.contrib.restservice.TaskTimeoutWorkitemHandler(runtimeManager)",
+            "documentation" : "",
+
+            "mavenDependencies" : [
+                                 "org.jbpm.contrib:rest-service-workitem:7.23.0.Final"
+                ,"org.slf4j:slf4j-api:"
+
+            ],
+            "icon" : ""
+
+        ]
+    ,[
+            "name" : "RestServiceDefinitions",
+            "displayName" : "RestServiceDefinitions",
+            "category" : "rest-service-workitem",
+            "description" : "",
+            "defaultHandler" : "mvel: new org.jbpm.contrib.restservice.RestServiceWorkItemHandler(runtimeManager)",
+            "documentation" : "",
+
+            "parameters" : [
+                                "mustRunAfter" : new StringDataType()
+                ,"successCondition" : new StringDataType()
+                ,"taskTimeout" : new StringDataType()
+                ,"requestBody" : new StringDataType()
+                ,"requestUrl" : new StringDataType()
+                ,"requestMethod" : new StringDataType()
+                ,"cancelTimeout" : new StringDataType()
+                ,"alwaysRun" : new StringDataType()
+                ,"cancelUrlJsonPointer" : new StringDataType()
+
+            ],
+            "results" : [
+                                "result" : new StringDataType()
+
+            ],
+            "mavenDependencies" : [
+                                 "org.jbpm.contrib:rest-service-workitem:7.23.0.Final"
+                ,"org.slf4j:slf4j-api:"
+
+            ],
+            "icon" : ""
+
+        ]
+    ,[
+            "name" : "CancelTaskTimeout",
+            "displayName" : "CancelTaskTimeout",
+            "category" : "rest-service-workitem",
+            "description" : "",
+            "defaultHandler" : "mvel: new org.jbpm.contrib.restservice.CancelAllActiveTasksWorkitemHandler(runtimeManager)",
+            "documentation" : "",
+
+            "mavenDependencies" : [
+                                 "org.jbpm.contrib:rest-service-workitem:7.23.0.Final"
+                ,"org.slf4j:slf4j-api:"
+
+            ],
+            "icon" : ""
+
+        ]
+
+]
