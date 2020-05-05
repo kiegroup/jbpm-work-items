@@ -2,6 +2,9 @@ package org.jbpm.contrib.restservice.util;
 
 import java.util.*;
 
+/**
+ * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
+ */
 public class Strings {
 
     /**
@@ -39,5 +42,13 @@ public class Strings {
             string += "/";
         }
         return string;
+    }
+
+    public static boolean isEmpty(String string) {
+        if (string == null) {
+            return true;
+        } else {
+            return "".equals(string);
+        }
     }
 }

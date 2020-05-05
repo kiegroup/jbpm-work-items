@@ -15,20 +15,23 @@
  */
 package org.jbpm.contrib.restservice;
 
-import static org.jbpm.contrib.restservice.util.Helper.getKsession;
-import static org.jbpm.contrib.restservice.util.Helper.getParameterNameCancelUrl;
+import static org.mvel2.templates.TemplateCompiler.compileTemplate;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.drools.core.process.instance.impl.WorkItemImpl;
-import org.jbpm.contrib.restservice.util.Helper;
-import org.jbpm.contrib.restservice.util.StringPropertyReplacer;
+import org.jbpm.contrib.restservice.util.Mapper;
+import org.jbpm.contrib.restservice.util.ProcessUtils;
 import org.jbpm.contrib.restservice.util.Strings;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
@@ -36,14 +39,14 @@ import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
 import org.jbpm.process.workitem.core.util.service.WidService;
-import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.manager.RuntimeManager;
 import org.kie.api.runtime.process.NodeInstance;
-import org.kie.api.runtime.process.ProcessContext;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
+import org.mvel2.templates.CompiledTemplate;
+import org.mvel2.templates.TemplateRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,13 +78,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 )
 public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
 
-    public static final String TASK_NAME = "taskName";
-
-    private static final String CANCEL_URL_JSON_POINTER_VARIABLE = "cancelUrlJsonPointer";
-
     private static final Logger logger = LoggerFactory.getLogger(SimpleRestServiceWorkItemHandler.class);
-
-    private ProcessContext kcontext;
 
     private final RuntimeManager runtimeManager;
 
@@ -91,64 +88,57 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
     }
 
     public SimpleRestServiceWorkItemHandler() {
-        logger.info(">>> Constructing with no parameters...");
+        logger.info(">>> Constructing without runtimeManager ...");
         runtimeManager = null;
     }
 
-    public void executeWorkItem(WorkItem _workItem,
-                                WorkItemManager manager) {
+    public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
         try {
             //TODO enable
             //RequiredParameterValidator.validate(this.getClass(), workItem);
 
-            WorkItemImpl workItem = (WorkItemImpl) _workItem; //TODO use api
-            WorkflowProcessInstance processInstance = Helper.getProcessInstance(runtimeManager, workItem.getProcessInstanceId());
+            long processInstanceId = workItem.getProcessInstanceId();
+            WorkflowProcessInstance processInstance = ProcessUtils.getProcessInstance(runtimeManager,
+                    processInstanceId);
 
-            long nodeInstanceId = workItem.getNodeInstanceId();
-            NodeInstance nodeInstance = processInstance.getNodeInstance(nodeInstanceId);
-            String nodeName = nodeInstance.getNodeName();
-
-            logger.info("Started nodeInstance.name {}, nodeInstance.id {}.", nodeName, nodeInstanceId);
-
-            String cancelUrlJsonPointer = Helper.getStringParameter(workItem, CANCEL_URL_JSON_POINTER_VARIABLE);
-            String requestUrl = Helper.getStringParameter(workItem,"requestUrl");
-            String requestMethod = Helper.getStringParameter(workItem,"requestMethod");
-            String requestBody = Helper.getStringParameter(workItem,"requestBody");
-            String requestHeaders = Helper.getStringParameter(workItem,"Headers");
-
-            //TODO use ksession.getEnvironment().get() ?
-            String callbackKieRestBase = Helper.getStringParameter(workItem,"callbackKieRestBaseUrl");
+            String cancelUrlJsonPointer = ProcessUtils.getStringParameter(workItem, Constant.CANCEL_URL_JSON_POINTER_VARIABLE);
+            String requestUrl = ProcessUtils.getStringParameter(workItem,"requestUrl");
+            String requestMethod = ProcessUtils.getStringParameter(workItem,"requestMethod");
+            String requestBody = ProcessUtils.getStringParameter(workItem,"requestBody");
+            String requestHeaders = ProcessUtils.getStringParameter(workItem,"Headers");
 
             //TODO get without parameters
-            String containerId = (String) processInstance.getVariable("containerId");
+            //kcontext.getKieRuntime().getEnvironment().get("deploymentId"));
+
+            WorkflowProcessInstance mainInstance = ProcessUtils.getProcessInstance(
+                    runtimeManager,
+                    processInstance.getParentProcessInstanceId());
+            String containerId = (String) mainInstance.getVariable("containerId");
 
             //should this service run
-            logger.debug("Should run ProcessInstance.id: {}, nodeName: {}.", processInstance.getId(), nodeName);
-            
-            final KieSession ksession = Helper.getKsession(runtimeManager, workItem.getProcessInstanceId());
-
-            long processInstanceId = processInstance.getId();
+            logger.debug("Should run ProcessInstance.id: {}.", processInstance.getId());
             
             try {
-                boolean invoked = handleTask(manager,
-                        workItem,
+                boolean invoked = invokeRemoteService(
+                        processInstance,
+                        manager,
+                        workItem.getId(),
                         requestUrl,
                         requestMethod,
                         requestBody,
-                        nodeName,
                         containerId,
                         cancelUrlJsonPointer,
-                        requestHeaders,
-                        callbackKieRestBase);
+                        requestHeaders);
                 if (!invoked) {
                     logger.warn("Invalid remote service response. ProcessInstanceId {}.", processInstanceId);
-                    Helper.cancelAll(processInstance);
+                    //TODO refine signal
+                    processInstance.signalEvent(Constant.CANCEL_SIGNAL_TYPE, processInstance.getId());
                 }
-                
             } catch (Exception e) {
                 String message = MessageFormat.format("Failed to invoke remote service. ProcessInstanceId {0}.", processInstanceId);
                 logger.warn(message, e);
-                Helper.cancelAll(processInstance);
+                //TODO refine signal
+                processInstance.signalEvent(Constant.CANCEL_SIGNAL_TYPE, processInstance.getId());
             }
         } catch(Throwable cause) {
             //TODO: removal of AbstractLogOrThrowWorkItemHandler: handleException(cause);
@@ -157,43 +147,32 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
         }
     }
 
-    private boolean checkTaskCompletedSuccessfully(String nodeName, long processInstanceId) {
-        WorkflowProcessInstance processInstance = Helper.getProcessInstance(runtimeManager, processInstanceId);
-        Object completedSuccessfully = processInstance.getVariable(Helper.getParameterNameSuccessCompletions(nodeName));
-        if (completedSuccessfully == null) {
-            return false;
-        } else {
-            return (Boolean) completedSuccessfully;
-        }
-    }
-
-    private boolean handleTask(
+    private boolean invokeRemoteService(
+            WorkflowProcessInstance processInstance,
             WorkItemManager manager,
-            WorkItem workItem,
+            long workItemId,
             String requestUrl,
             String httpMethod,
-            String requestBody,
-            String nodeInstanceName,
+            String requestTemplate,
             String containerId,
             String cancelUrlJsonPointer,
-            String requestHeaders,
-            String callbackKieRestBase) throws IOException {
+            String requestHeaders) throws IOException {
 
-        WorkflowProcessInstance processInstance = Helper.getProcessInstance(runtimeManager, workItem.getProcessInstanceId());
-        
-        Properties properties = new Properties();
-        String host = "localhost:8080"; //TODO
-        properties.put("handler.callback.url",
-                Strings.addEndingSlash(callbackKieRestBase) + "server/containers/" + containerId +
-                "/processes/instances/"+processInstance.getId()+"/signal/RESTResponded");
-        
-        String requestBodyReplaced = StringPropertyReplacer.replaceProperties(
-                requestBody, properties);
+        Map<String, Object> systemVariables = Collections.singletonMap(
+                "callbackUrl",
+                getKieHost() + "/kie-server/services/rest/server/containers/" + containerId +
+                        "/processes/instances/" + processInstance.getId() + "/signal/RESTResponded");
+
+        logger.info("requestTemplate: {}", requestTemplate);
+
+        CompiledTemplate compiled = compileTemplate(requestTemplate);
+        String requestBodyEvaluated = (String) TemplateRuntime
+                .execute(compiled, null, new SystemVariableResolver(processInstance, systemVariables));
 
         Map<String, String> requestHeadersMap = Strings.toMap(requestHeaders);
-        HttpResponse httpResponse = Helper.httpRequest(
+        HttpResponse httpResponse = httpRequest(
                 requestUrl,
-                requestBodyReplaced,
+                requestBodyEvaluated,
                 httpMethod,
                 requestHeadersMap,
                 5000, //TODO configurable
@@ -207,29 +186,86 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
             logger.debug("Remote service responded with status: {}", statusCode);
 
             //TODO: this should be improved by throwing a BPM error event instead of just completing the workitem.
-            completeWorkItem(manager, workItem, nodeInstanceName, "");
+            completeWorkItem(manager, workItemId, Collections.emptyMap(), "");
             return false;
         }
 
-        String cancelUrl = "";
-        JsonNode root = null;
+        JsonNode root;
+        Map<String, Object> serviceInvocationResponse;
         try {
-            root = Helper.objectMapper.readTree(httpResponse.getEntity().getContent());
+            root = Mapper.getInstance().readTree(httpResponse.getEntity().getContent());
+            serviceInvocationResponse = Mapper.getInstance().convertValue(root, new TypeReference<Map<String, Object>>(){});
+        } catch (Exception e) {
+            logger.warn("Cannot parse service invocation response.", e);
+            //TODO: this should be improved by throwing a BPM error event instead of just completing the workitem.
+            //processInstance.signalEvent(Constant.CANCEL_SIGNAL_TYPE, processInstance.getId());
+            return false;
+        }
+
+        try {
             JsonNode cancelUrlNode = root.at(cancelUrlJsonPointer);
+            String cancelUrl = "";
             if (!cancelUrlNode.isMissingNode()) {
                 cancelUrl = cancelUrlNode.asText();
             }
+            completeWorkItem(manager, workItemId, serviceInvocationResponse, cancelUrl);
         } catch (Exception e) {
-            logger.warn("Cannot read cancel url.", e);
+            logger.warn("Cannot read cancel url from service invocation response.", e);
+            //TODO: this should be improved by throwing a BPM error event instead of just completing the workitem.
+            //processInstance.signalEvent(Constant.CANCEL_SIGNAL_TYPE, processInstance.getId());
+            return false;
         }
-        processInstance.setVariable(getParameterNameCancelUrl(nodeInstanceName), cancelUrl);
-        processInstance.setVariable("result",root==null ? "" : root.asText());
-        
-        //TODO: The above parsing and cancelUrl setting is redundant to the below
-        // but we need to decide whether we process the JSON content in Java code or in the process diagram itself
-        completeWorkItem(manager, workItem, nodeInstanceName, root==null ? "" : root.asText());
-        
         return true;
+    }
+
+    private HttpResponse httpRequest(
+            String url,
+            String jsonContent,
+            String httpMethod,
+            Map<String,String> requestHeaders,
+            int readTimeout,
+            int connectTimeout,
+            int requestTimeout) throws IOException {
+        RequestConfig config = RequestConfig.custom()
+                .setSocketTimeout(readTimeout)
+                .setConnectTimeout(connectTimeout)
+                .setConnectionRequestTimeout(requestTimeout)
+                .build();
+
+        HttpClientBuilder clientBuilder = HttpClientBuilder.create()
+                .setDefaultRequestConfig(config);
+
+        HttpClient httpClient = clientBuilder.build();
+
+        RequestBuilder requestBuilder = RequestBuilder.create(httpMethod).setUri(url);
+
+        requestBuilder.addHeader("Content-Type","application/json");
+        if (requestHeaders != null) {
+            requestHeaders.forEach((k,v) -> requestBuilder.addHeader(k,v));
+        }
+
+        StringEntity entity = new StringEntity(jsonContent, ContentType.APPLICATION_JSON);
+
+        requestBuilder.setEntity(entity);
+
+        logger.info("Invoking remote endpoint {} {} Headers: {} Body: {}.", httpMethod, url, requestHeaders, jsonContent);
+
+        return httpClient.execute(requestBuilder.build());
+    }
+
+
+    private String getKieHost() {
+        String host = System.getProperty(Constant.KIE_HOST_SYSTEM_PROPERTY);
+        if (host != null) {
+            host = "http://" + host;
+        }
+        if (host == null) {
+            host = System.getenv("HOSTNAME_HTTPS"); //TODO configurable
+            if (host != null) {
+                host = "https://" + host;
+            }
+        }
+        return host;
     }
 
     /**
@@ -239,18 +275,17 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
      */
     private void completeWorkItem(
             WorkItemManager manager,
-            WorkItem workItem,
-            String taskName,
-            String jsonResult) {
+            long workItemId,
+            Map<String, Object> serviceInvocationResult,
+            String cancelUrl) {
         Map<String, Object> results = new HashMap<>();
-        results.put(taskName, jsonResult);
-        manager.completeWorkItem(workItem.getId(), results);
+        results.put("result", serviceInvocationResult);
+        results.put("cancelUrl", cancelUrl);
+        manager.completeWorkItem(workItemId, results);
     }
 
     @Override
     public void abortWorkItem(WorkItem workItem, WorkItemManager manager) {
-        String taskName = Helper.getStringParameter(workItem, "taskName");
-        completeWorkItem(manager, workItem, taskName, "{\"aborted\":\"true\"}");
+        completeWorkItem(manager, workItem.getId(), Collections.singletonMap("aborted", "true"), "");
     }
-
 }

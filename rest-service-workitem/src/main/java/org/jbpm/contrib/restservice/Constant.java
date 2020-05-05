@@ -3,14 +3,9 @@ package org.jbpm.contrib.restservice;
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
  */
-public class Constant {
+public class Constant { //TODO clean-up
 
     public static final String TIMEOUT_NODE_INSTANCE_ID_VARIABLE = "nodeInstanceId"; //TODO update value
-
-    /**
-     * When true the task is canceled internally without trying to cancel remote operation.
-     */
-    public static final String FORCE_CANCEL_VARIABLE = "forceCancel";
 
     public final static String CANCEL_SIGNAL_TYPE = "cancel-all";
 
@@ -21,4 +16,8 @@ public class Constant {
     public static final String CANCEL_TIMEOUT_VARIABLE = "cancelTimeout";
 
     public static final String MAIN_PROCESS_INSTANCE_ID_VARIABLE = "mainProcessInstanceId";
+
+    public static final String KIE_HOST_SYSTEM_PROPERTY = "KIE_HOSTNAME";
+
+    public static final String CANCEL_URL_JSON_POINTER_VARIABLE = "cancelUrlJsonPointer";
 }
