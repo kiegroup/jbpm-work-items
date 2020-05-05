@@ -102,10 +102,10 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
                     processInstanceId);
 
             String cancelUrlJsonPointer = ProcessUtils.getStringParameter(workItem, Constant.CANCEL_URL_JSON_POINTER_VARIABLE);
-            String requestUrl = ProcessUtils.getStringParameter(workItem,"requestUrl");
-            String requestMethod = ProcessUtils.getStringParameter(workItem,"requestMethod");
-            String requestBody = ProcessUtils.getStringParameter(workItem,"requestBody");
-            String requestHeaders = ProcessUtils.getStringParameter(workItem,"Headers");
+            String requestUrl = ProcessUtils.getStringParameter(workItem,"url");
+            String requestMethod = ProcessUtils.getStringParameter(workItem,"method");
+            String requestBody = ProcessUtils.getStringParameter(workItem,"template");
+            String requestHeaders = ProcessUtils.getStringParameter(workItem,"headers");
 
             //TODO get without parameters
             //kcontext.getKieRuntime().getEnvironment().get("deploymentId"));
