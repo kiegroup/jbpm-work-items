@@ -104,7 +104,7 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
             String cancelUrlJsonPointer = ProcessUtils.getStringParameter(workItem, Constant.CANCEL_URL_JSON_POINTER_VARIABLE);
             String requestUrl = ProcessUtils.getStringParameter(workItem,"url");
             String requestMethod = ProcessUtils.getStringParameter(workItem,"method");
-            String requestBody = ProcessUtils.getStringParameter(workItem,"template");
+            String requestTemplate = ProcessUtils.getStringParameter(workItem,"template");
             String requestHeaders = ProcessUtils.getStringParameter(workItem,"headers");
 
             //TODO get without parameters
@@ -125,7 +125,7 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
                         workItem.getId(),
                         requestUrl,
                         requestMethod,
-                        requestBody,
+                        requestTemplate,
                         containerId,
                         cancelUrlJsonPointer,
                         requestHeaders);
@@ -165,9 +165,14 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
 
         logger.info("requestTemplate: {}", requestTemplate);
 
-        CompiledTemplate compiled = compileTemplate(requestTemplate);
-        String requestBodyEvaluated = (String) TemplateRuntime
-                .execute(compiled, null, new SystemVariableResolver(processInstance, systemVariables));
+        String requestBodyEvaluated;
+        if (requestTemplate != null && !requestTemplate.equals("")) {
+            CompiledTemplate compiled = compileTemplate(requestTemplate);
+            requestBodyEvaluated = (String) TemplateRuntime
+                    .execute(compiled, null, new SystemVariableResolver(processInstance, systemVariables));
+        } else {
+            requestBodyEvaluated = "";
+        }
 
         Map<String, String> requestHeadersMap = Strings.toMap(requestHeaders);
         HttpResponse httpResponse = httpRequest(
@@ -239,14 +244,15 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
 
         RequestBuilder requestBuilder = RequestBuilder.create(httpMethod).setUri(url);
 
-        requestBuilder.addHeader("Content-Type","application/json");
         if (requestHeaders != null) {
             requestHeaders.forEach((k,v) -> requestBuilder.addHeader(k,v));
         }
 
-        StringEntity entity = new StringEntity(jsonContent, ContentType.APPLICATION_JSON);
-
-        requestBuilder.setEntity(entity);
+        if (jsonContent != null && !jsonContent.equals("")) {
+            requestBuilder.addHeader("Content-Type","application/json");
+            StringEntity entity = new StringEntity(jsonContent, ContentType.APPLICATION_JSON);
+            requestBuilder.setEntity(entity);
+        }
 
         logger.info("Invoking remote endpoint {} {} Headers: {} Body: {}.", httpMethod, url, requestHeaders, jsonContent);
 
