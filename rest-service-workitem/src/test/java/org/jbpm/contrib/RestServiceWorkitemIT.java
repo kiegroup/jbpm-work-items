@@ -475,12 +475,12 @@ public class RestServiceWorkitemIT extends JBPMBase {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("containerId", "mock");
         parameters.put("cancel", false);
-        parameters.put("requestUrl", "http://localhost:8080/demo-service/service/A?callbackDelay=3");
-        parameters.put("requestBody", ""
+        parameters.put("url", "http://localhost:8080/demo-service/service/A?callbackDelay=3");
+        parameters.put("template", ""
                 + "{\"callbackUrl\":\"${handler.callback.url}\","
                 + "\"callbackMethod\":\"POST\","
                 + "\"name\":\"Matej\"}");
-        parameters.put("requestMethod", "POST" );
+        parameters.put("method", "POST" );
         parameters.put("taskTimeout", 10);
         parameters.put("cancelTimeout", 10);
         parameters.put("cancelUrlJsonPointer", "/cancelUrl");

@@ -266,10 +266,10 @@ if( kcontext.getVariable("cancel")==null ) {
       <bpmn2:outgoing>_0AF965EE-C1E4-4CD6-A1DB-18299E716F3A</bpmn2:outgoing>
       <bpmn2:ioSpecification id="_aN3SJYsAEeqLEd0nVdvlPw">
         <bpmn2:dataInput id="_1D0DBC64-8238-42CC-93CA-C2F1C801D9CC_cancelUrlJsonPointerInputX" drools:dtype="String" itemSubjectRef="__1D0DBC64-8238-42CC-93CA-C2F1C801D9CC_cancelUrlJsonPointerInputXItem" name="cancelUrlJsonPointer"/>
-        <bpmn2:dataInput id="_1D0DBC64-8238-42CC-93CA-C2F1C801D9CC_requestBodyInputX" drools:dtype="String" itemSubjectRef="__1D0DBC64-8238-42CC-93CA-C2F1C801D9CC_requestBodyInputXItem" name="requestBody"/>
-        <bpmn2:dataInput id="_1D0DBC64-8238-42CC-93CA-C2F1C801D9CC_requestMethodInputX" drools:dtype="String" itemSubjectRef="__1D0DBC64-8238-42CC-93CA-C2F1C801D9CC_requestMethodInputXItem" name="requestMethod"/>
-        <bpmn2:dataInput id="_1D0DBC64-8238-42CC-93CA-C2F1C801D9CC_requestUrlInputX" drools:dtype="String" itemSubjectRef="__1D0DBC64-8238-42CC-93CA-C2F1C801D9CC_requestUrlInputXItem" name="requestUrl"/>
-        <bpmn2:dataInput id="_1D0DBC64-8238-42CC-93CA-C2F1C801D9CC_HeadersInputX" drools:dtype="String" itemSubjectRef="__1D0DBC64-8238-42CC-93CA-C2F1C801D9CC_HeadersInputXItem" name="Headers"/>
+        <bpmn2:dataInput id="_1D0DBC64-8238-42CC-93CA-C2F1C801D9CC_requestBodyInputX" drools:dtype="String" itemSubjectRef="__1D0DBC64-8238-42CC-93CA-C2F1C801D9CC_requestBodyInputXItem" name="template"/>
+        <bpmn2:dataInput id="_1D0DBC64-8238-42CC-93CA-C2F1C801D9CC_requestMethodInputX" drools:dtype="String" itemSubjectRef="__1D0DBC64-8238-42CC-93CA-C2F1C801D9CC_requestMethodInputXItem" name="method"/>
+        <bpmn2:dataInput id="_1D0DBC64-8238-42CC-93CA-C2F1C801D9CC_requestUrlInputX" drools:dtype="String" itemSubjectRef="__1D0DBC64-8238-42CC-93CA-C2F1C801D9CC_requestUrlInputXItem" name="url"/>
+        <bpmn2:dataInput id="_1D0DBC64-8238-42CC-93CA-C2F1C801D9CC_HeadersInputX" drools:dtype="String" itemSubjectRef="__1D0DBC64-8238-42CC-93CA-C2F1C801D9CC_HeadersInputXItem" name="headers"/>
         <bpmn2:dataInput id="_1D0DBC64-8238-42CC-93CA-C2F1C801D9CC_TaskNameInputX" drools:dtype="Object" name="TaskName"/>
         <bpmn2:dataOutput id="_1D0DBC64-8238-42CC-93CA-C2F1C801D9CC_resultOutputX" drools:dtype="String" itemSubjectRef="__1D0DBC64-8238-42CC-93CA-C2F1C801D9CC_resultOutputXItem" name="result"/>
         <bpmn2:inputSet id="_aN3SJosAEeqLEd0nVdvlPw">
