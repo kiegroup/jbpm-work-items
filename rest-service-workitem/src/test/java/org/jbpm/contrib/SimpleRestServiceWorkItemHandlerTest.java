@@ -16,14 +16,14 @@
 package org.jbpm.contrib;
 
 import org.drools.core.process.instance.impl.WorkItemImpl;
-import org.jbpm.contrib.restservice.RestServiceWorkItemHandler;
+import org.jbpm.contrib.restservice.SimpleRestServiceWorkItemHandler;
 import org.jbpm.process.workitem.core.TestWorkItemManager;
 import org.jbpm.test.AbstractBaseTest;
 import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class RestServiceWorkItemHandlerTest extends AbstractBaseTest {
+public class SimpleRestServiceWorkItemHandlerTest extends AbstractBaseTest {
 
     @Test @Ignore
     public void testHandler() throws Exception {
@@ -33,8 +33,7 @@ public class RestServiceWorkItemHandlerTest extends AbstractBaseTest {
 
         TestWorkItemManager manager = new TestWorkItemManager();
 
-        org.jbpm.contrib.restservice.RestServiceWorkItemHandler handler = new RestServiceWorkItemHandler();
-        handler.setLogThrownException(true);
+        SimpleRestServiceWorkItemHandler handler = new SimpleRestServiceWorkItemHandler();
         handler.executeWorkItem(workItem, manager);
 
         assertNotNull(manager.getResults());

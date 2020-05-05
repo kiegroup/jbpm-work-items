@@ -27,7 +27,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.jbpm.contrib.RestServiceWorkitemIntegrationTest;
+import org.jbpm.contrib.RestServiceWorkitemIT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +50,7 @@ public class WorkItems {
             Map<String, Object> result)
     {
         logger.info("Completing workitem id: {}, result: {}.", taskId, result);
-        RestServiceWorkitemIntegrationTest.completeWorkItem(taskId, result);
+        RestServiceWorkitemIT.completeWorkItem(taskId, result);
 
         Map<String, Object> response = new HashMap<>();
         return Response.status(200).entity(response).build();
@@ -65,7 +65,7 @@ public class WorkItems {
             Map<String, Object> result)
     {
         logger.info("Sending {} signal to process id: {}, result: {}.", signalName, instanceId, result);
-        RestServiceWorkitemIntegrationTest.sendSignalToProcess(instanceId, signalName, result);
+        RestServiceWorkitemIT.sendSignalToProcess(instanceId, signalName, result);
 
         Map<String, Object> response = new HashMap<>();
         return Response.status(200).entity(response).build();

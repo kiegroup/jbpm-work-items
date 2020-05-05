@@ -56,30 +56,58 @@ public class ServiceFlowTestProcess extends GeneratedTestProcessBase {
                 // Nodes
                 .startNode(1).name("Start").done()
 
-                .workItemNode(2)
-                .workName("RestServiceWorkItemHandler")
+                .subProcessNode(2)
                 .name("serviceA")
-                .workParameter("requestUrl", "http://localhost:8080/demo-service/service/A?callbackDelay=1")
-                .workParameter("requestMethod", "POST")
-                .workParameter("requestBody", "{\"callbackUrl\":\"${handler.callback.url}\",\"name\":\"Matej\"}")
-                .workParameter("successCondition", successCondition)
-                .outMapping("content", "resultA")
+                .processId("executerest")
+                .onEntryAction("mvel", "java.util.Map processData = kcontext.getVariable(\"processData\");\n"
+                        + "java.util.Map buildConfig = processData.get(\"buildExecutionConfiguration\");\n"
+                        + "if(buildConfig.get(\"scmRepoURL\")!=null) {\n"
+                        + "    buildConfig.put(\"scmRepoURLReadOnly\",buildConfig.get(\"scmRepoURL\").replaceFirst(\"^git\\\\+ssh\",'http'));\n"
+                        + "}\n" + "\n" + "String repourTemplate = '{\n" + "    \"internal_url\": {\n"
+                        + "        \"readwrite\": \"@{buildExecutionConfiguration.scmRepoURL}\",\n"
+                        + "        \"readonly\": \"@{buildExecutionConfiguration.scmRepoURLReadOnly}\"\n" + "    },\n"
+                        + "    \"ref\": \"@{buildExecutionConfiguration.scmRevision}\",\n" + "    \"callback\": {\n"
+                        + "        \"url\": \"\\\\${handler.callback.url}\"\n" + "    },\n"
+                        + "    \"sync\": @{buildExecutionConfiguration.preBuildSyncEnabled},\n"
+                        + "    \"originRepoUrl\": \"@{buildExecutionConfiguration.originRepoURL}\",\n"
+                        + "    \"adjustParameters\": {},\n"
+                        + "    \"tempBuild\": @{buildExecutionConfiguration.tempBuild},\n"
+                        + "    \"tempBuildTimestamp\": None,\n"
+                        + "    \"taskId\": \"@{buildExecutionConfiguration.id}\",\n"
+                        + "    \"buildType\": \"@{buildExecutionConfiguration.buildType}\"\n" + "}';\n" + "\n"
+                        + "kcontext.setVariable(\"repourTemplate\",repourTemplate);")
+                .onExitAction("mvel", "java.util.Map repourResponse = kcontext.getVariable(\"repourResponse\");\n"
+                        + "java.util.Map processData = kcontext.getVariable(\"processData\");\n" + "\n"
+                        + "processData.put(\"repourResponse\",repourResponse==empty ? new java.util.LinkedHashMap() : repourResponse);")
+                .inMapping("requestMethod", "\"POST\"")
+                .inMapping("requestUrl", "http://localhost:8080/demo-service/service/A?callbackDelay=1")
+                .inMapping("requestBody", "\"{\"callbackUrl\":\"${handler.callback.url}\",\"name\":\"Matej\"}\"")
+                .inMapping("taskTimeout", "10")
+                .inMapping("cancelTimeout", "5")
+                .inMapping("cancelUrlJsonPointer", "")
+                .inMapping("requestTemplate", "repourTemplate")
+                .inMapping("processData", "processData")
+                .inMapping("subProcessIdNode", "\"repourProcessId\"")
+                .inMapping("jsonMapper", "jsonMapper")
+                .inMapping("Headers", "")
+//                .inMapping("successCondition", successCondition)
+                .outMapping("result", "resultA")
                 .done()
 
-                .workItemNode(3)
-                .workName("RestServiceWorkItemHandler")
-                .name("serviceB")
-                .workParameter("requestUrl", "http://localhost:8080/demo-service/service/B?callbackDelay=1")
-                .workParameter("requestMethod", "POST")
-                .workParameter("requestBody", "{\"callbackUrl\":\"${handler.callback.url}\",\"nameFromA\":\"#{resultA.person.name}\",\"surname\":\"Lazar\"}")
-                .outMapping("content", "resultB")
-                .done()
+//                .workItemNode(3)
+//                .workName("SimpleRestService")
+//                .name("serviceB")
+//                .workParameter("requestUrl", "http://localhost:8080/demo-service/service/B?callbackDelay=1")
+//                .workParameter("requestMethod", "POST")
+//                .workParameter("requestBody", "{\"callbackUrl\":\"${handler.callback.url}\",\"nameFromA\":\"#{resultA.person.name}\",\"surname\":\"Lazar\"}")
+//                .outMapping("content", "resultB")
+//                .done()
 
                 .endNode(4).name("End").done()
                 // Connections
                 .connection(1, 2)
-                .connection(2, 3)
-                .connection(3, 4);
+//                .connection(2, 3)
+                .connection(2, 4);
         process = factory.validate().getProcess();
     }
     
