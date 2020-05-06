@@ -4,6 +4,8 @@ import org.jbpm.workflow.instance.impl.ProcessInstanceResolverFactory;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.mvel2.integration.VariableResolver;
 import org.mvel2.integration.impl.SimpleValueResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -13,6 +15,8 @@ import java.util.Map;
  */
 public class SystemVariableResolver extends ProcessInstanceResolverFactory {
 
+    private static final Logger logger = LoggerFactory.getLogger(SystemVariableResolver.class);
+
     private final Map<String, Object> system;
 
     public SystemVariableResolver(WorkflowProcessInstance processInstance, Map<String, Object> system) {
@@ -21,7 +25,12 @@ public class SystemVariableResolver extends ProcessInstanceResolverFactory {
     }
 
     public boolean isResolveable(String name) {
-        return "system".equals(name) || super.isResolveable(name);
+        try {
+            return "system".equals(name) || super.isResolveable(name);
+        } catch (NullPointerException e) {
+            logger.warn("Missing variable '{}'.", name);
+            return false;
+        }
     }
 
     public VariableResolver getVariableResolver(String name) {
