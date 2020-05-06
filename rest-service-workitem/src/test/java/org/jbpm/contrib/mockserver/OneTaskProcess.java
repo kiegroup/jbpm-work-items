@@ -35,7 +35,7 @@ public class OneTaskProcess extends GeneratedTestProcessBase {
                 .packageName("org.jbpm")
                 .variable("resultA", new StringDataType())
                 .variable("serviceATemplate", new StringDataType())
-                .variable("mainProcessData", new StringDataType())
+                .variable("input", new StringDataType())
                 .variable("containerId", new StringDataType())
                 // Nodes
                 .startNode(1).name("Start").done()
@@ -47,14 +47,13 @@ public class OneTaskProcess extends GeneratedTestProcessBase {
                         + "String serviceATemplate = '{\n"
                         + "    \"callbackUrl\": \"@{system.callbackUrl}\",\n"
                         + "    \"callbackMethod\": \"POST\",\n"
-                        + "    \"name\": \"@{processData.username}\"\n"
+                        + "    \"name\": \"@{input.username}\"\n"
                         + "}';\n"
                         + "\n"
                         + "kcontext.setVariable(\"serviceATemplate\",serviceATemplate);")
                 .inMapping("requestMethod", "\"POST\"")
                 .inMapping("requestUrl", "http://localhost:8080/demo-service/service/A?callbackDelay=1")
                 .inMapping("requestBody", "serviceATemplate")
-                .inMapping("processData", "mainProcessData")
                 .inMapping("cancelUrlJsonPointer", "\"/cancelUrl\"")
                 .inMapping("containerId", "\"mock\"")
                 .outMapping("result", "resultA")

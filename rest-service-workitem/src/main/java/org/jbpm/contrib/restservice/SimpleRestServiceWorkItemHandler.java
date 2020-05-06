@@ -15,13 +15,8 @@
  */
 package org.jbpm.contrib.restservice;
 
-import static org.mvel2.templates.TemplateCompiler.compileTemplate;
-
-import java.io.IOException;
-import java.text.MessageFormat;
-import java.util.*;
-
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -29,7 +24,6 @@ import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.drools.core.process.instance.impl.WorkItemImpl;
 import org.jbpm.contrib.restservice.util.Mapper;
 import org.jbpm.contrib.restservice.util.ProcessUtils;
 import org.jbpm.contrib.restservice.util.Strings;
@@ -40,17 +34,24 @@ import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.manager.RuntimeManager;
-import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
+import org.mvel2.integration.VariableResolverFactory;
+import org.mvel2.integration.impl.MapVariableResolverFactory;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.mvel2.templates.TemplateCompiler.compileTemplate;
 
 @Wid(widfile="SimpleRestService.wid", 
         name="SimpleRestService",
@@ -59,9 +60,9 @@ import com.fasterxml.jackson.databind.JsonNode;
         category="rest-service-workitem",
         documentation = "",
         parameters={
-            @WidParameter(name="requestUrl", required = true),
-            @WidParameter(name="requestMethod", required = true),
-            @WidParameter(name="requestBody", required = true),
+            @WidParameter(name="url", required = true),
+            @WidParameter(name="method", required = true),
+            @WidParameter(name="template", required = true),
             @WidParameter(name="cancelUrlJsonPointer", required = false)
         },
         results={
@@ -110,10 +111,10 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
             //TODO get without parameters
             //kcontext.getKieRuntime().getEnvironment().get("deploymentId"));
 
-            WorkflowProcessInstance mainInstance = ProcessUtils.getProcessInstance(
+            WorkflowProcessInstance mainProcessInstance = ProcessUtils.getProcessInstance(
                     runtimeManager,
                     processInstance.getParentProcessInstanceId());
-            String containerId = (String) mainInstance.getVariable("containerId");
+            String containerId = (String) mainProcessInstance.getVariable("containerId");
 
             //should this service run
             logger.debug("Should run ProcessInstance.id: {}.", processInstance.getId());
@@ -121,6 +122,7 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
             try {
                 boolean invoked = invokeRemoteService(
                         processInstance,
+                        mainProcessInstance,
                         manager,
                         workItem.getId(),
                         requestUrl,
@@ -149,6 +151,7 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
 
     private boolean invokeRemoteService(
             WorkflowProcessInstance processInstance,
+            WorkflowProcessInstance mainProcessInstance,
             WorkItemManager manager,
             long workItemId,
             String requestUrl,
@@ -158,18 +161,23 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
             String cancelUrlJsonPointer,
             String requestHeaders) throws IOException {
 
-        Map<String, Object> systemVariables = Collections.singletonMap(
-                "callbackUrl",
-                getKieHost() + "/kie-server/services/rest/server/containers/" + containerId +
-                        "/processes/instances/" + processInstance.getId() + "/signal/RESTResponded");
-
         logger.info("requestTemplate: {}", requestTemplate);
 
         String requestBodyEvaluated;
         if (requestTemplate != null && !requestTemplate.equals("")) {
             CompiledTemplate compiled = compileTemplate(requestTemplate);
+
+            Map<String, Object> systemVariables = Collections.singletonMap(
+                    "callbackUrl",
+                    getKieHost() + "/kie-server/services/rest/server/containers/" + containerId +
+                            "/processes/instances/" + processInstance.getId() + "/signal/RESTResponded");
+
+            VariableResolverFactory variableResolverFactory = getVariableResolverFactoryChain(
+                    systemVariables,
+                    processInstance,
+                    mainProcessInstance);
             requestBodyEvaluated = (String) TemplateRuntime
-                    .execute(compiled, null, new SystemVariableResolver(processInstance, systemVariables));
+                    .execute(compiled, null, variableResolverFactory);
         } else {
             requestBodyEvaluated = "";
         }
@@ -221,6 +229,18 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
             return false;
         }
         return true;
+    }
+
+    private VariableResolverFactory getVariableResolverFactoryChain(
+            Map<String, Object> systemVariables,
+            WorkflowProcessInstance processInstance,
+            WorkflowProcessInstance mainProcessInstance) {
+        VariableResolverFactory variableResolverFactory = new MapVariableResolverFactory(
+                Collections.singletonMap("system", systemVariables));
+        variableResolverFactory
+                .setNextFactory(new ProcessVariableResolverFactory(processInstance))
+                .setNextFactory(new ProcessVariableResolverFactory(mainProcessInstance));
+        return variableResolverFactory;
     }
 
     private HttpResponse httpRequest(

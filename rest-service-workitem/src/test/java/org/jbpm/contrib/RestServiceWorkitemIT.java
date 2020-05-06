@@ -15,15 +15,6 @@
  */
 package org.jbpm.contrib;
 
-import static org.jbpm.contrib.restservice.Constant.KIE_HOST_SYSTEM_PROPERTY;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.server.Server;
@@ -56,6 +47,20 @@ import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.jbpm.contrib.restservice.Constant.KIE_HOST_SYSTEM_PROPERTY;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * 
@@ -162,7 +167,7 @@ public class RestServiceWorkitemIT extends JBPMBase {
         parameters.put("containerId", "mock");
         Map<String, Object> input = new HashMap<>();
         input.put("username", "Matej");
-        parameters.put("mainProcessData", input);
+        parameters.put("input", input);
 
         //when
         kieSession.startProcess("org.jbpm.oneTaskProcess", parameters);
