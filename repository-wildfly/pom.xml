@@ -17,10 +17,6 @@
     <name>jBPM dev team</name>
   </organization>
 
-  <properties>
-    <version.org.wildfly>11.0.0.Final</version.org.wildfly>
-  </properties>
-
   <dependencies>
 
     <!-- module dependencies -->
