@@ -167,10 +167,12 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
         if (requestTemplate != null && !requestTemplate.equals("")) {
             CompiledTemplate compiled = compileTemplate(requestTemplate);
 
-            Map<String, Object> systemVariables = Collections.singletonMap(
+            Map<String, Object> systemVariables = new HashMap<>();
+            systemVariables.put(
                     "callbackUrl",
-                    getKieHost() + "/kie-server/services/rest/server/containers/" + containerId +
+                    getKieHost() + "/services/rest/server/containers/" + containerId + //TODO configurable base path
                             "/processes/instances/" + processInstance.getId() + "/signal/RESTResponded");
+            systemVariables.put("callbackMethod", "POST");
 
             VariableResolverFactory variableResolverFactory = getVariableResolverFactoryChain(
                     systemVariables,
