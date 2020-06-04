@@ -15,17 +15,21 @@
  */
 package org.jbpm.contrib.mockserver;
 
+import org.jbpm.contrib.restservice.Constant;
+import org.jbpm.process.core.datatype.impl.type.BooleanDataType;
 import org.jbpm.process.core.datatype.impl.type.StringDataType;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
+import org.jbpm.workflow.core.node.Join;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
- * @author Ryszard Kozmik
  */
-public class OneTaskProcess extends GeneratedTestProcessBase {
+public class RestTaskFailProcess extends GeneratedTestProcessBase {
 
-    public OneTaskProcess() {
-        String processName = "oneTaskProcess";;
+    public static final String EXCEPTIONAL_PATH_KEY = "exceptionalPath";
+
+    public RestTaskFailProcess() {
+        String processName = "restTaskFailProcess";;
 
         RuleFlowProcessFactory factory = RuleFlowProcessFactory.createProcess("org.jbpm." + processName);
         factory
@@ -37,6 +41,7 @@ public class OneTaskProcess extends GeneratedTestProcessBase {
                 .variable("serviceATemplate", new StringDataType())
                 .variable("input", new StringDataType())
                 .variable("containerId", new StringDataType())
+                .variable(EXCEPTIONAL_PATH_KEY, new BooleanDataType(), false)
                 // Nodes
                 .startNode(1).name("Start").done()
 
@@ -45,24 +50,41 @@ public class OneTaskProcess extends GeneratedTestProcessBase {
                 .processId("executerest")
                 .onEntryAction("mvel", ""
                         + "String serviceATemplate = '{\n"
-                        + "    \"callbackUrl\": \"@{system.callbackUrl}\",\n"
-                        + "    \"callbackMethod\": \"POST\",\n"
-                        + "    \"name\": \"@{input.username}\"\n"
+                        + "    \"invalid\": \"to make it fail\"\n"
                         + "}';\n"
                         + "\n"
                         + "kcontext.setVariable(\"serviceATemplate\",serviceATemplate);")
                 .inMapping("requestMethod", "\"POST\"")
                 .inMapping("requestUrl", "http://localhost:8080/demo-service/service/A?callbackDelay=1")
-                .inMapping("requestTemplate", "serviceATemplate")
-                .inMapping("cancelUrlJsonPointer", "\"/cancelUrl\"")
+                .inMapping("requestBody", "serviceATemplate")
                 .inMapping("containerId", "\"mock\"")
                 .outMapping("result", "resultA")
                 .done()
 
-                .endNode(3).name("End").done()
+                .boundaryEventNode(3)
+                .attachedTo(2)
+                .eventType("Message-" + Constant.OPERATION_FAILED_SIGNAL_TYPE)
+                .cancelActivity(true)
+                .done()
+
+                .actionNode(4)
+                .action(context -> {
+                    context.setVariable(EXCEPTIONAL_PATH_KEY, true);
+                })
+                .done()
+
+                .joinNode(10)
+                .type(Join.TYPE_OR)
+                .done()
+
+                .endNode(11).name("End").done()
                 // Connections
                 .connection(1, 2)
-                .connection(2, 3);
+                .connection(2, 10)
+//                .connection(2, 10)
+                .connection(3, 4)
+                .connection(4, 10)
+                .connection(10, 11);
         process = factory.validate().getProcess();
     }
     

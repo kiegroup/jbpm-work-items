@@ -120,7 +120,7 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
             logger.debug("Should run ProcessInstance.id: {}.", processInstance.getId());
             
             try {
-                boolean invoked = invokeRemoteService(
+                invokeRemoteService(
                         processInstance,
                         mainProcessInstance,
                         manager,
@@ -131,11 +131,6 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
                         containerId,
                         cancelUrlJsonPointer,
                         requestHeaders);
-                if (!invoked) {
-                    logger.warn("Invalid remote service response. ProcessInstanceId {}.", processInstanceId);
-                    //TODO refine signal
-                    processInstance.signalEvent(Constant.CANCEL_SIGNAL_TYPE, processInstance.getId());
-                }
             } catch (Exception e) {
                 String message = MessageFormat.format("Failed to invoke remote service. ProcessInstanceId {0}.", processInstanceId);
                 logger.warn(message, e);
@@ -149,7 +144,7 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
         }
     }
 
-    private boolean invokeRemoteService(
+    private void invokeRemoteService(
             WorkflowProcessInstance processInstance,
             WorkflowProcessInstance mainProcessInstance,
             WorkItemManager manager,
@@ -198,11 +193,13 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
         logger.info("Remote endpoint returned status: {}.", statusCode);
 
         if (statusCode < 200 || statusCode >= 300 ) {
-            logger.debug("Remote service responded with status: {}", statusCode);
-
-            //TODO: this should be improved by throwing a BPM error event instead of just completing the workitem.
-            completeWorkItem(manager, workItemId, Collections.emptyMap(), "");
-            return false;
+            logger.debug("Remote service responded with error status.");
+            processInstance.signalEvent(Constant.OPERATION_FAILED_SIGNAL_TYPE, processInstance.getId());
+            mainProcessInstance.signalEvent(Constant.OPERATION_FAILED_SIGNAL_TYPE, processInstance.getId());
+            return;
+            //            completeWorkItem(manager, workItemId, Collections.emptyMap(), "");
+//            throw new WorkItemHandlerRuntimeException(new RuntimeException("Service invocation responded with error code."),
+//                    Constant.OPERATION_FAILED_SIGNAL_TYPE);
         }
 
         JsonNode root;
@@ -212,9 +209,12 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
             serviceInvocationResponse = Mapper.getInstance().convertValue(root, new TypeReference<Map<String, Object>>(){});
         } catch (Exception e) {
             logger.warn("Cannot parse service invocation response.", e);
-            //TODO: this should be improved by throwing a BPM error event instead of just completing the workitem.
-            //processInstance.signalEvent(Constant.CANCEL_SIGNAL_TYPE, processInstance.getId());
-            return false;
+            processInstance.signalEvent(Constant.OPERATION_FAILED_SIGNAL_TYPE, processInstance.getId());
+            mainProcessInstance.signalEvent(Constant.OPERATION_FAILED_SIGNAL_TYPE, processInstance.getId());
+            return;
+//            completeWorkItem(manager, workItemId, Collections.emptyMap(), "");
+//            throw new WorkItemHandlerRuntimeException(new RuntimeException("Cannot parse service invocation response."),
+//                    Constant.OPERATION_FAILED_SIGNAL_TYPE);
         }
 
         try {
@@ -227,10 +227,9 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
         } catch (Exception e) {
             logger.warn("Cannot read cancel url from service invocation response.", e);
             //TODO: this should be improved by throwing a BPM error event instead of just completing the workitem.
-            //processInstance.signalEvent(Constant.CANCEL_SIGNAL_TYPE, processInstance.getId());
-            return false;
+            processInstance.signalEvent(Constant.OPERATION_FAILED_SIGNAL_TYPE, processInstance.getId());
+//            completeWorkItem(manager, workItemId, Collections.emptyMap(), "");
         }
-        return true;
     }
 
     private VariableResolverFactory getVariableResolverFactoryChain(
