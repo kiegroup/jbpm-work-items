@@ -33,13 +33,8 @@ public class JBPMBase extends JbpmJUnitBaseTestCase {
         return createRuntimeManager(Strategy.SINGLETON, resources, binaryProcesses, null);
     }
 
-    protected RuntimeManager createRuntimeManager( WorkflowProcess[] binaryProcesses, String... processes ) {
-
-        Map<String, ResourceType> resources = new HashMap<String, ResourceType>();
-        for (String p : processes) {
-            resources.put(p, ResourceType.BPMN2);
-        }
-
+    protected RuntimeManager createRuntimeManager( WorkflowProcess... binaryProcesses ) {
+        Map<String, ResourceType> resources = Collections.singletonMap("execute-rest.bpmn2", ResourceType.BPMN2);
         return createRuntimeManager(Strategy.SINGLETON, resources, binaryProcesses, null);
     }
 

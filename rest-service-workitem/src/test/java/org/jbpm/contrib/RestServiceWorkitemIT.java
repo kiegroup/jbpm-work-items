@@ -23,6 +23,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.jbpm.contrib.demoservices.Service;
 import org.jbpm.contrib.mockserver.OneTaskProcess;
+import org.jbpm.contrib.mockserver.RestTaskFailProcess;
 import org.jbpm.contrib.mockserver.WorkItems;
 import org.jbpm.contrib.restservice.Constant;
 import org.jbpm.contrib.restservice.SimpleRestServiceWorkItemHandler;
@@ -95,7 +96,7 @@ public class RestServiceWorkitemIT extends JBPMBase {
         // Configure jBPM server with all the test processes, workitems and event listeners.
         setupPoolingDataSource();
         
-        RuntimeManager manager = createRuntimeManager( new OneTaskProcess().getProcess() );
+        RuntimeManager manager = createRuntimeManager(new OneTaskProcess().getProcess(), new RestTaskFailProcess().getProcess());
         RuntimeEngine runtimeEngine = getRuntimeEngine();
         
         KieSession kieSession = runtimeEngine.getKieSession();
@@ -136,7 +137,7 @@ public class RestServiceWorkitemIT extends JBPMBase {
         servletHolder.setInitParameter("jersey.config.server.provider.classnames", Service.class.getCanonicalName());
 
         // JBPM server mock
-        ServletContextHandler jbpmMock = new ServletContextHandler(contexts, "/kie-server/services/rest", ServletContextHandler.SESSIONS);
+        ServletContextHandler jbpmMock = new ServletContextHandler(contexts, "/services/rest", ServletContextHandler.SESSIONS);
         ServletHolder jbpmMockServlet = jbpmMock.addServlet(org.glassfish.jersey.servlet.ServletContainer.class, "/*");
         jbpmMockServlet.setInitOrder(0);
         jbpmMockServlet.setInitParameter("jersey.config.server.provider.classnames", WorkItems.class.getCanonicalName());
@@ -290,34 +291,39 @@ public class RestServiceWorkitemIT extends JBPMBase {
         disposeRuntimeManager();
     }
 
-    @Test @Ignore
-    public void testInvalidServiceUrl() throws InterruptedException {
-        KieSession kieSession = getRuntimeEngine().getKieSession();
-
-        final Semaphore nodeACompleted = new Semaphore(0);
-        final AtomicReference<String> resultA = new AtomicReference<>();
+    @Test
+    public void testServiceInvocationFails() throws InterruptedException {
+        BlockingQueue<ProcessVariableChangedEvent> queue = new ArrayBlockingQueue(1000);
 
         ProcessEventListener processEventListener = new DefaultProcessEventListener() {
             public void afterVariableChanged(ProcessVariableChangedEvent event) {
-                if (event.getVariableId().equals("resultA")) {
-                    resultA.set(event.getNewValue().toString());
-                    nodeACompleted.release();
+                String variableId = event.getVariableId();
+                logger.info("Process: {}, variable: {}, changed to: {}.",
+                        event.getProcessInstance().getProcessName(), variableId,
+                        event.getNewValue());
+                if (RestTaskFailProcess.EXCEPTIONAL_PATH_KEY.equals(variableId)) {
+                    queue.add(event);
                 }
             }
         };
+
+        KieSession kieSession = getRuntimeEngine().getKieSession();
         kieSession.addEventListener(processEventListener);
 
-        Map<String, Object> parameters = new HashMap<String, Object>();
-
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("containerId", "mock");
-        ProcessInstance processInstance = (ProcessInstance) kieSession.startProcess("invalid-service-url-test", parameters);
+        Map<String, Object> input = new HashMap<>();
+        input.put("username", "Matej");
+        parameters.put("input", input);
 
-        boolean completed = nodeACompleted.tryAcquire(15, TimeUnit.SECONDS);
-        if (!completed) {
-            Assert.fail("Failed to complete the process.");
-        }
+        //when
+        kieSession.startProcess("org.jbpm.restTaskFailProcess", parameters);
+
+        //then
+        Boolean exceptionalPath  = (Boolean) queue.take().getNewValue();
+        Assert.assertEquals(true, exceptionalPath);
+
         kieSession.removeEventListener(processEventListener);
-        Assert.assertEquals("{\"remote-cancel-failed\":true}", resultA.get());
     }
 
     @Test @Ignore
