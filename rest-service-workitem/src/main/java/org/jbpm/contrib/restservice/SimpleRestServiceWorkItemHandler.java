@@ -111,10 +111,7 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
             //TODO get without parameters
             //kcontext.getKieRuntime().getEnvironment().get("deploymentId"));
 
-            WorkflowProcessInstance mainProcessInstance = ProcessUtils.getProcessInstance(
-                    runtimeManager,
-                    processInstance.getParentProcessInstanceId());
-            String containerId = (String) mainProcessInstance.getVariable("containerId");
+            String containerId = (String) getProcessVariable("containerId", processInstance);
 
             //should this service run
             logger.debug("Should run ProcessInstance.id: {}.", processInstance.getId());
@@ -122,7 +119,6 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
             try {
                 invokeRemoteService(
                         processInstance,
-                        mainProcessInstance,
                         manager,
                         workItem.getId(),
                         requestUrl,
@@ -144,9 +140,28 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
         }
     }
 
+    /**
+     * Get process variable, if it is not find on the given process instance, parent process instances are searched recursively.
+     */
+    private Object getProcessVariable(
+            String variableName, WorkflowProcessInstance processInstance) {
+        Object processVariable = processInstance.getVariable(variableName);
+        if (processVariable == null) {
+            long parentProcessInstanceId = processInstance.getParentProcessInstanceId();
+            if (parentProcessInstanceId > 0) {
+                WorkflowProcessInstance parentProcessInstance = ProcessUtils.getProcessInstance(
+                        runtimeManager, parentProcessInstanceId);
+                return getProcessVariable(variableName, parentProcessInstance);
+            } else {
+                return null;
+            }
+        } else {
+            return processVariable;
+        }
+    }
+
     private void invokeRemoteService(
             WorkflowProcessInstance processInstance,
-            WorkflowProcessInstance mainProcessInstance,
             WorkItemManager manager,
             long workItemId,
             String requestUrl,
@@ -171,8 +186,7 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
 
             VariableResolverFactory variableResolverFactory = getVariableResolverFactoryChain(
                     systemVariables,
-                    processInstance,
-                    mainProcessInstance);
+                    processInstance);
             requestBodyEvaluated = (String) TemplateRuntime
                     .execute(compiled, null, variableResolverFactory);
         } else {
@@ -195,7 +209,6 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
         if (statusCode < 200 || statusCode >= 300 ) {
             logger.debug("Remote service responded with error status.");
             processInstance.signalEvent(Constant.OPERATION_FAILED_SIGNAL_TYPE, processInstance.getId());
-            mainProcessInstance.signalEvent(Constant.OPERATION_FAILED_SIGNAL_TYPE, processInstance.getId());
             return;
             //            completeWorkItem(manager, workItemId, Collections.emptyMap(), "");
 //            throw new WorkItemHandlerRuntimeException(new RuntimeException("Service invocation responded with error code."),
@@ -210,7 +223,6 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
         } catch (Exception e) {
             logger.warn("Cannot parse service invocation response.", e);
             processInstance.signalEvent(Constant.OPERATION_FAILED_SIGNAL_TYPE, processInstance.getId());
-            mainProcessInstance.signalEvent(Constant.OPERATION_FAILED_SIGNAL_TYPE, processInstance.getId());
             return;
 //            completeWorkItem(manager, workItemId, Collections.emptyMap(), "");
 //            throw new WorkItemHandlerRuntimeException(new RuntimeException("Cannot parse service invocation response."),
@@ -234,13 +246,26 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
 
     private VariableResolverFactory getVariableResolverFactoryChain(
             Map<String, Object> systemVariables,
-            WorkflowProcessInstance processInstance,
-            WorkflowProcessInstance mainProcessInstance) {
+            WorkflowProcessInstance processInstance) {
         VariableResolverFactory variableResolverFactory = new MapVariableResolverFactory(
                 Collections.singletonMap("system", systemVariables));
-        variableResolverFactory
-                .setNextFactory(new ProcessVariableResolverFactory(processInstance))
-                .setNextFactory(new ProcessVariableResolverFactory(mainProcessInstance));
+
+        VariableResolverFactory resolver = variableResolverFactory.setNextFactory(
+                new ProcessVariableResolverFactory(processInstance));
+
+        WorkflowProcessInstance currentInstance = processInstance;
+        //add all parent instances to resolver chain
+        for (int i = 0; i < 100; i++) { //circuit-breaker: allow max 100 nested process instances
+            long parentProcessInstanceId = currentInstance.getParentProcessInstanceId();
+            if (parentProcessInstanceId > 0) {
+                WorkflowProcessInstance parentProcessInstance = ProcessUtils.getProcessInstance(
+                        runtimeManager, parentProcessInstanceId);
+                resolver.setNextFactory(new ProcessVariableResolverFactory(parentProcessInstance));
+                currentInstance = parentProcessInstance;
+            } else {
+                break;
+            }
+        }
         return variableResolverFactory;
     }
 
