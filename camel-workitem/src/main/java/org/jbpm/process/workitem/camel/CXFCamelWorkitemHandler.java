@@ -25,6 +25,7 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 
 @Wid(widfile = "CamelCXFConnector.wid", name = "CamelCXFConnector",
@@ -48,7 +49,8 @@ import org.jbpm.process.workitem.core.util.service.WidService;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "apache,camel,cxf,payload,route,connector",
-                action = @WidAction(title = "Connect to a JAX-WS service hosted in CXF")
+                action = @WidAction(title = "Connect to a JAX-WS service hosted in CXF"),
+                authinfo = @WidAuth
         )
 
 )

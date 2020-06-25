@@ -41,7 +41,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(RuntimeManagerRegistry.class)
-@PowerMockIgnore({"javax.net.*", "javax.security.*"})
+@PowerMockIgnore({"javax.*", "javax.security.*", "jdk.internal.reflect.*", "org.drools.compiler.*"})
 public class MavenEmbedderWorkitemHandlerTest extends AbstractBaseTest {
 
     @Before

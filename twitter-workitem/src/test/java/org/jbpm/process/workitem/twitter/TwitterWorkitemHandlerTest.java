@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
 import twitter4j.DirectMessage;
 import twitter4j.Status;
@@ -36,6 +37,7 @@ import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
+@PowerMockIgnore({"jdk.internal.reflect.*"})
 public class TwitterWorkitemHandlerTest extends AbstractBaseTest {
 
     @Mock

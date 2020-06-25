@@ -29,6 +29,7 @@ import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.jbpm.process.workitem.email.Connection;
 import org.kie.api.runtime.process.WorkItem;
@@ -53,7 +54,8 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "ftp,file,upload",
-                action = @WidAction(title = "Upload a file using FTP")
+                action = @WidAction(title = "Upload a file using FTP"),
+                authinfo = @WidAuth
         ))
 public class FTPUploadWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 

@@ -258,4 +258,20 @@
     </plugins>
   </build>
 
+  <profiles>
+    <profile>
+      <id>jdk-11-compile</id>
+      <activation>
+        <jdk>[9,)</jdk>
+      </activation>
+      <dependencies>
+        <!-- Needed for JDK 11 -->
+        <dependency>
+          <groupId>javax.activation</groupId>
+          <artifactId>activation</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+
 </project>

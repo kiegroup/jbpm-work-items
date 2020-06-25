@@ -29,6 +29,7 @@ import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -47,7 +48,8 @@ import org.kie.api.runtime.process.WorkItemManager;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "rss,feed,create",
-                action = @WidAction(title = "Create a RSS feed from multiple sources")
+                action = @WidAction(title = "Create a RSS feed from multiple sources"),
+                authinfo = @WidAuth
         ))
 public class RSSWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
