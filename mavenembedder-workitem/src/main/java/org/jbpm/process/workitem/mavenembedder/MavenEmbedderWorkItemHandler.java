@@ -26,6 +26,7 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.manager.RuntimeEngine;
 import org.kie.api.runtime.manager.RuntimeManager;
@@ -57,7 +58,8 @@ import org.slf4j.LoggerFactory;
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "maven,mvn,build,execute,pom,project,intall",
-                action = @WidAction(title = "Execute Maven commands")
+                action = @WidAction(title = "Execute Maven commands"),
+                authinfo = @WidAuth
         ))
 public class MavenEmbedderWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 

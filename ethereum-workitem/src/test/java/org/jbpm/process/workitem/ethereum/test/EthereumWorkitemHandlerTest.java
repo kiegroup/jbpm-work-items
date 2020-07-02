@@ -67,7 +67,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Observable.class})
-@PowerMockIgnore({"javax.crypto.*"})
+@PowerMockIgnore({"javax.crypto.*", "jdk.internal.reflect.*"})
 public class EthereumWorkitemHandlerTest {
 
     private static final String TEST_WALLET_PASSWORD = "jbpmtest123";
