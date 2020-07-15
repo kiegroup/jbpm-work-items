@@ -15,8 +15,17 @@
  */
 package org.jbpm.contrib.restservice;
 
+import static org.mvel2.templates.TemplateCompiler.compileTemplate;
+
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -27,6 +36,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.jbpm.contrib.restservice.util.Mapper;
 import org.jbpm.contrib.restservice.util.ProcessUtils;
 import org.jbpm.contrib.restservice.util.Strings;
+import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
 import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
@@ -35,7 +45,6 @@ import org.jbpm.process.workitem.core.util.service.WidAction;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.manager.RuntimeManager;
 import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.mvel2.integration.VariableResolverFactory;
@@ -44,14 +53,6 @@ import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.text.MessageFormat;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.mvel2.templates.TemplateCompiler.compileTemplate;
 
 @Wid(widfile="SimpleRestService.wid", 
         name="SimpleRestService",
@@ -77,7 +78,7 @@ import static org.mvel2.templates.TemplateCompiler.compileTemplate;
             action = @WidAction(title = "Simplified execute of an REST service ver. ${version}")
         )
 )
-public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
+public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(SimpleRestServiceWorkItemHandler.class);
 
@@ -86,11 +87,13 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
     public SimpleRestServiceWorkItemHandler(RuntimeManager runtimeManager) {
         this.runtimeManager = runtimeManager;
         logger.info(">>> Constructing with runtimeManager ...");
+        setLogThrownException(false);
     }
 
     public SimpleRestServiceWorkItemHandler() {
         logger.info(">>> Constructing without runtimeManager ...");
         runtimeManager = null;
+        setLogThrownException(false);
     }
 
     public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
@@ -130,13 +133,11 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
             } catch (Exception e) {
                 String message = MessageFormat.format("Failed to invoke remote service. ProcessInstanceId {0}.", processInstanceId);
                 logger.warn(message, e);
-                //TODO refine signal
-                processInstance.signalEvent(Constant.CANCEL_SIGNAL_TYPE, processInstance.getId());
+                handleException(e);
             }
         } catch(Throwable cause) {
-            //TODO: removal of AbstractLogOrThrowWorkItemHandler: handleException(cause);
-            //for now throw RuntimeException rather than just swallow it
-            throw new RuntimeException(cause);
+            logger.error("Failed to execute workitem handler due to the following error.",cause);
+            handleException(cause);
         }
     }
 
@@ -207,12 +208,9 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
         logger.info("Remote endpoint returned status: {}.", statusCode);
 
         if (statusCode < 200 || statusCode >= 300 ) {
-            logger.debug("Remote service responded with error status.");
-            processInstance.signalEvent(Constant.OPERATION_FAILED_SIGNAL_TYPE, processInstance.getId());
-            return;
-            //            completeWorkItem(manager, workItemId, Collections.emptyMap(), "");
-//            throw new WorkItemHandlerRuntimeException(new RuntimeException("Service invocation responded with error code."),
-//                    Constant.OPERATION_FAILED_SIGNAL_TYPE);
+            String message = MessageFormat.format("Remote service responded with error status code {0} and reason: {1}. ProcessInstanceId {2}.", statusCode, httpResponse.getStatusLine().getReasonPhrase(), processInstance.getId());
+            logger.debug(message);
+            throw new IOException(message);
         }
 
         JsonNode root;
@@ -221,12 +219,9 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
             root = Mapper.getInstance().readTree(httpResponse.getEntity().getContent());
             serviceInvocationResponse = Mapper.getInstance().convertValue(root, new TypeReference<Map<String, Object>>(){});
         } catch (Exception e) {
-            logger.warn("Cannot parse service invocation response.", e);
-            processInstance.signalEvent(Constant.OPERATION_FAILED_SIGNAL_TYPE, processInstance.getId());
-            return;
-//            completeWorkItem(manager, workItemId, Collections.emptyMap(), "");
-//            throw new WorkItemHandlerRuntimeException(new RuntimeException("Cannot parse service invocation response."),
-//                    Constant.OPERATION_FAILED_SIGNAL_TYPE);
+            String message = MessageFormat.format("Cannot parse service invocation response. ProcessInstanceId {0}.", processInstance.getId());
+            logger.debug(message);
+            throw e;
         }
 
         try {
@@ -237,10 +232,9 @@ public class SimpleRestServiceWorkItemHandler implements WorkItemHandler {
             }
             completeWorkItem(manager, workItemId, serviceInvocationResponse, cancelUrl);
         } catch (Exception e) {
-            logger.warn("Cannot read cancel url from service invocation response.", e);
-            //TODO: this should be improved by throwing a BPM error event instead of just completing the workitem.
-            processInstance.signalEvent(Constant.OPERATION_FAILED_SIGNAL_TYPE, processInstance.getId());
-//            completeWorkItem(manager, workItemId, Collections.emptyMap(), "");
+            String message = MessageFormat.format("Cannot read cancel url from service invocation response. ProcessInstanceId {0}.", processInstance.getId());
+            logger.debug(message);
+            throw e;
         }
     }
 
