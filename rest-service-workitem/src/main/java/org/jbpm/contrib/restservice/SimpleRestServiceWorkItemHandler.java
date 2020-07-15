@@ -15,17 +15,8 @@
  */
 package org.jbpm.contrib.restservice;
 
-import static org.mvel2.templates.TemplateCompiler.compileTemplate;
-
-import java.io.IOException;
-import java.text.MessageFormat;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -53,6 +44,14 @@ import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.mvel2.templates.TemplateCompiler.compileTemplate;
 
 @Wid(widfile="SimpleRestService.wid", 
         name="SimpleRestService",
@@ -146,6 +145,7 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
      */
     private Object getProcessVariable(
             String variableName, WorkflowProcessInstance processInstance) {
+        logger.info("Looking for process variable " + variableName + " in process instance " + processInstance.getProcessId());
         Object processVariable = processInstance.getVariable(variableName);
         if (processVariable == null) {
             long parentProcessInstanceId = processInstance.getParentProcessInstanceId();
