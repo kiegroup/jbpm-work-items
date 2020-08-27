@@ -1166,6 +1166,7 @@
         </property>
       </activation>
       <modules>
+        <module>kafka-workitem</module>
         <module>template-resources</module>
         <module>camel-workitem</module>
         <module>repository</module>
