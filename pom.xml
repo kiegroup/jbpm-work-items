@@ -65,7 +65,7 @@
     <version.org.xhtmlrenderer>9.1.15</version.org.xhtmlrenderer>
     <version.bouncycastle>1.60</version.bouncycastle>
     <version.xmlsec>1.5.1</version.xmlsec>
-    <version.google.guava>14.0.1</version.google.guava>
+    <version.google.guava>24.1.1-jre</version.google.guava>
     <version.riot.api>4.1.0</version.riot.api>
     <version.jpastebin>1.0.1</version.jpastebin>
     <version.vimeo>1.10</version.vimeo>
