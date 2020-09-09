@@ -20,7 +20,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,6 +54,87 @@ public class ExecShellScriptWorkItemHandlerTest {
         assertNotNull(result);
         assertTrue(result.contains("Test Script Started") || result.contains("Test Script Ended"));
     }
+    
+    @Test
+    public void testExecShellScriptCommandWithTimeout() throws Exception {
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+        workItem.setParameter("ShellScriptLocation",
+        		"src/test/resources/TestScript.sh");
+        workItem.setParameter("Timeout",
+        		"0.1");
+        ExecShellScriptWorkItemHandler handler = new ExecShellScriptWorkItemHandler();
+        handler.setLogThrownException(true);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
+
+    }
+    
+    @Test
+    public void testExecShellScriptCommandWithAddEnvironmentVariables() throws Exception {
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+        workItem.setParameter("ShellScriptLocation",
+        		"src/test/resources/TestScript.sh");
+        Map<String, String> envVariableList = new HashMap<>();
+        envVariableList.put("testVariable","tested");
+        workItem.setParameter("AddEnvironmentVariable",
+        		envVariableList);
+        ExecShellScriptWorkItemHandler handler = new ExecShellScriptWorkItemHandler();
+        handler.setLogThrownException(true);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+
+        assertNotNull(manager.getResults());
+        assertEquals(1,
+                     manager.getResults().size());
+        assertTrue(manager.getResults().containsKey(workItem.getId()));
+
+        Map<String, Object> results = ((TestWorkItemManager) manager).getResults(workItem.getId());
+        List<String> result = (List<String>) results.get(ExecWorkItemHandler.RESULT);
+
+        assertNotNull(result);
+        assertTrue(result.contains("tested"));
+    }
+    
+    @Test
+    public void testExecShellScriptCommandWithRemoveEnvironmentVariables() throws Exception {
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+        workItem.setParameter("ShellScriptLocation",
+        		"src/test/resources/TestScript.sh");
+        
+        Map<String, String> envVariableList = new HashMap<>();
+        envVariableList.put("newVariable","variableRemoved");
+        workItem.setParameter("AddEnvironmentVariable",
+        		envVariableList);
+        List<String> removeEnvList = new ArrayList<>();
+        removeEnvList.add("newVariable");
+        workItem.setParameter("RemoveEnvironmentVariable",
+        		removeEnvList);
+        ExecShellScriptWorkItemHandler handler = new ExecShellScriptWorkItemHandler();
+        handler.setLogThrownException(true);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+
+        assertNotNull(manager.getResults());
+        assertEquals(1,
+                     manager.getResults().size());
+        assertTrue(manager.getResults().containsKey(workItem.getId()));
+
+        Map<String, Object> results = ((TestWorkItemManager) manager).getResults(workItem.getId());
+        List<String> result = (List<String>) results.get(ExecWorkItemHandler.RESULT);
+
+        assertNotNull(result);
+        assertTrue(!result.contains("variableRemoved"));
+    }
 
    
     @Test
@@ -70,4 +152,6 @@ public class ExecShellScriptWorkItemHandlerTest {
         assertEquals(0,
                      manager.getResults().size());
     }
+   
 }
+
