@@ -16,12 +16,14 @@
 package org.jbpm.process.workitem.exec;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
 import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
@@ -34,6 +36,8 @@ import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "ExecDefinitions.wid", name = "Exec",
         displayName = "Exec",
@@ -43,7 +47,8 @@ import org.kie.api.runtime.process.WorkItemManager;
         icon = "Exec.png",
         parameters = {
                 @WidParameter(name = "Command", required = true),
-                @WidParameter(name = "Arguments", runtimeType = "java.util.List")
+                @WidParameter(name = "Arguments", runtimeType = "java.util.List"),
+                @WidParameter(name = "CommandExecutionTimeout", runtimeType = "java.lang.String")
         },
         results = {
                 @WidResult(name = "Output")
@@ -58,8 +63,10 @@ import org.kie.api.runtime.process.WorkItemManager;
         ))
 public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(ExecWorkItemHandler.class);
     public static final String RESULT = "Output";
     private String parsedCommandStr = "";
+	private long defaultTimeoutInSeconds=0;
 
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager manager) {
@@ -71,6 +78,13 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
             String command = (String) workItem.getParameter("Command");
             List<String> arguments = (List<String>) workItem.getParameter("Arguments");
+			String commandExecutionTimeout = (String) workItem.getParameter("CommandExecutionTimeout");
+			
+			if (commandExecutionTimeout ==null) {
+				this.SetDefaultTimeoutInSeconds(4L);
+			} else {
+				this.SetDefaultTimeoutInSeconds(Long.parseLong(commandExecutionTimeout));
+			}
 
             Map<String, Object> results = new HashMap<>();
 
@@ -82,11 +96,24 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
             parsedCommandStr = commandLine.toString();
 
+            ExecuteWatchdog watchdog = new ExecuteWatchdog(java.time.Duration.ofSeconds(defaultTimeoutInSeconds).toMillis());
             DefaultExecutor executor = new DefaultExecutor();
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
             executor.setStreamHandler(streamHandler);
-            executor.execute(commandLine);
+		    executor.setWatchdog(watchdog);
+            try {
+				  executor.execute(commandLine);
+			    } catch (IOException e) {
+			        if (watchdog.killedProcess()) {
+			        	logger.debug("A timeout occured after "+java.time.Duration.ofSeconds(defaultTimeoutInSeconds).toMillis()+"ms while executing a command "+parsedCommandStr.replace(",", ""));
+						results.put(RESULT, outputStream.toString());
+					    outputStream.close();
+						manager.completeWorkItem(workItem.getId(), results);
+			        } else {
+			            throw e;
+			        }
+			    }
 
             results.put(RESULT,
                         outputStream.toString());
@@ -104,6 +131,10 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
                               WorkItemManager manager) {
         // Do nothing, this work item cannot be aborted
     }
+    
+    public void SetDefaultTimeoutInSeconds(long defaultTimeoutInSeconds) {
+		this.defaultTimeoutInSeconds = defaultTimeoutInSeconds;
+	}
 
     public String getParsedCommandStr() {
         return parsedCommandStr;
