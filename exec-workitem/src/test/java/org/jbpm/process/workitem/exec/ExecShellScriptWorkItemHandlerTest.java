@@ -61,7 +61,7 @@ public class ExecShellScriptWorkItemHandlerTest {
         WorkItemImpl workItem = new WorkItemImpl();
         workItem.setParameter("ShellScriptLocation",
         		"src/test/resources/TestScript.sh");
-        workItem.setParameter("Timeout",
+        workItem.setParameter("TimeoutInMillis",
         		"0.1");
         ExecShellScriptWorkItemHandler handler = new ExecShellScriptWorkItemHandler();
         handler.setLogThrownException(true);

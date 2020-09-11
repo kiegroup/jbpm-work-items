@@ -42,8 +42,8 @@ import org.slf4j.LoggerFactory;
  * WorkItemHandler that is capable of executing shell script file
  * <ul>
  * <li>ShellScriptLocation - Absolute or relative path of shell script file - mandatory</li>
- * <li>Timeout - Timeout for execution. Default value is 1000 MilliSeconds</li>
- * <li>AddEnvironmentVariable - A map of environment variable to be added</li>
+ * <li>TimeoutInMillis - Timeout in Milliseconds for execution. Default value is 1000 MilliSeconds</li>
+ * <li>AddEnvironmentVariable - A Map of environment variable to be added</li>
  * <li>RemoveEnvironmentVariable -A List of environment variable to be removed</li>
  * </ul>
  */
@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
         icon = "ExecShellScript.png",
         parameters = {
                 @WidParameter(name = "ShellScriptLocation", required = true),
-                @WidParameter(name = "Timeout"),
+                @WidParameter(name = "TimeoutInMillis"),
                 @WidParameter(name = "AddEnvironmentVariable", runtimeType = "java.util.Map"),
                 @WidParameter(name = "RemoveEnvironmentVariable", runtimeType = "java.util.List")
         },
@@ -85,12 +85,12 @@ public class ExecShellScriptWorkItemHandler extends AbstractLogOrThrowWorkItemHa
     		RequiredParameterValidator.validate(this.getClass(),
     				workItem);
     		String shellScriptLocation = (String) workItem.getParameter("ShellScriptLocation");
-    		String tout = (String) workItem.getParameter("Timeout");
+    		String tout = (String) workItem.getParameter("TimeoutInMillis");
     		Long timeout=null;
     		if(tout!=null){
     			timeout = Long.parseLong(tout);
     		}else {
-    			timeout=1000l; //Default timeout if timeout is passed as a parameter
+    			timeout=1000l; //Default timeout in Milliseconds if timeout is not passed as a parameter
     		}
     		Map<String, String> addEnvironmentVariables = (Map<String, String>) workItem.getParameter("AddEnvironmentVariable");
     		List<String> removeEnvironmentVariables = (List<String>) workItem.getParameter("RemoveEnvironmentVariable");
@@ -103,7 +103,7 @@ public class ExecShellScriptWorkItemHandler extends AbstractLogOrThrowWorkItemHa
     		try {
 
     			List<String> commandList = new ArrayList<String>();
-    			// adding command and args to the list
+    			// adding command and script location to the list
     			commandList.add("sh");
     			commandList.add(shellScriptLocation);
     			ProcessBuilder processBuilder = new ProcessBuilder(commandList);
