@@ -48,7 +48,6 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 
-
 @Wid(widfile = "ExecShellScriptDefinitions.wid", name = "ExecShellScript",
         displayName = "ExecShellScript",
         defaultHandler = "mvel: new org.jbpm.process.workitem.exec.ExecShellScriptWorkItemHandler()",
@@ -70,91 +69,89 @@ import org.slf4j.LoggerFactory;
         serviceInfo = @WidService(category = "${name}", description = "${description}",
                 keywords = "execute,shell script",
                 action = @WidAction(title = "Execute a shell script"),
-                authinfo = @WidAuth
-        ))
+                authinfo = @WidAuth))
 public class ExecShellScriptWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     public static final String RESULT = "Output";
     private static final Logger logger = LoggerFactory.getLogger(ExecShellScriptWorkItemHandler.class);
 
-    public void executeWorkItem(WorkItem workItem,
-                                WorkItemManager manager) {
+    public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
 
-    	try {
+        try {
 
-    		RequiredParameterValidator.validate(this.getClass(),
-    				workItem);
-    		String shellScriptLocation = (String) workItem.getParameter("ShellScriptLocation");
-    		String tout = (String) workItem.getParameter("TimeoutInMillis");
-    		Long timeout=null;
-    		if(tout!=null){
-    			timeout = Long.parseLong(tout);
-    		}else {
-    			timeout=1000l; //Default timeout in Milliseconds if timeout is not passed as a parameter
-    		}
-    		Map<String, String> addEnvironmentVariables = (Map<String, String>) workItem.getParameter("AddEnvironmentVariable");
-    		List<String> removeEnvironmentVariables = (List<String>) workItem.getParameter("RemoveEnvironmentVariable");
-    		logger.debug("ShellScriptLocation " + shellScriptLocation + " Timeout " + timeout );
-    		List<String> output = new ArrayList<>();
+            RequiredParameterValidator.validate(this.getClass(), workItem);
+            String shellScriptLocation = (String) workItem.getParameter("ShellScriptLocation");
+            String tout = (String) workItem.getParameter("TimeoutInMillis");
+            Long timeout = null;
+            if (tout != null) {
+                timeout = Long.parseLong(tout);
+            } else {
+                timeout = 1000l; //Default timeout in Milliseconds if timeout is not passed as a parameter
+            }
+            Map<String, String> addEnvironmentVariables = (Map<String, String>) workItem.getParameter("AddEnvironmentVariable");
+            List<String> removeEnvironmentVariables = (List<String>) workItem.getParameter("RemoveEnvironmentVariable");
+            logger.debug("ShellScriptLocation " + shellScriptLocation + " Timeout " + timeout);
+            List<String> output = new ArrayList<>();
 
-    		Map<String, Object> results = new HashMap<>();
+            Map<String, Object> results = new HashMap<>();
 
-    		Process process;
-    		try {
+            Process process;
+            try {
 
-    			List<String> commandList = new ArrayList<String>();
-    			// adding command and script location to the list
-    			commandList.add("sh");
-    			commandList.add(shellScriptLocation);
-    			ProcessBuilder processBuilder = new ProcessBuilder(commandList);
+                List<String> commandList = new ArrayList<String>();
+                // adding command and script location to the list
+                commandList.add("sh");
+                commandList.add(shellScriptLocation);
+                ProcessBuilder processBuilder = new ProcessBuilder(commandList);
 
-    			Map<String, String> envVariables= processBuilder.environment();
+                Map<String, String> envVariables = processBuilder.environment();
 
-    			if(null!= addEnvironmentVariables && !addEnvironmentVariables.isEmpty()) {
-    				logger.debug("addEnvironmentVariables " + addEnvironmentVariables);
-    				envVariables.putAll(addEnvironmentVariables);
-    			}
+                if (null != addEnvironmentVariables && !addEnvironmentVariables.isEmpty()) {
+                    logger.debug("addEnvironmentVariables " + addEnvironmentVariables);
+                    envVariables.putAll(addEnvironmentVariables);
+                }
 
-    			if(null!= removeEnvironmentVariables && !removeEnvironmentVariables.isEmpty()) {
-    				logger.debug("removeEnvironmentVariables " + removeEnvironmentVariables);
-    				removeEnvironmentVariables.stream().forEach(variable -> envVariables.remove(variable));
-    			}
+                if (null != removeEnvironmentVariables && !removeEnvironmentVariables.isEmpty()) {
+                    logger.debug("removeEnvironmentVariables " + removeEnvironmentVariables);
+                    removeEnvironmentVariables.stream().forEach(variable -> envVariables.remove(variable));
+                }
 
-    			process = processBuilder.start();
+                process = processBuilder.start();
 
-    			process.waitFor(timeout,TimeUnit.MILLISECONDS); 
-    			BufferedReader reader=new BufferedReader(new InputStreamReader(
-    					process.getInputStream())); 
-    			String line; 
-    			while((line = reader.readLine()) != null) { 
-    				output.add(line);
-    				logger.debug("Output line " + line);
-    			} 
-    		} catch (IOException e) {
-    			logger.error("Error executing the work item IO Exception: " + e.getMessage());
-    			handleException(e);
-    		} catch (InterruptedException e) {
-    			logger.error("Error executing the work item Interrupted Exception: " + e.getMessage());
-    			handleException(e);
-    		} catch (Exception e) {
-    			logger.error("Error executing the work item with Exception: " + e.getMessage());
-    			handleException(e);
-    		}
+                if (!process.waitFor(timeout, TimeUnit.MILLISECONDS)) {
+                    // Process timed out destroying the process
+                    logger.error("Terminating the process has Process timed out: " + timeout);
+                    process.destroyForcibly();
+                    throw new IOException("Process timed out");
+                }
+                BufferedReader reader = new BufferedReader(new InputStreamReader(
+                        process.getInputStream()));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    output.add(line);
+                    logger.debug("Output line " + line);
+                }
+            } catch (IOException e) {
+                logger.error("Error executing the work item IO Exception: " + e.getMessage());
+                handleException(e);
+            } catch (InterruptedException e) {
+                logger.error("Error executing the work item Interrupted Exception: " + e.getMessage());
+                handleException(e);
+            } catch (Exception e) {
+                logger.error("Error executing the work item with Exception: " + e.getMessage());
+                handleException(e);
+            }
 
+            results.put(RESULT, output);
 
-    		results.put(RESULT,
-    				output);
-
-
-    		manager.completeWorkItem(workItem.getId(),
-    				results);
-    	} catch (Throwable t) {
+            manager.completeWorkItem(workItem.getId(), results);
+        } catch (Throwable t) {
             handleException(t);
         }
     }
 
     public void abortWorkItem(WorkItem workItem,
-                              WorkItemManager manager) {
+            WorkItemManager manager) {
         // Do nothing, this work item cannot be aborted
     }
 

@@ -6,7 +6,13 @@ echo ${testVariable}
 
 echo ${newVariable}
 
-java -version
+for i in `seq 1 1000`;
+
+do
+
+echo "Loop to test timeout ... i is $i"
+
+done
 
 mvn -version
 
