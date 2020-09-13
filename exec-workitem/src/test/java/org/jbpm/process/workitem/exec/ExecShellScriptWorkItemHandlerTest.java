@@ -69,7 +69,6 @@ public class ExecShellScriptWorkItemHandlerTest {
 
         Map<String, Object> results = ((TestWorkItemManager) manager).getResults(workItem.getId());
         List<String> result = (List<String>) results.get(ExecWorkItemHandler.RESULT);
-        System.out.println(result);
         assertNotNull(result);
         assertTrue(result.isEmpty());
 
