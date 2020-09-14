@@ -97,7 +97,7 @@ public class ExecWorkItemHandlerTest {
 		argumentList.add("127.0.0.1");
 		workItem.setParameter("Arguments",
 							argumentList);
-		workItem.setParameter("TimeoutInSeconds", 
+		workItem.setParameter("TimeoutInMillis", 
 								"PT5S");
 		ExecWorkItemHandler handler = new ExecWorkItemHandler();
 		handler.setLogThrownException(true);
@@ -134,6 +134,6 @@ public class ExecWorkItemHandlerTest {
 
         assertNotNull(manager.getResults());
         assertEquals(0,
-                     manager.getResults().size());
+                manager.getResults().size());
     }
 }
