@@ -87,7 +87,14 @@ public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler impl
                    keySerializerClass);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
                    valueSerializerClass);
-        producer = new KafkaProducer<Long, String>(config);
+        // it is needed to change the classloader to KIEURLClassLoader for dependencies to be resolved and then, set it back
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+        try {
+          Thread.currentThread().setContextClassLoader(KafkaProducer.class.getClassLoader());
+          producer = new KafkaProducer<Long, String>(config);
+        } finally {
+          Thread.currentThread().setContextClassLoader(oldClassLoader);
+        }              
     }
 
     public void executeWorkItem(WorkItem workItem,
