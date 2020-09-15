@@ -664,6 +664,12 @@
           <type>zip</type>
           <scope>provided</scope>
         </dependency>
+        <dependency>
+          <groupId>org.jbpm.contrib</groupId>
+          <artifactId>kafka-workitem</artifactId>
+          <type>zip</type>
+          <scope>provided</scope>
+        </dependency>
       </dependencies>
     
       <build>
