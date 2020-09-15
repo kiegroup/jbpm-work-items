@@ -67,9 +67,9 @@ public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler impl
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaWorkItemHandler.class);
 
-    private Producer<Long, String> producer;
+    private Producer<String, String> producer;
     private static final String RESULTS_VALUE = "Result";
-
+    
     public KafkaWorkItemHandler(Producer producer) {
         this.producer = producer;
     }
@@ -91,10 +91,10 @@ public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler impl
         ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
         try {
           Thread.currentThread().setContextClassLoader(KafkaProducer.class.getClassLoader());
-          producer = new KafkaProducer<Long, String>(config);
+          producer = new KafkaProducer<String, String>(config);
         } finally {
           Thread.currentThread().setContextClassLoader(oldClassLoader);
-        }              
+        }
     }
 
     public void executeWorkItem(WorkItem workItem,
@@ -106,25 +106,16 @@ public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler impl
 
             Map<String, Object> results = new HashMap<String, Object>();
             String topic = (String) workItem.getParameter("Topic");
-            String key = (String) workItem.getParameter("Key");
-            String value = (String) workItem.getParameter("Value");
+            Object key = workItem.getParameter("Key");
+            Object value = workItem.getParameter("Value");
 
-            try {
+            producer.send(new ProducerRecord(topic, 
+                                             key, 
+                                             value))
+                    .get();
 
-                producer.send(new ProducerRecord(topic,
-                                                 key,
-                                                 value));
-                results.put(RESULTS_VALUE,
-                            "success");
-                manager.completeWorkItem(workItem.getId(),
-                                         results);
-            } catch (Exception e) {
-                LOG.error("Kafka error",
-                          e);
-                producer.flush();
-                results.put(RESULTS_VALUE,
-                            "failure");
-            }
+            results.put(RESULTS_VALUE, "success");
+            manager.completeWorkItem(workItem.getId(), results);
         } catch (Exception exp) {
             LOG.error("Handler error",
                       exp);
