@@ -24,9 +24,11 @@ jobs:
         id: build-chain
         uses: kiegroup/github-action-build-chain@v1.4
         with:
-          build-command: 'mvn -e -nsu -Dfull -Pwildfly install -Prun-code-coverage  -Dcontainer.profile=wildfly -Dcontainer=wildfly -Dintegration-tests=true -Dmaven.test.failure.ignore=true --builder smart'
+          parent-dependencies: 'jbpm-designer'
+          child-dependencies: 'jbpm-wb'
+          build-command: 'mvn -e -nsu -Dfull -Pwildfly install -Prun-code-coverage  -Dcontainer.profile=wildfly -Dcontainer=wildfly -Dintegration-tests=true -Dmaven.test.failure.ignore=true'
           build-command-upstream: |
-            mvn -e -T1C install -DskipTests -Dgwt.compiler.skip=true -Dgwt.skipCompilation=true -Denforcer.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Drevapi.skip=true --builder smart
+            mvn -e --builder smart -T1C install -DskipTests -Dgwt.compiler.skip=true -Dgwt.skipCompilation=true -Denforcer.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Drevapi.skip=true --builder smart
             rm -rf ./*
           workflow-file-name: "pull_request.yml"
         env:
