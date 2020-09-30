@@ -679,8 +679,8 @@
             <artifactId>maven-failsafe-plugin</artifactId>
             <configuration>
               <systemPropertyVariables>
-                <total.mod.count>6</total.mod.count>
-                <total.wi.count>15</total.wi.count>
+                <total.mod.count>7</total.mod.count>
+                <total.wi.count>16</total.wi.count>
               </systemPropertyVariables>
             </configuration>
           </plugin>
