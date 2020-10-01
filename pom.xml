@@ -938,6 +938,12 @@
         <version>${version.org.kie}</version>
         <type>zip</type>
       </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>jbpm-workitem-itests</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -1155,6 +1161,7 @@
         <module>repository-springboot</module>
         <module>repository-wildfly</module>
         <module>karaf-itests</module>
+        <module>jbpm-workitem-itests</module>
       </modules>
     </profile>
     <profile>
@@ -1171,6 +1178,7 @@
         <module>camel-workitem</module>
         <module>repository</module>
         <module>karaf-itests</module>
+        <module>jbpm-workitem-itests</module>
       </modules>
     </profile>
   </profiles>
