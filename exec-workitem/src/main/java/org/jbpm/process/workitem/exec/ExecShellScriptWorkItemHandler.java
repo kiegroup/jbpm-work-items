@@ -120,7 +120,7 @@ public class ExecShellScriptWorkItemHandler extends AbstractLogOrThrowWorkItemHa
 
                 if (!process.waitFor(timeout, TimeUnit.MILLISECONDS)) {
                     // Process timed out destroying the process
-                    logger.error("Terminating the process has Process timed out: " + timeout);
+                    logger.error("Terminating the process as the Process timed out: " + timeout);
                     process.destroyForcibly();
                     throw new IOException("Process timed out");
                 }

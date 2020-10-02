@@ -49,7 +49,7 @@ public class ExecShellScriptWorkItemHandlerTest {
         List<String> result = (List<String>) results.get(ExecWorkItemHandler.RESULT);
 
         assertNotNull(result);
-        assertTrue(result.contains("Test Script Started") || result.contains("Test Script Ended"));
+        assertTrue(result.contains("Test Script Started") && result.contains("Test Script Ended"));
     }
 
     @Test
