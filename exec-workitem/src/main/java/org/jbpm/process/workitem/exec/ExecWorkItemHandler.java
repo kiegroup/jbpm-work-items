@@ -84,7 +84,7 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
             String commandExecutionTimeout = (String) workItem.getParameter("TimeoutInMillis");
 
             if (commandExecutionTimeout != null) {
-                this.setDefaultTimeoutInSeconds(parsetimeout(commandExecutionTimeout));
+                this.setDefaultTimeout(parsetimeout(commandExecutionTimeout));
             }
 
             String executionResult = executecommand(command, arguments, defaultTimeout);
@@ -162,7 +162,7 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
         // Do nothing, this work item cannot be aborted
     }
 
-    public void setDefaultTimeoutInSeconds(long defaultTimeout) {
+    public void setDefaultTimeout(long defaultTimeout) {
         this.defaultTimeout = defaultTimeout;
     }
 
