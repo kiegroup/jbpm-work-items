@@ -72,7 +72,7 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
     private long defaultTimeout = 4000L;
 
     public void executeWorkItem(WorkItem workItem,
-            WorkItemManager manager) {
+                                WorkItemManager manager) {
 
         try {
 
@@ -158,7 +158,7 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
     }
 
     public void abortWorkItem(WorkItem workItem,
-            WorkItemManager manager) {
+                              WorkItemManager manager) {
         // Do nothing, this work item cannot be aborted
     }
 

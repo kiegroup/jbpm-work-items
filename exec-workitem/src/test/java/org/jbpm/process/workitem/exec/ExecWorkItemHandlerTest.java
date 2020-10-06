@@ -92,7 +92,7 @@ public class ExecWorkItemHandlerTest {
 		TestWorkItemManager manager = new TestWorkItemManager();
 		WorkItemImpl workItem = new WorkItemImpl();
 		workItem.setParameter("Command",
-							  "ping");
+		                      "ping");
 		List<String> argumentList = new ArrayList<>();
 		argumentList.add("127.0.0.1");
 		workItem.setParameter("Arguments",
