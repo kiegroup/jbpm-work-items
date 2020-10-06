@@ -96,9 +96,9 @@ public class ExecWorkItemHandlerTest {
 		List<String> argumentList = new ArrayList<>();
 		argumentList.add("127.0.0.1");
 		workItem.setParameter("Arguments",
-							argumentList);
+							  argumentList);
 		workItem.setParameter("TimeoutInMillis", 
-								"PT5S");
+							  "PT5S");
 		ExecWorkItemHandler handler = new ExecWorkItemHandler();
 		handler.setLogThrownException(true);
 
@@ -107,7 +107,7 @@ public class ExecWorkItemHandlerTest {
 		
 		assertNotNull(manager.getResults());
 		assertEquals(1,
-				manager.getResults().size());
+				     manager.getResults().size());
 		assertTrue(manager.getResults().containsKey(workItem.getId()));
 
 		Map<String, Object> results = ((TestWorkItemManager) manager).getResults(workItem.getId());
@@ -134,6 +134,6 @@ public class ExecWorkItemHandlerTest {
 
         assertNotNull(manager.getResults());
         assertEquals(0,
-                manager.getResults().size());
+                     manager.getResults().size());
     }
 }
