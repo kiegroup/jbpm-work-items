@@ -44,26 +44,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Wid(widfile = "ExecDefinitions.wid", name = "Exec",
-        displayName = "Exec",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.exec.ExecWorkItemHandler()",
-        documentation = "${artifactId}/index.html",
-        category = "${artifactId}",
-        icon = "Exec.png",
-        parameters = {
-                @WidParameter(name = "Command", required = true),
-                @WidParameter(name = "Arguments", runtimeType = "java.util.List"),
-                @WidParameter(name = "TimeoutInMillis", runtimeType = "java.lang.String")
-        },
-        results = {
+     displayName = "Exec",
+     defaultHandler = "mvel: new org.jbpm.process.workitem.exec.ExecWorkItemHandler()",
+     documentation = "${artifactId}/index.html",
+     category = "${artifactId}",
+     icon = "Exec.png",
+     parameters = {
+                   @WidParameter(name = "Command", required = true),
+                   @WidParameter(name = "Arguments", runtimeType = "java.util.List"),
+                   @WidParameter(name = "TimeoutInMillis", runtimeType = "java.lang.String")
+     },
+     results = {
                 @WidResult(name = "Output")
-        },
-        mavenDepends = {
-                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
-        },
-        serviceInfo = @WidService(category = "${name}", description = "${description}",
-                keywords = "execute,comand",
-                action = @WidAction(title = "Execute a command"),
-                authinfo = @WidAuth))
+     },
+     mavenDepends = {
+                     @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
+     },
+     serviceInfo = @WidService(category = "${name}", description = "${description}",
+                               keywords = "execute,comand",
+                               action = @WidAction(title = "Execute a command"),
+                               authinfo = @WidAuth))
 public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(ExecWorkItemHandler.class);
@@ -77,7 +77,7 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
         try {
 
             RequiredParameterValidator.validate(this.getClass(),
-                    workItem);
+                                                workItem);
 
             String command = (String) workItem.getParameter("Command");
             List<String> arguments = (List<String>) workItem.getParameter("Arguments");
@@ -91,10 +91,10 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
             Map<String, Object> results = new HashMap<>();
             results.put(RESULT,
-                    executionResult);
+                        executionResult);
 
             manager.completeWorkItem(workItem.getId(),
-                    results);
+                                     results);
         } catch (Throwable t) {
             handleException(t);
         }
@@ -117,9 +117,8 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
                 return Duration.between(now, now.plus(period).plus(duration)).toMillis();
             }
         } catch (Exception e) {
-            logger.error("Exception occured while parsing provided timeout" + durationStr
-                    + ".Default timeout of" + defaultTimeout
-                    + "ms will be used for command execution");
+            logger.error("Exception occured while parsing provided timeout" + durationStr + ".Default timeout of" +
+                         defaultTimeout + "ms will be used for command execution");
             return defaultTimeout;
         }
     }
@@ -144,12 +143,12 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
             executor.execute(commandLine);
         } catch (IOException e) {
             if (watchdog.killedProcess()) {
-                logger.error("A timeout occured after " + timeout
-                        + "ms while executing a command " + parsedCommandStr.replace(",", ""));
+                logger.error("A timeout occured after " + timeout + "ms while executing a command " +
+                             parsedCommandStr.replace(",", ""));
                 outputStream.reset();
                 outputStream.close();
-                return result = "A timeout occured after " + timeout
-                        + "ms while executing a command " + parsedCommandStr.replace(",", "");
+                return result = "A timeout occured after " + timeout + "ms while executing a command " +
+                                parsedCommandStr.replace(",", "");
             }
         }
 
