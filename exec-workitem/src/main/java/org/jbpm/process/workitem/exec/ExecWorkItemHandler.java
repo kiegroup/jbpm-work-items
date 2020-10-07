@@ -158,11 +158,11 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
                 outputStream.reset();
                 outputStream.close();
                 throw new RuntimeException("A timeout occured after " + timeout + "ms while executing a command " +
-                                           parsedCommandStr.replace(",", ""));
+                                           parsedCommandStr.replace(",", ""),e);
 
             } else {
                 logger.error(parsedCommandStr.replace(",", "") + " command exception failed");
-                throw new RuntimeException(parsedCommandStr.replace(",", "") + " command exception failed");
+                throw new RuntimeException(parsedCommandStr.replace(",", "") + " command exception failed",e);
 
             }
         } 
