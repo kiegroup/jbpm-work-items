@@ -77,7 +77,7 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
         try {
 
             RequiredParameterValidator.validate(this.getClass(),
-                                                workItem);
+                    workItem);
 
             String command = (String) workItem.getParameter("Command");
             List<String> arguments = (List<String>) workItem.getParameter("Arguments");
@@ -91,10 +91,10 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
             Map<String, Object> results = new HashMap<>();
             results.put(RESULT,
-                        executionResult);
+                    executionResult);
 
             manager.completeWorkItem(workItem.getId(),
-                                     results);
+                    results);
         } catch (Throwable t) {
             handleException(t);
         }
@@ -125,7 +125,7 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     protected String executeCommand(String command, List<String> arguments, long timeout) throws IOException {
 
-        String result = null;
+        int executionResult;
         CommandLine commandLine = CommandLine.parse(command);
         if (arguments != null && arguments.size() > 0) {
             commandLine.addArguments(arguments.toArray(new String[0]), true);
@@ -140,18 +140,31 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
         executor.setStreamHandler(streamHandler);
         executor.setWatchdog(watchdog);
         try {
-            executor.execute(commandLine);
-        } catch (IOException e) {
+            executionResult = executor.execute(commandLine);
+            if (executor.isFailure(executionResult)) {
+                logger.error(parsedCommandStr.replace(",", "") + " command exception failed with result code " +
+                             executionResult);
+                outputStream.reset();
+                outputStream.close();
+                return parsedCommandStr.replace(",", "") + " command exception failed with result code " +
+                       executionResult;
+            }
+
+        } catch (Exception e) {
             if (watchdog.killedProcess()) {
                 logger.error("A timeout occured after " + timeout + "ms while executing a command " +
                              parsedCommandStr.replace(",", ""));
                 outputStream.reset();
                 outputStream.close();
-                return result = "A timeout occured after " + timeout + "ms while executing a command " +
-                                parsedCommandStr.replace(",", "");
+
+                return "A timeout occured after " + timeout + "ms while executing a command " +
+                       parsedCommandStr.replace(",", "");
+            } else {
+                logger.error(parsedCommandStr.replace(",", "") + " command exception failed");
+                return parsedCommandStr.replace(",", "") + " command exception failed";
+
             }
         }
-
         return outputStream.toString();
 
     }
