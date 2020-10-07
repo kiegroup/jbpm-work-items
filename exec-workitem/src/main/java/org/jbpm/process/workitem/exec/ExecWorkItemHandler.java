@@ -84,10 +84,10 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
             String commandExecutionTimeout = (String) workItem.getParameter("TimeoutInMillis");
 
             if (commandExecutionTimeout != null) {
-                this.setDefaultTimeout(parsetimeout(commandExecutionTimeout));
+                this.setDefaultTimeout(parseTimeout(commandExecutionTimeout));
             }
 
-            String executionResult = executecommand(command, arguments, defaultTimeout);
+            String executionResult = executeCommand(command, arguments, defaultTimeout);
 
             Map<String, Object> results = new HashMap<>();
             results.put(RESULT,
@@ -100,7 +100,7 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
         }
     }
 
-    protected long parsetimeout(String durationStr) {
+    protected long parseTimeout(String durationStr) {
         try {
             if (durationStr.startsWith("PT")) { // ISO-8601 PTnHnMn.nS
                 return Duration.parse(durationStr).toMillis();
@@ -123,7 +123,7 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
         }
     }
 
-    protected String executecommand(String command, List<String> arguments, long timeout) throws IOException {
+    protected String executeCommand(String command, List<String> arguments, long timeout) throws IOException {
 
         String result = null;
         CommandLine commandLine = CommandLine.parse(command);
