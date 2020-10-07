@@ -140,7 +140,7 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
         executor.setStreamHandler(streamHandler);
         executor.setWatchdog(watchdog);
         try {
-             executor.execute(commandLine);
+            executor.execute(commandLine);
         } catch (ExecuteException e) {
             if (watchdog.killedProcess()) {
                 logger.error("A timeout occured after " + timeout + "ms while executing a command " +
