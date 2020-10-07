@@ -109,7 +109,7 @@ public class ExecWorkItemHandlerTest {
         assertEquals(0,
                      manager.getResults().size());
 
-       assertEquals("[ping, 127.0.0.1]",
+        assertEquals("[ping, 127.0.0.1]",
                      handler.getParsedCommandStr());
 
     }
