@@ -142,15 +142,6 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
         executor.setWatchdog(watchdog);
         try {
             executionResult = executor.execute(commandLine);
-            if (executor.isFailure(executionResult)) {
-                logger.error(parsedCommandStr.replace(",", "") + " command exception failed with result code " +
-                             executionResult);
-                outputStream.reset();
-                outputStream.close();
-                throw new RuntimeException(parsedCommandStr.replace(",", "") + " command exception failed with result code " +
-                                           executionResult);
-            }
-
         } catch (ExecuteException e) {
             if (watchdog.killedProcess()) {
                 logger.error("A timeout occured after " + timeout + "ms while executing a command " +
