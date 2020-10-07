@@ -77,7 +77,7 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
         try {
 
             RequiredParameterValidator.validate(this.getClass(),
-                    workItem);
+                                                workItem);
 
             String command = (String) workItem.getParameter("Command");
             List<String> arguments = (List<String>) workItem.getParameter("Arguments");
