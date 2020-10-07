@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
@@ -91,7 +92,7 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
             Map<String, Object> results = new HashMap<>();
             results.put(RESULT,
-                        executionResult);
+                    executionResult);
 
             manager.completeWorkItem(workItem.getId(),
                                      results);
@@ -146,25 +147,25 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
                              executionResult);
                 outputStream.reset();
                 outputStream.close();
-                return parsedCommandStr.replace(",", "") + " command exception failed with result code " +
-                       executionResult;
+                throw new RuntimeException(parsedCommandStr.replace(",", "") + " command exception failed with result code " +
+                                           executionResult);
             }
 
-        } catch (Exception e) {
+        } catch (ExecuteException e) {
             if (watchdog.killedProcess()) {
                 logger.error("A timeout occured after " + timeout + "ms while executing a command " +
                              parsedCommandStr.replace(",", ""));
                 outputStream.reset();
                 outputStream.close();
+                throw new RuntimeException("A timeout occured after " + timeout + "ms while executing a command " +
+                                           parsedCommandStr.replace(",", ""));
 
-                return "A timeout occured after " + timeout + "ms while executing a command " +
-                       parsedCommandStr.replace(",", "");
             } else {
                 logger.error(parsedCommandStr.replace(",", "") + " command exception failed");
-                return parsedCommandStr.replace(",", "") + " command exception failed";
+                throw new RuntimeException(parsedCommandStr.replace(",", "") + " command exception failed");
 
             }
-        }
+        } 
         return outputStream.toString();
 
     }

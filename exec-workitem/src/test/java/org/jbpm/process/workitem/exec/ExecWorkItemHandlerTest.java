@@ -106,18 +106,11 @@ public class ExecWorkItemHandlerTest {
                                 manager);
 
         assertNotNull(manager.getResults());
-        assertEquals(1,
+        assertEquals(0,
                      manager.getResults().size());
-        assertTrue(manager.getResults().containsKey(workItem.getId()));
 
-        Map<String, Object> results = ((TestWorkItemManager) manager).getResults(workItem.getId());
-        String result = (String) results.get(ExecWorkItemHandler.RESULT);
-
-        assertEquals("[ping, 127.0.0.1]",
+       assertEquals("[ping, 127.0.0.1]",
                      handler.getParsedCommandStr());
-
-        assertNotNull(result);
-        assertTrue(result.contains("A timeout occured"));
 
     }
 
