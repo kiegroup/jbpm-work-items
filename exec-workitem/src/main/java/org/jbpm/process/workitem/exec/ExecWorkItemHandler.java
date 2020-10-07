@@ -126,7 +126,6 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     protected String executeCommand(String command, List<String> arguments, long timeout) throws IOException {
 
-        int executionResult;
         CommandLine commandLine = CommandLine.parse(command);
         if (arguments != null && arguments.size() > 0) {
             commandLine.addArguments(arguments.toArray(new String[0]), true);
@@ -141,7 +140,7 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
         executor.setStreamHandler(streamHandler);
         executor.setWatchdog(watchdog);
         try {
-            executionResult = executor.execute(commandLine);
+             executor.execute(commandLine);
         } catch (ExecuteException e) {
             if (watchdog.killedProcess()) {
                 logger.error("A timeout occured after " + timeout + "ms while executing a command " +
