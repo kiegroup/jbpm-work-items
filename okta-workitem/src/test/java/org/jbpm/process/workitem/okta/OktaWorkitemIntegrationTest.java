@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 public class OktaWorkitemIntegrationTest {
     @Test
     public void testWorkitemValidity() {
-        String repoPath = "file://" + System.getProperty("builddir") +
+        String repoPath = "file:" + System.getProperty("builddir") +
                 "/" + System.getProperty("artifactId") + "-" +
                 System.getProperty("version") + "/";
 
