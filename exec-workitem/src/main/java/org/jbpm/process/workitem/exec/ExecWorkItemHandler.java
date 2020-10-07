@@ -145,8 +145,6 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
             if (watchdog.killedProcess()) {
                 logger.error("A timeout occured after " + timeout + "ms while executing a command " +
                              parsedCommandStr.replace(",", ""));
-                outputStream.reset();
-                outputStream.close();
                 throw new RuntimeException("A timeout occured after " + timeout + "ms while executing a command " +
                                            parsedCommandStr.replace(",", ""),e);
 
