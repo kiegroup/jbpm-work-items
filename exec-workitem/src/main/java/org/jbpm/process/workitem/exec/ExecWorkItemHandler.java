@@ -91,10 +91,10 @@ public class ExecWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
             Map<String, Object> results = new HashMap<>();
             results.put(RESULT,
-                    executionResult);
+                        executionResult);
 
             manager.completeWorkItem(workItem.getId(),
-                    results);
+                                     results);
         } catch (Throwable t) {
             handleException(t);
         }
