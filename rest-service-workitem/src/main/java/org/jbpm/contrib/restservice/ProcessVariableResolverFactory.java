@@ -7,6 +7,8 @@ import org.mvel2.UnresolveablePropertyException;
 import org.mvel2.integration.VariableResolver;
 import org.mvel2.integration.impl.BaseVariableResolverFactory;
 import org.mvel2.integration.impl.SimpleValueResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -21,10 +23,13 @@ import java.util.stream.Collectors;
  */
 public class ProcessVariableResolverFactory extends BaseVariableResolverFactory {
 
+    private static final Logger logger = LoggerFactory.getLogger(ProcessVariableResolverFactory.class);
+
     private final WorkflowProcessInstance processInstance;
 
     public ProcessVariableResolverFactory(WorkflowProcessInstance processInstance) {
         this.processInstance = processInstance;
+        logger.info("Created new ProcessVariableResolverFactory for processInstance {}.", processInstance.getId());
     }
 
     @Override
@@ -44,6 +49,7 @@ public class ProcessVariableResolverFactory extends BaseVariableResolverFactory 
 
     @Override
     public boolean isResolveable(String name) {
+        logger.info("Is variable {} resolvable in the processInstance {}.", name, processInstance.getId());
         Object processInstanceVariable = null;
         try {
             processInstanceVariable = processInstance.getVariable(name);
@@ -51,16 +57,20 @@ public class ProcessVariableResolverFactory extends BaseVariableResolverFactory 
             //workaround for NPE in processInstance.getVariable
         }
         if (processInstanceVariable != null) {
+            logger.info("Variable {} is resolvable in the processInstance {}.", name, processInstance.getId());
             return true;
         } else if (nextFactory != null) {
+            logger.info("Variable {} is NOT resolvable in the processInstance {}, searching in the next factory.", name, processInstance.getId());
             return nextFactory.isResolveable(name);
         } else {
+            logger.info("Variable {} is NOT resolvable in the processInstance {}.", name, processInstance.getId());
             return false;
         }
     }
 
     @Override
     public VariableResolver getVariableResolver(String name) {
+        logger.info("Getting resolver for {} in the processInstance {}.", name, processInstance.getId());
         Object processInstanceVariable = null;
         try {
             processInstanceVariable = processInstance.getVariable(name);
@@ -68,8 +78,10 @@ public class ProcessVariableResolverFactory extends BaseVariableResolverFactory 
             //workaround for NPE in processInstance.getVariable
         }
         if (processInstanceVariable != null) {
+            logger.info("Returning SimpleValueResolver for {} in the processInstance {}.", name, processInstance.getId());
             return new SimpleValueResolver(escape(processInstanceVariable));
         } else if (nextFactory != null) {
+            logger.info("Looking-up for next variable resolver for {}.", name);
             return nextFactory.getVariableResolver(name);
         }
         throw new UnresolveablePropertyException("Unable to resolve variable '" + name + "'");
