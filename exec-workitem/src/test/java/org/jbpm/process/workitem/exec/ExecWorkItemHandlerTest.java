@@ -86,6 +86,34 @@ public class ExecWorkItemHandlerTest {
         assertTrue(result.contains("java version") || result.contains("jdk version"));
     }
 
+    @Test(timeout = 6000)
+    public void testExecCommandWithTimeout() throws Exception {
+
+        TestWorkItemManager manager = new TestWorkItemManager();
+        WorkItemImpl workItem = new WorkItemImpl();
+        workItem.setParameter("Command",
+                              "ping");
+        List<String> argumentList = new ArrayList<>();
+        argumentList.add("127.0.0.1");
+        workItem.setParameter("Arguments",
+                              argumentList);
+        workItem.setParameter("TimeoutInMillis",
+                              "PT5S");
+        ExecWorkItemHandler handler = new ExecWorkItemHandler();
+        handler.setLogThrownException(true);
+
+        handler.executeWorkItem(workItem,
+                                manager);
+
+        assertNotNull(manager.getResults());
+        assertEquals(0,
+                     manager.getResults().size());
+
+        assertEquals("[ping, 127.0.0.1]",
+                     handler.getParsedCommandStr());
+
+    }
+
     @Test
     public void testExecCommandInvalidParam() throws Exception {
         TestWorkItemManager manager = new TestWorkItemManager();
