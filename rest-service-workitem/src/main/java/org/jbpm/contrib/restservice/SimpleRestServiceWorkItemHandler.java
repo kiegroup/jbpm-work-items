@@ -105,6 +105,7 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
                     processInstanceId);
 
             String cancelUrlJsonPointer = ProcessUtils.getStringParameter(workItem, Constant.CANCEL_URL_JSON_POINTER_VARIABLE);
+            String cancelUrlTemplate = ProcessUtils.getStringParameter(workItem, Constant.CANCEL_URL_TEMPLATE_VARIABLE);
             String requestUrl = ProcessUtils.getStringParameter(workItem,"url");
             String requestMethod = ProcessUtils.getStringParameter(workItem,"method");
             String requestTemplate = ProcessUtils.getStringParameter(workItem,"template");
@@ -128,6 +129,7 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
                         requestTemplate,
                         containerId,
                         cancelUrlJsonPointer,
+                        cancelUrlTemplate,
                         requestHeaders);
             } catch (Exception e) {
                 String message = MessageFormat.format("Failed to invoke remote service. ProcessInstanceId {0}.", processInstanceId);
@@ -170,24 +172,16 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
             String requestTemplate,
             String containerId,
             String cancelUrlJsonPointer,
+            String cancelUrlTemplate,
             String requestHeaders) throws IOException {
 
         logger.info("requestTemplate: {}", requestTemplate);
 
+        VariableResolverFactory variableResolverFactory = getVariableResolverFactory(processInstance, containerId);
+
         String requestBodyEvaluated;
         if (requestTemplate != null && !requestTemplate.equals("")) {
             CompiledTemplate compiled = compileTemplate(requestTemplate);
-
-            Map<String, Object> systemVariables = new HashMap<>();
-            systemVariables.put(
-                    "callbackUrl",
-                    getKieHost() + "/services/rest/server/containers/" + containerId + //TODO configurable base path
-                            "/processes/instances/" + processInstance.getId() + "/signal/RESTResponded");
-            systemVariables.put("callbackMethod", "POST");
-
-            VariableResolverFactory variableResolverFactory = getVariableResolverFactoryChain(
-                    systemVariables,
-                    processInstance);
             requestBodyEvaluated = (String) TemplateRuntime
                     .execute(compiled, null, variableResolverFactory);
         } else {
@@ -225,10 +219,18 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
         }
 
         try {
-            JsonNode cancelUrlNode = root.at(cancelUrlJsonPointer);
             String cancelUrl = "";
-            if (!cancelUrlNode.isMissingNode()) {
-                cancelUrl = cancelUrlNode.asText();
+            if (!Strings.isEmpty(cancelUrlTemplate)) {
+                logger.debug("Setting cancel url from template: {}.", cancelUrlTemplate);
+                CompiledTemplate compiled = compileTemplate(cancelUrlTemplate);
+                requestBodyEvaluated = (String) TemplateRuntime
+                        .execute(compiled, null, variableResolverFactory);
+            } else {
+                logger.debug("Setting cancel url from json pointer: {}.", cancelUrlJsonPointer);
+                JsonNode cancelUrlNode = root.at(cancelUrlJsonPointer);
+                if (!cancelUrlNode.isMissingNode()) {
+                    cancelUrl = cancelUrlNode.asText();
+                }
             }
             completeWorkItem(manager, workItemId, serviceInvocationResponse, cancelUrl);
         } catch (Exception e) {
@@ -236,6 +238,19 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
             logger.debug(message);
             throw e;
         }
+    }
+
+    private VariableResolverFactory getVariableResolverFactory(
+            WorkflowProcessInstance processInstance, String containerId) {
+        Map<String, Object> systemVariables = new HashMap<>();
+        systemVariables.put(
+                "callbackUrl",
+                getKieHost() + "/services/rest/server/containers/" + containerId + //TODO configurable base path
+                        "/processes/instances/" + processInstance.getId() + "/signal/RESTResponded");
+        systemVariables.put("callbackMethod", "POST");
+        return getVariableResolverFactoryChain(
+                systemVariables,
+                processInstance);
     }
 
     private VariableResolverFactory getVariableResolverFactoryChain(
