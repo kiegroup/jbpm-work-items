@@ -15,20 +15,18 @@
  */
 package org.jbpm.contrib;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.jbpm.contrib.demoservices.Service;
-import org.jbpm.contrib.mockserver.OneTaskProcess;
-import org.jbpm.contrib.mockserver.RestTaskFailProcess;
 import org.jbpm.contrib.mockserver.WorkItems;
 import org.jbpm.contrib.restservice.Constant;
 import org.jbpm.contrib.restservice.SimpleRestServiceWorkItemHandler;
 import org.jbpm.process.workitem.WorkDefinitionImpl;
 import org.jbpm.process.workitem.WorkItemRepository;
+import org.jbpm.test.JbpmJUnitBaseTestCase;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -40,6 +38,7 @@ import org.kie.api.event.process.ProcessCompletedEvent;
 import org.kie.api.event.process.ProcessEventListener;
 import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.api.event.process.ProcessVariableChangedEvent;
+import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.manager.RuntimeEngine;
 import org.kie.api.runtime.manager.RuntimeManager;
@@ -49,6 +48,8 @@ import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -68,7 +69,7 @@ import static org.junit.Assert.assertNotNull;
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
  * @author Ryszard Kozmik
  */
-public class RestServiceWorkitemIT extends JBPMBase {
+public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
 
     private static int PORT = 8080;
     private static String DEFAULT_HOST = "localhost";
@@ -78,7 +79,11 @@ public class RestServiceWorkitemIT extends JBPMBase {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    protected static KieSession currentKieSession;
+    private static KieSession currentKieSession;
+
+    public static KieSession getCurrentKieSession() {
+        return currentKieSession;
+    }
 
     public RestServiceWorkitemIT() {
         super(true, true);
@@ -86,44 +91,38 @@ public class RestServiceWorkitemIT extends JBPMBase {
 
     @BeforeClass
     public static void mainSetUp() throws Exception {
-        bootUpServices();
     }
 
     @Before
-    public void preTestSetup() {
+    public void preTestSetup() throws Exception {
         System.setProperty(KIE_HOST_SYSTEM_PROPERTY, "localhost:8080");
 
         // Configure jBPM server with all the test processes, workitems and event listeners.
         setupPoolingDataSource();
-        
-        RuntimeManager manager = createRuntimeManager(new OneTaskProcess().getProcess(), new RestTaskFailProcess().getProcess());
+
+        Map<String, ResourceType> resources = new HashMap<>();
+        resources.put("execute-rest.bpmn", ResourceType.BPMN2);
+        resources.put("test-process.bpmn", ResourceType.BPMN2);
+
+        RuntimeManager manager = createRuntimeManager(Strategy.SINGLETON, resources);
+
         RuntimeEngine runtimeEngine = getRuntimeEngine();
         
-        KieSession kieSession = runtimeEngine.getKieSession();
-        kieSession.addEventListener(new RestServiceProcessEventListener());
+        currentKieSession = runtimeEngine.getKieSession();
+        currentKieSession.addEventListener(new RestServiceProcessEventListener());
 
-        WorkItemManager workItemManager = kieSession.getWorkItemManager();
+        WorkItemManager workItemManager = currentKieSession.getWorkItemManager();
         workItemManager.registerWorkItemHandler("SimpleRestService", new SimpleRestServiceWorkItemHandler(manager));
 
-        currentKieSession = kieSession;
+        bootUpServices(currentKieSession);
     }
-    
+
     @After
     public void postTestTeardown() {
-        currentKieSession=null;
+        //TODO stop services
     }
-    
-    // TODO: This is a bit of a hack. It works but such sharing of tested instance through static field is questionable.
-    public static void completeWorkItem( int workItemId, Map<String, Object> result ) {
-        currentKieSession.getWorkItemManager().completeWorkItem(workItemId, result);
-    }
-    
-    // TODO: This is a bit of a hack. It works but such sharing of tested instance through static field is questionable.
-    public static void sendSignalToProcess( long processId, String signalName, Map<String, Object> result ) {
-        currentKieSession.signalEvent(signalName, result, processId);
-    }
-    
-    private static void bootUpServices() throws Exception {
+
+    private static void bootUpServices(KieSession kieSession) throws Exception {
         ContextHandlerCollection contexts = new ContextHandlerCollection();
 
         final Server server = new Server(PORT);
@@ -138,6 +137,7 @@ public class RestServiceWorkitemIT extends JBPMBase {
 
         // JBPM server mock
         ServletContextHandler jbpmMock = new ServletContextHandler(contexts, "/services/rest", ServletContextHandler.SESSIONS);
+//        jbpmMock.setAttribute("kieSession", kieSession);
         ServletHolder jbpmMockServlet = jbpmMock.addServlet(org.glassfish.jersey.servlet.ServletContainer.class, "/*");
         jbpmMockServlet.setInitOrder(0);
         jbpmMockServlet.setInitParameter("jersey.config.server.provider.classnames", WorkItems.class.getCanonicalName());
@@ -145,8 +145,7 @@ public class RestServiceWorkitemIT extends JBPMBase {
     }
 
     @Test (timeout=15000)
-    public void shouldInvokeRemoteServiceAndReceiveCallback() throws InterruptedException, JsonProcessingException {
-
+    public void shouldInvokeRemoteServiceAndReceiveCallback() throws Exception {
         BlockingQueue<ProcessVariableChangedEvent> queue = new ArrayBlockingQueue(1000);
 
         ProcessEventListener processEventListener = new DefaultProcessEventListener() {
@@ -155,31 +154,52 @@ public class RestServiceWorkitemIT extends JBPMBase {
                 logger.info("Process: {}, variable: {}, changed to: {}.",
                         event.getProcessInstance().getProcessName(), variableId,
                         event.getNewValue());
-                if ("resultA".equals(variableId)) {
+                String[] enqueueEvents = new String[]{
+                        "preBuildResult",
+                        "buildResult",
+                        "completionResult"
+                };
+                if (Arrays.asList(enqueueEvents).contains(variableId)) {
                     queue.add(event);
                 }
             }
         };
 
-        KieSession kieSession = getRuntimeEngine().getKieSession();
-        kieSession.addEventListener(processEventListener);
+//        KieSession kieSession = getRuntimeEngine().getKieSession();
+        currentKieSession.addEventListener(processEventListener);
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("containerId", "mock");
-        Map<String, Object> input = new HashMap<>();
-        input.put("username", "Matej");
-        parameters.put("input", input);
+        parameters.put("serviceBaseUrl", "http://localhost:8080/demo-service/service");
+        Map<String, Object> buildConfiguration = new HashMap<>();
+        buildConfiguration.put("id", "1");
+        buildConfiguration.put("scmRepoURL", "https://github.com/kiegroup/jbpm-work-items.git");
+        buildConfiguration.put("scmRevision", "master");
+        buildConfiguration.put("preBuildSyncEnabled", "true");
+        buildConfiguration.put("buildScript", "true");
+        parameters.put("buildConfiguration", buildConfiguration);
 
         //when
-        kieSession.startProcess("org.jbpm.oneTaskProcess", parameters);
+        currentKieSession.startProcess("testProcess", Collections.singletonMap("in_initData", parameters));
 
         //then
-        Map<String, Object> callbackResult  = (Map<String, Object>) queue.take().getNewValue();
-        Map<String, Object> content = (Map<String, Object>) callbackResult.get("content");
-        Map<String, Object> person = (Map<String, Object>) content.get("person");
-        Assert.assertEquals("Matej", person.get("name"));
+        Map<String, Object> preBuildCallbackResult  = (Map<String, Object>) queue.take().getNewValue();
+        System.out.println("preBuildCallbackResult: " + preBuildCallbackResult);
+        Map<String, Object> preBuildResponse = (Map<String, Object>) preBuildCallbackResult.get("response");
+        Assert.assertEquals("new-scm-tag", ((Map<String, Object>)preBuildResponse.get("scm")).get("revision"));
+        Map<String, Object> initialResponse = (Map<String, Object>) preBuildCallbackResult.get("initialResponse");
+        Assert.assertTrue(initialResponse.get("cancelUrl").toString().startsWith("http://localhost:8080/demo-service/service/cancel/"));
 
-        kieSession.removeEventListener(processEventListener);
+        Map<String, Object> buildCallbackResult  = (Map<String, Object>) queue.take().getNewValue();
+        System.out.println("buildCallbackResult: " + buildCallbackResult);
+        Map<String, Object> buildResponse = (Map<String, Object>) preBuildCallbackResult.get("response");
+        Assert.assertEquals("SUCCESS", buildResponse.get("status"));
+
+        Map<String, Object> completionResult  = (Map<String, Object>) queue.take().getNewValue();
+        System.out.println("completionResult: " + completionResult);
+        Assert.assertEquals("SUCCESS", completionResult.get("status"));
+
+        currentKieSession.removeEventListener(processEventListener);
     }
 
     @Test @Ignore
@@ -218,7 +238,7 @@ public class RestServiceWorkitemIT extends JBPMBase {
         });
         nodeACompleted.tryAcquire(8, TimeUnit.SECONDS);
         kieSession.removeEventListener(processEventListener);
-        logger.info("Cancelled A result: {}", resultA.get());
+        logger.info("Cancelled result: {}", resultA.get());
         Assert.assertEquals("{canceled=true}", resultA.get());
     }
 
@@ -291,19 +311,19 @@ public class RestServiceWorkitemIT extends JBPMBase {
         disposeRuntimeManager();
     }
 
-    @Test
+    @Test @Ignore
     public void testServiceInvocationFails() throws InterruptedException {
         BlockingQueue<ProcessVariableChangedEvent> queue = new ArrayBlockingQueue(1000);
 
         ProcessEventListener processEventListener = new DefaultProcessEventListener() {
             public void afterVariableChanged(ProcessVariableChangedEvent event) {
-                String variableId = event.getVariableId();
-                logger.info("Process: {}, variable: {}, changed to: {}.",
-                        event.getProcessInstance().getProcessName(), variableId,
-                        event.getNewValue());
-                if (RestTaskFailProcess.EXCEPTIONAL_PATH_KEY.equals(variableId)) {
-                    queue.add(event);
-                }
+//                String variableId = event.getVariableId();
+//                logger.info("Process: {}, variable: {}, changed to: {}.",
+//                        event.getProcessInstance().getProcessName(), variableId,
+//                        event.getNewValue());
+//                if (RestTaskFailProcess.EXCEPTIONAL_PATH_KEY.equals(variableId)) {
+//                    queue.add(event);
+//                }
             }
         };
 

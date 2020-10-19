@@ -15,31 +15,8 @@
  */
 package org.jbpm.contrib.demoservices;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
@@ -55,9 +32,35 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.hibernate.cfg.NotYetImplementedException;
+import org.jbpm.contrib.demoservices.dto.BuildRequest;
+import org.jbpm.contrib.demoservices.dto.Callback;
+import org.jbpm.contrib.demoservices.dto.CompleteRequest;
+import org.jbpm.contrib.demoservices.dto.PreBuildRequest;
+import org.jbpm.contrib.demoservices.dto.Scm;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
@@ -84,23 +87,24 @@ public class Service {
     }
 
     @POST
-    @Path("/A")
-    public Response actionA(
-            RequestA request,
+    @Path("/prebuild")
+    public Response prebuild(
+            PreBuildRequest request,
             @QueryParam("callbackDelay") @DefaultValue("3") int callbackDelay,
             @QueryParam("cancelDelay") @DefaultValue("1") String cancelDelay)
             throws JsonProcessingException {
-        System.out.println(">>> Action A requested.");
-        System.out.println(">>> request object: " + objectMapper.writeValueAsString(request));
-        String callbackUrl = request.getCallbackUrl();
+        System.out.println("PreBuild requested.");
+        System.out.println("Request object: " + objectMapper.writeValueAsString(request));
+        Callback callback = request.getCallback();
 
-        Map<String, String> person = new HashMap<>();
-        person.put("name", request.getName());
-
+        Scm scm = new Scm();
+        scm.setUrl(request.getScm().getUrl());
+        scm.setRevision("new-scm-tag");
         Map<String, Object> result = new HashMap<>();
-        result.put("person", person);
+        result.put("scm", scm);
+        result.put("status", "SUCCESS");
 
-        int jobId = scheduleCallback(callbackUrl, request.getCallbackMethod(),request.getCallbackParamsAsNameValuePairList(),callbackDelay, result);
+        int jobId = scheduleCallback(callback.getUrl(), callback.getMethod(),null, callbackDelay, result);
 
         String cancelUrl = "http://localhost:8080/demo-service/service/cancel/" + jobId;
         cancelUrl += "?delay=" + cancelDelay;
@@ -111,25 +115,33 @@ public class Service {
     }
 
     @POST
-    @Path("/B")
-    public Response actionB(
-            RequestB request,
+    @Path("/build")
+    public Response build(
+            BuildRequest request,
             @QueryParam("callbackDelay") @DefaultValue("5") int callbackDelay)
             throws JsonProcessingException {
-        System.out.println(">>> Action B requested.");
-        System.out.println(">>> request object: " + objectMapper.writeValueAsString(request));
-
-        String callbackUrl = request.getCallbackUrl();
+        System.out.println("Build requested.");
+        System.out.println("Request object: " + objectMapper.writeValueAsString(request));
+        Callback callback = request.getCallback();
 
         Map<String, Object> result = new HashMap<>();
-        result.put("fullName", request.getNameFromA() + " " + request.getSurname());
+        result.put("status", "SUCCESS");
 
-        int jobId = scheduleCallback(callbackUrl,request.getCallbackMethod(),null, callbackDelay, result);
+        int jobId = scheduleCallback(callback.getUrl(), callback.getMethod(),null, callbackDelay, result);
 
         String cancelUrl = "http://localhost:8080/demo-service/service/cancel/" + jobId;
         Map<String, Object> response = new HashMap<>();
         response.put("cancelUrl", cancelUrl);
 
+        return Response.status(200).entity(response).build();
+    }
+
+    @POST
+    @Path("/complete/{buildConfigId}")
+    public Response complete(CompleteRequest completeRequest, @PathParam("buildConfigId") String buildConfigId) throws JsonProcessingException {
+        System.out.println("Complete requested.");
+        System.out.println("Request object: " + objectMapper.writeValueAsString(completeRequest));
+        Map<String, Object> response = new HashMap<>();
         return Response.status(200).entity(response).build();
     }
 
@@ -150,7 +162,7 @@ public class Service {
         return Response.status(200).entity(null).build();
     }
 
-    private int scheduleCallback(String callbackUrl, String callbackMethod, List<NameValuePair> callbackParams, int delay, Map<String, Object> result) {
+    private int scheduleCallback(String callbackUrl, String callbackMethod, List<NameValuePair> callbackParams, int delay, Object result) {
         ScheduledFuture<?> future = executorService.schedule(() -> executeCallback(callbackUrl, callbackMethod, callbackParams, result), delay, TimeUnit.SECONDS);
         int id = sequence.getAndIncrement();
         runningJobs.put(id, new RunningJob(future, callbackUrl));
@@ -167,7 +179,7 @@ public class Service {
         }
     }
 
-    private void executeCallback(String callbackUrl,String callbackMethod, List<NameValuePair> callbackParams, Map<String, Object> result) {
+    private void executeCallback(String callbackUrl,String callbackMethod, List<NameValuePair> callbackParams, Object result) {
 
         RequestConfig config = RequestConfig.custom()
                 .setSocketTimeout(5000)
@@ -175,7 +187,6 @@ public class Service {
                 .setConnectionRequestTimeout(5000)
                 .setAuthenticationEnabled(true)
                 .build();
-
 
         try {
 
@@ -210,10 +221,7 @@ public class Service {
 
             System.out.println(">>> Calling back to: " + requestUri);
 
-            Map<String, Map<String, Object>> wrappedResult = new HashMap<>();
-            wrappedResult.put("content", result);
-
-            String jsonContent = objectMapper.writeValueAsString(wrappedResult);
+            String jsonContent = objectMapper.writeValueAsString(result);
 
             System.out.println(">>> Result data:" + jsonContent);
 

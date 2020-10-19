@@ -15,8 +15,10 @@
  */
 package org.jbpm.contrib.mockserver;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.jbpm.contrib.RestServiceWorkitemIT;
+import org.kie.api.runtime.KieSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -26,10 +28,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.jbpm.contrib.RestServiceWorkitemIT;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
@@ -50,13 +50,12 @@ public class WorkItems {
             Map<String, Object> result)
     {
         logger.info("Completing workitem id: {}, result: {}.", taskId, result);
-        RestServiceWorkitemIT.completeWorkItem(taskId, result);
+        getKieSession().getWorkItemManager().completeWorkItem(taskId, result);
 
         Map<String, Object> response = new HashMap<>();
         return Response.status(200).entity(response).build();
-
     }
-    
+
     @POST
     @Path("{instanceId}/signal/{signalName}")
     public Response signalProcess(
@@ -65,11 +64,12 @@ public class WorkItems {
             Map<String, Object> result)
     {
         logger.info("Sending {} signal to process id: {}, result: {}.", signalName, instanceId, result);
-        RestServiceWorkitemIT.sendSignalToProcess(instanceId, signalName, result);
-
-        Map<String, Object> response = new HashMap<>();
-        return Response.status(200).entity(response).build();
+        getKieSession().signalEvent(signalName, result, instanceId);
+        return Response.status(200).entity(result).build();
 
     }
 
+    private KieSession getKieSession() {
+        return RestServiceWorkitemIT.getCurrentKieSession();
+    }
 }
