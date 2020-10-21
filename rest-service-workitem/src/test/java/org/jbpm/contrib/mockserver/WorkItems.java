@@ -15,17 +15,21 @@
  */
 package org.jbpm.contrib.mockserver;
 
-import org.jbpm.contrib.RestServiceWorkitemIT;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.manager.RuntimeEngine;
+import org.kie.api.runtime.manager.RuntimeManager;
+import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.HashMap;
@@ -42,6 +46,9 @@ public class WorkItems {
 
     private final Logger logger = LoggerFactory.getLogger(WorkItems.class);
 
+    @Context
+    ServletContext servletContext;
+
     @PUT
     @Path("{instanceId}/workitems/{id}/completed")
     public Response complete(
@@ -50,7 +57,7 @@ public class WorkItems {
             Map<String, Object> result)
     {
         logger.info("Completing workitem id: {}, result: {}.", taskId, result);
-        getKieSession().getWorkItemManager().completeWorkItem(taskId, result);
+        getKieSession(instanceId).getWorkItemManager().completeWorkItem(taskId, result);
 
         Map<String, Object> response = new HashMap<>();
         return Response.status(200).entity(response).build();
@@ -64,12 +71,17 @@ public class WorkItems {
             Map<String, Object> result)
     {
         logger.info("Sending {} signal to process id: {}, result: {}.", signalName, instanceId, result);
-        getKieSession().signalEvent(signalName, result, instanceId);
+        KieSession kieSession = getKieSession(instanceId);
+        kieSession.signalEvent(signalName, result);
+
         return Response.status(200).entity(result).build();
-
     }
 
-    private KieSession getKieSession() {
-        return RestServiceWorkitemIT.getCurrentKieSession();
+    private KieSession getKieSession(long processInstanceId) {
+        RuntimeManager manager = (RuntimeManager) servletContext.getAttribute("runtimeManager");
+        ProcessInstanceIdContext processInstanceContext = ProcessInstanceIdContext.get(processInstanceId);
+        RuntimeEngine runtimeEngine = manager.getRuntimeEngine(processInstanceContext);
+        return runtimeEngine.getKieSession();
     }
+
 }
