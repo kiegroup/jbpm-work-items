@@ -24,8 +24,6 @@ import org.jbpm.contrib.demoservices.Service;
 import org.jbpm.contrib.mockserver.WorkItems;
 import org.jbpm.contrib.restservice.Constant;
 import org.jbpm.contrib.restservice.SimpleRestServiceWorkItemHandler;
-import org.jbpm.process.workitem.WorkDefinitionImpl;
-import org.jbpm.process.workitem.WorkItemRepository;
 import org.jbpm.test.JbpmJUnitBaseTestCase;
 import org.junit.After;
 import org.junit.Assert;
@@ -41,10 +39,7 @@ import org.kie.api.event.process.ProcessVariableChangedEvent;
 import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.manager.RuntimeEngine;
-import org.kie.api.runtime.manager.RuntimeManager;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkItemManager;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,8 +56,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.jbpm.contrib.restservice.Constant.KIE_HOST_SYSTEM_PROPERTY;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * 
@@ -78,12 +71,6 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private ObjectMapper objectMapper = new ObjectMapper();
-
-    private static KieSession currentKieSession;
-
-    public static KieSession getCurrentKieSession() {
-        return currentKieSession;
-    }
 
     public RestServiceWorkitemIT() {
         super(true, true);
@@ -104,17 +91,11 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
         resources.put("execute-rest.bpmn", ResourceType.BPMN2);
         resources.put("test-process.bpmn", ResourceType.BPMN2);
 
-        RuntimeManager manager = createRuntimeManager(Strategy.SINGLETON, resources);
+        manager = createRuntimeManager(Strategy.PROCESS_INSTANCE, resources);
+        customProcessListeners.add(new RestServiceProcessEventListener());
+        customHandlers.put("SimpleRestService", new SimpleRestServiceWorkItemHandler(manager));
 
-        RuntimeEngine runtimeEngine = getRuntimeEngine();
-        
-        currentKieSession = runtimeEngine.getKieSession();
-        currentKieSession.addEventListener(new RestServiceProcessEventListener());
-
-        WorkItemManager workItemManager = currentKieSession.getWorkItemManager();
-        workItemManager.registerWorkItemHandler("SimpleRestService", new SimpleRestServiceWorkItemHandler(manager));
-
-        bootUpServices(currentKieSession);
+        bootUpServices();
     }
 
     @After
@@ -122,7 +103,7 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
         //TODO stop services
     }
 
-    private static void bootUpServices(KieSession kieSession) throws Exception {
+    private void bootUpServices() throws Exception {
         ContextHandlerCollection contexts = new ContextHandlerCollection();
 
         final Server server = new Server(PORT);
@@ -137,7 +118,7 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
 
         // JBPM server mock
         ServletContextHandler jbpmMock = new ServletContextHandler(contexts, "/services/rest", ServletContextHandler.SESSIONS);
-//        jbpmMock.setAttribute("kieSession", kieSession);
+        jbpmMock.setAttribute("runtimeManager", manager);
         ServletHolder jbpmMockServlet = jbpmMock.addServlet(org.glassfish.jersey.servlet.ServletContainer.class, "/*");
         jbpmMockServlet.setInitOrder(0);
         jbpmMockServlet.setInitParameter("jersey.config.server.provider.classnames", WorkItems.class.getCanonicalName());
@@ -146,8 +127,7 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
 
     @Test (timeout=15000)
     public void shouldInvokeRemoteServiceAndReceiveCallback() throws Exception {
-        BlockingQueue<ProcessVariableChangedEvent> queue = new ArrayBlockingQueue(1000);
-
+        BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
         ProcessEventListener processEventListener = new DefaultProcessEventListener() {
             public void afterVariableChanged(ProcessVariableChangedEvent event) {
                 String variableId = event.getVariableId();
@@ -160,13 +140,14 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
                         "completionResult"
                 };
                 if (Arrays.asList(enqueueEvents).contains(variableId)) {
-                    queue.add(event);
+                    variableChangedQueue.add(event);
                 }
             }
         };
+        customProcessListeners.add(processEventListener);
 
-//        KieSession kieSession = getRuntimeEngine().getKieSession();
-        currentKieSession.addEventListener(processEventListener);
+        RuntimeEngine runtimeEngine = getRuntimeEngine();
+        KieSession kieSession = runtimeEngine.getKieSession();
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("containerId", "mock");
@@ -180,26 +161,30 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
         parameters.put("buildConfiguration", buildConfiguration);
 
         //when
-        currentKieSession.startProcess("testProcess", Collections.singletonMap("in_initData", parameters));
+        ProcessInstance processInstance = kieSession.startProcess(
+                "testProcess",
+                Collections.singletonMap("in_initData", parameters));
+
+        manager.disposeRuntimeEngine(runtimeEngine);
 
         //then
-        Map<String, Object> preBuildCallbackResult  = (Map<String, Object>) queue.take().getNewValue();
+        Map<String, Object> preBuildCallbackResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
         System.out.println("preBuildCallbackResult: " + preBuildCallbackResult);
         Map<String, Object> preBuildResponse = (Map<String, Object>) preBuildCallbackResult.get("response");
         Assert.assertEquals("new-scm-tag", ((Map<String, Object>)preBuildResponse.get("scm")).get("revision"));
         Map<String, Object> initialResponse = (Map<String, Object>) preBuildCallbackResult.get("initialResponse");
         Assert.assertTrue(initialResponse.get("cancelUrl").toString().startsWith("http://localhost:8080/demo-service/service/cancel/"));
 
-        Map<String, Object> buildCallbackResult  = (Map<String, Object>) queue.take().getNewValue();
+        Map<String, Object> buildCallbackResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
         System.out.println("buildCallbackResult: " + buildCallbackResult);
         Map<String, Object> buildResponse = (Map<String, Object>) preBuildCallbackResult.get("response");
         Assert.assertEquals("SUCCESS", buildResponse.get("status"));
 
-        Map<String, Object> completionResult  = (Map<String, Object>) queue.take().getNewValue();
+        Map<String, Object> completionResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
         System.out.println("completionResult: " + completionResult);
         Assert.assertEquals("SUCCESS", completionResult.get("status"));
 
-        currentKieSession.removeEventListener(processEventListener);
+        customProcessListeners.remove(processEventListener);
     }
 
     @Test @Ignore
@@ -311,175 +296,9 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
         disposeRuntimeManager();
     }
 
-    @Test @Ignore
-    public void testServiceInvocationFails() throws InterruptedException {
-        BlockingQueue<ProcessVariableChangedEvent> queue = new ArrayBlockingQueue(1000);
-
-        ProcessEventListener processEventListener = new DefaultProcessEventListener() {
-            public void afterVariableChanged(ProcessVariableChangedEvent event) {
-//                String variableId = event.getVariableId();
-//                logger.info("Process: {}, variable: {}, changed to: {}.",
-//                        event.getProcessInstance().getProcessName(), variableId,
-//                        event.getNewValue());
-//                if (RestTaskFailProcess.EXCEPTIONAL_PATH_KEY.equals(variableId)) {
-//                    queue.add(event);
-//                }
-            }
-        };
-
-        KieSession kieSession = getRuntimeEngine().getKieSession();
-        kieSession.addEventListener(processEventListener);
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("containerId", "mock");
-        Map<String, Object> input = new HashMap<>();
-        input.put("username", "Matej");
-        parameters.put("input", input);
-
-        //when
-        kieSession.startProcess("org.jbpm.restTaskFailProcess", parameters);
-
-        //then
-        Boolean exceptionalPath  = (Boolean) queue.take().getNewValue();
-        Assert.assertEquals(true, exceptionalPath);
-
-        kieSession.removeEventListener(processEventListener);
-    }
-
-    @Test @Ignore
-    public void processFlowTest() throws InterruptedException {
-        KieSession kieSession = getRuntimeEngine().getKieSession();
-
-        final Semaphore nodeACompleted = new Semaphore(0);
-        final AtomicReference<Boolean> serviceASuccessCompletion = new AtomicReference<>();
-        final Semaphore nodeBCompleted = new Semaphore(0);
-        final AtomicReference<String> resultB = new AtomicReference<>();
-
-        ProcessEventListener processEventListener = new DefaultProcessEventListener() {
-            public void afterVariableChanged(ProcessVariableChangedEvent event) {
-                logger.info("Process variable: {}, changed to: {}.", event.getVariableId(), event.getNewValue());
-                if (event.getVariableId().equals("serviceA-successCompletion")) {
-                    serviceASuccessCompletion.set((Boolean) event.getNewValue());
-                    nodeACompleted.release();
-                }
-                if (event.getVariableId().equals("resultB")) {
-                    resultB.set(event.getNewValue().toString());
-                }
-                if (event.getVariableId().equals("serviceB-successCompletion")) {
-                    nodeBCompleted.release();
-                }
-            }
-        };
-        kieSession.addEventListener(processEventListener);
-
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("containerId", "mock");
-        WorkflowProcessInstance processInstance = (WorkflowProcessInstance) kieSession.startProcess("org.jbpm.ServiceFlowTest", parameters);
-
-        boolean completed = nodeACompleted.tryAcquire(5, TimeUnit.SECONDS);
-        if (!completed) {
-            Assert.fail("Failed to complete the process.");
-        }
-        Assert.assertTrue(serviceASuccessCompletion.get());
-
-        nodeBCompleted.tryAcquire(5, TimeUnit.SECONDS);
-
-        Assert.assertEquals("{fullName=Matej Lazar}", resultB.get());
-
-        kieSession.removeEventListener(processEventListener);
-    }
-
-    @Test @Ignore
-    public void processFlowCancelOnFailureTest() throws InterruptedException {
-        KieSession kieSession = getRuntimeEngine().getKieSession();
-
-        final Semaphore nodeACompleted = new Semaphore(0);
-        final AtomicReference<Boolean> serviceASuccessCompletion = new AtomicReference<>();
-        final Semaphore nodeBCompleted = new Semaphore(0);
-        final AtomicReference<String> resultB = new AtomicReference<>();
-
-        ProcessEventListener processEventListener = new DefaultProcessEventListener() {
-            public void afterVariableChanged(ProcessVariableChangedEvent event) {
-                logger.info("Process variable: {}, changed to: {}.", event.getVariableId(), event.getNewValue());
-                if (event.getVariableId().equals("serviceA-successCompletion")) {
-                    serviceASuccessCompletion.set((Boolean) event.getNewValue());
-                    nodeACompleted.release();
-                }
-                if (event.getVariableId().equals("resultB")) {
-                    resultB.set(event.getNewValue().toString());
-                }
-                if (event.getVariableId().equals("serviceB-successCompletion")) {
-                    nodeBCompleted.release();
-                }
-            }
-        };
-        kieSession.addEventListener(processEventListener);
-
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("containerId", "mock");
-        WorkflowProcessInstance processInstance = (WorkflowProcessInstance) kieSession.startProcess("org.jbpm.ServiceFlowFailingServiceTest", parameters);
-
-        boolean completed = nodeACompleted.tryAcquire(5, TimeUnit.SECONDS);
-        if (!completed) {
-            Assert.fail("Failed to complete the process.");
-        }
-        Assert.assertFalse(serviceASuccessCompletion.get());
-
-        nodeBCompleted.tryAcquire(5, TimeUnit.SECONDS);
-
-        Assert.assertEquals(null, resultB.get());
-
-        kieSession.removeEventListener(processEventListener);
-    }
-
-    @Test @Ignore
-    public void processFlowMustRunAfterTest() throws InterruptedException {
-        KieSession kieSession = getRuntimeEngine().getKieSession();
-
-        final Semaphore nodeACompleted = new Semaphore(0);
-        final AtomicReference<Boolean> serviceASuccessCompletion = new AtomicReference<>();
-        final Semaphore nodeBCompleted = new Semaphore(0);
-        final AtomicReference<String> resultTimeout = new AtomicReference<>();
-        final AtomicReference<String> resultB = new AtomicReference<>();
-
-        ProcessEventListener processEventListener = new DefaultProcessEventListener() {
-            public void afterVariableChanged(ProcessVariableChangedEvent event) {
-                logger.info("Process variable: {}, changed to: {}.", event.getVariableId(), event.getNewValue());
-                if (event.getVariableId().equals("serviceA-successCompletion")) {
-                    serviceASuccessCompletion.set((Boolean) event.getNewValue());
-                    nodeACompleted.release();
-                }
-                if (event.getVariableId().equals("resultTimeout")) {
-                    resultTimeout.set((String) event.getNewValue());
-                }
-                if (event.getVariableId().equals("resultB")) {
-                    resultB.set(event.getNewValue().toString());
-                }
-                if (event.getVariableId().equals("serviceB-successCompletion")) {
-                    nodeBCompleted.release();
-                }
-            }
-        };
-        kieSession.addEventListener(processEventListener);
-
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("containerId", "mock");
-        WorkflowProcessInstance processInstance = (WorkflowProcessInstance) kieSession.startProcess("org.jbpm.ServiceFlowMustRunAfterFailingServiceTest", parameters);
-
-        boolean completed = nodeACompleted.tryAcquire(5, TimeUnit.SECONDS);
-        if (!completed) {
-            Assert.fail("Failed to complete the process.");
-        }
-        Assert.assertTrue(serviceASuccessCompletion.get());
-
-        nodeBCompleted.tryAcquire(5, TimeUnit.SECONDS);
-
-        Assert.assertEquals("{fullName=Matej Lazar}", resultB.get());
-        Assert.assertEquals("{\"remote-cancel-failed\":true}", resultTimeout.get());
-
-        kieSession.removeEventListener(processEventListener);
-    }
-    
+    /**
+     * Standalone test for the Workitem process only (execute-rest)
+     */
     @Test @Ignore
     public void testWrappedWorkitem() throws InterruptedException {
         
@@ -528,18 +347,4 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
         
     }
 
-    @Test @Ignore
-    public void testWorkitemValidity() {
-
-        String repoPath = "file://" + System.getProperty("builddir") +
-                "/" + System.getProperty("artifactId") + "-" +
-                System.getProperty("version") + "/";
-
-        Map<String, WorkDefinitionImpl> repoResults = new WorkItemRepository().getWorkDefinitions(repoPath,
-                                                                                                  null,
-                                                                                                  System.getProperty("artifactId"));
-        assertNotNull(repoResults);
-        assertEquals(1,
-                     repoResults.size());
-    }
 }
