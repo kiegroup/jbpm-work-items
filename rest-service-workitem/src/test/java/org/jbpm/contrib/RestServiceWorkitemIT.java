@@ -15,15 +15,20 @@
  */
 package org.jbpm.contrib;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.jbpm.contrib.demoservices.Service;
+import org.jbpm.contrib.demoservices.dto.Callback;
+import org.jbpm.contrib.demoservices.dto.PreBuildRequest;
+import org.jbpm.contrib.demoservices.dto.Scm;
 import org.jbpm.contrib.mockserver.WorkItems;
 import org.jbpm.contrib.restservice.Constant;
 import org.jbpm.contrib.restservice.SimpleRestServiceWorkItemHandler;
+import org.jbpm.contrib.restservice.util.Maps;
 import org.jbpm.test.JbpmJUnitBaseTestCase;
 import org.junit.After;
 import org.junit.Assert;
@@ -40,6 +45,7 @@ import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.manager.RuntimeEngine;
 import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -149,35 +155,24 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
         RuntimeEngine runtimeEngine = getRuntimeEngine();
         KieSession kieSession = runtimeEngine.getKieSession();
 
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("containerId", "mock");
-        parameters.put("serviceBaseUrl", "http://localhost:8080/demo-service/service");
-        Map<String, Object> buildConfiguration = new HashMap<>();
-        buildConfiguration.put("id", "1");
-        buildConfiguration.put("scmRepoURL", "https://github.com/kiegroup/jbpm-work-items.git");
-        buildConfiguration.put("scmRevision", "master");
-        buildConfiguration.put("preBuildSyncEnabled", "true");
-        buildConfiguration.put("buildScript", "true");
-        parameters.put("buildConfiguration", buildConfiguration);
-
         //when
         ProcessInstance processInstance = kieSession.startProcess(
                 "testProcess",
-                Collections.singletonMap("in_initData", parameters));
+                Collections.singletonMap("in_initData", getProcessParameters(1, 30)));
 
         manager.disposeRuntimeEngine(runtimeEngine);
 
         //then
         Map<String, Object> preBuildCallbackResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
         System.out.println("preBuildCallbackResult: " + preBuildCallbackResult);
-        Map<String, Object> preBuildResponse = (Map<String, Object>) preBuildCallbackResult.get("response");
-        Assert.assertEquals("new-scm-tag", ((Map<String, Object>)preBuildResponse.get("scm")).get("revision"));
-        Map<String, Object> initialResponse = (Map<String, Object>) preBuildCallbackResult.get("initialResponse");
+        Map<String, Object> preBuildResponse = Maps.getStringObjectMap(preBuildCallbackResult, "response");
+        Assert.assertEquals("new-scm-tag", Maps.getStringObjectMap(preBuildResponse, "scm").get("revision"));
+        Map<String, Object> initialResponse = Maps.getStringObjectMap(preBuildCallbackResult, "initialResponse");
         Assert.assertTrue(initialResponse.get("cancelUrl").toString().startsWith("http://localhost:8080/demo-service/service/cancel/"));
 
         Map<String, Object> buildCallbackResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
         System.out.println("buildCallbackResult: " + buildCallbackResult);
-        Map<String, Object> buildResponse = (Map<String, Object>) preBuildCallbackResult.get("response");
+        Map<String, Object> buildResponse = Maps.getStringObjectMap(preBuildCallbackResult, "response");
         Assert.assertEquals("SUCCESS", buildResponse.get("status"));
 
         Map<String, Object> completionResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
@@ -187,83 +182,95 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
         customProcessListeners.remove(processEventListener);
     }
 
-    @Test @Ignore
+    @Ignore
+    @Test (timeout=15000)
     public void testCancel() throws InterruptedException {
-        KieSession kieSession = getRuntimeEngine().getKieSession();
-
-        final Semaphore nodeAActive = new Semaphore(0);
-        final Semaphore nodeACompleted = new Semaphore(0);
-        final AtomicReference<String> resultA = new AtomicReference<>();
-
+        BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
         ProcessEventListener processEventListener = new DefaultProcessEventListener() {
             public void afterVariableChanged(ProcessVariableChangedEvent event) {
-                logger.info("Variable changed {} = {}.", event.getVariableId(), event.getNewValue());
-                if (event.getVariableId().equals("serviceA-cancelUrl")) {
-                    nodeAActive.release();
-                }
-                if (event.getVariableId().equals("resultA")) {
-                    resultA.set(event.getNewValue().toString());
-                    nodeACompleted.release();
+                String variableId = event.getVariableId();
+                logger.info("Process: {}, variable: {}, changed to: {}.",
+                        event.getProcessInstance().getProcessName(), variableId,
+                        event.getNewValue());
+
+                    String[] enqueueEvents = new String[]{
+                        "restResponse"
+                };
+                if (Arrays.asList(enqueueEvents).contains(variableId)) {
+                    variableChangedQueue.add(event);
                 }
             }
         };
-        kieSession.addEventListener(processEventListener);
+        customProcessListeners.add(processEventListener);
 
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("containerId", "mock");
-        ProcessInstance processInstance = (ProcessInstance) kieSession.startProcess("service-orchestration-test", parameters);
+        RuntimeEngine runtimeEngine = getRuntimeEngine();
+        KieSession kieSession = runtimeEngine.getKieSession();
 
-        //wait for nodeA active
-        nodeAActive.acquire();
+        //when
+        ProcessInstance processInstance = kieSession.startProcess(
+                "testProcess",
+                Collections.singletonMap("in_initData", getProcessParameters(10, 30)));
+        manager.disposeRuntimeEngine(runtimeEngine);
 
-        final String pid = Long.toString(processInstance.getId());
-        executor.execute(() -> {
-            logger.info("Signaling cancel for pid: {}.", pid);
-            kieSession.signalEvent(Constant.CANCEL_SIGNAL_TYPE, pid);
-        });
-        nodeACompleted.tryAcquire(8, TimeUnit.SECONDS);
-        kieSession.removeEventListener(processEventListener);
-        logger.info("Cancelled result: {}", resultA.get());
-        Assert.assertEquals("{canceled=true}", resultA.get());
+        //then wait for first service to start
+        variableChangedQueue.take().getNewValue();
+        RuntimeEngine runtimeEngineCancel = getRuntimeEngine(processInstance.getId());
+        runtimeEngineCancel.getKieSession().signalEvent(Constant.CANCEL_SIGNAL_TYPE, null);
+        manager.disposeRuntimeEngine(runtimeEngineCancel);
+
+        //TODO verify result
+
+        customProcessListeners.remove(processEventListener);
     }
 
+    /**
+     * Prebuild service time-out and cancel is invoked on it. Cancel completes successfully.
+     */
     @Test @Ignore
-    public void testTimeoutServiceDoesNotRespondCancelSucess() throws InterruptedException {
-        KieSession kieSession = getRuntimeEngine().getKieSession();
-
-        final Semaphore nodeACompleted = new Semaphore(0);
-        final AtomicReference<String> resultA = new AtomicReference<>();
-
+    public void testTimeoutServiceDoesNotRespondCancelSuccess() throws InterruptedException {
+        BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
         ProcessEventListener processEventListener = new DefaultProcessEventListener() {
             public void afterVariableChanged(ProcessVariableChangedEvent event) {
-                if (event.getVariableId().equals("resultA")) {
-                    resultA.set(event.getNewValue().toString());
-                    nodeACompleted.release();
+                String variableId = event.getVariableId();
+                logger.info("Process: {}, variable: {}, changed to: {}.",
+                        event.getProcessInstance().getProcessName(), variableId,
+                        event.getNewValue());
+
+                String[] enqueueEvents = new String[]{
+                        "restResponse" //TODO get cancel result
+                };
+                if (Arrays.asList(enqueueEvents).contains(variableId)) {
+                    variableChangedQueue.add(event);
                 }
             }
         };
-        kieSession.addEventListener(processEventListener);
+        customProcessListeners.add(processEventListener);
 
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        RuntimeEngine runtimeEngine = getRuntimeEngine();
+        KieSession kieSession = runtimeEngine.getKieSession();
 
-        parameters.put("containerId", "mock");
-        ProcessInstance processInstance = (ProcessInstance) kieSession.startProcess("timeout-test", parameters);
+        //when
+        ProcessInstance processInstance = kieSession.startProcess(
+                "testProcess",
+                Collections.singletonMap("in_initData", getProcessParameters(10, 5)));
+        manager.disposeRuntimeEngine(runtimeEngine);
 
-        boolean completed = nodeACompleted.tryAcquire(10, TimeUnit.SECONDS);
-        if (!completed) {
-            Assert.fail("Failed to complete the process.");
-        }
-        kieSession.removeEventListener(processEventListener);
-        Assert.assertEquals("{canceled=true}", resultA.get());
+        //then wait for first service to start
+        variableChangedQueue.take().getNewValue();
+
+
+        //TODO verify result
+
+        customProcessListeners.remove(processEventListener);
     }
 
     /**
      * The test will execute a process with just one task that is set with 2s timeout while the REST service invoked in it is set with 10sec callback time.
      * After 2 seconds the timeout process will kick in by finishing the REST workitem and setting the information that it has failed.
-     * 
+     *
      * @throws InterruptedException
      */
-    @Test @Ignore
+    @Test(timeout=15000) @Ignore
     public void testTimeoutServiceDoesNotRespondCancelTimeouts() throws InterruptedException {
 
         final Semaphore nodeACompleted = new Semaphore(0);
@@ -277,13 +284,13 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
                 }
             }
         };
-        
+
         KieSession kieSession = getRuntimeEngine().getKieSession();
         kieSession.addEventListener(processEventListener);
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("containerId", "mock");
-        ProcessInstance processInstance = (ProcessInstance) kieSession.startProcess("timeout-test-cancel-timeouts", parameters);
+        ProcessInstance processInstance = (ProcessInstance) kieSession.startProcess("testProcess", parameters);
 
         boolean completed = nodeACompleted.tryAcquire(15, TimeUnit.SECONDS);
         if (!completed) {
@@ -291,60 +298,123 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
         }
         kieSession.removeEventListener(processEventListener);
         Assert.assertEquals("{\"remote-cancel-failed\":true}", resultA.get());
-        
+
         assertProcessInstanceCompleted(processInstance.getId());
         disposeRuntimeManager();
     }
 
-    /**
-     * Standalone test for the Workitem process only (execute-rest)
-     */
-    @Test @Ignore
-    public void testWrappedWorkitem() throws InterruptedException {
-        
-        KieSession kieSession = getRuntimeEngine().getKieSession();
-        
+    @Test(timeout=15000)
+    public void shouldStartAndCompleteExecuteRestProcess() throws InterruptedException {
         // Semaphore for process completed event
         final Semaphore processFinished = new Semaphore(0);
-        
+        BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
+
         ProcessEventListener processEventListener = new DefaultProcessEventListener() {
-            
             @Override
             public void beforeNodeTriggered(ProcessNodeTriggeredEvent event) {
                 logger.info("Event ID: {}, event node ID: {}, event node name: {}", event.getNodeInstance().getId(), event.getNodeInstance().getNodeId(), event.getNodeInstance().getNodeName());
             }
-            
+
             public void afterProcessCompleted(ProcessCompletedEvent event) {
                 logger.info("Process completed, unblocking test.");
                 processFinished.release();
             }
-            
-        };
-        kieSession.addEventListener(processEventListener);
-        
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("containerId", "mock");
-        parameters.put("cancel", false);
-        parameters.put("url", "http://localhost:8080/demo-service/service/A?callbackDelay=3");
-        parameters.put("template", ""
-                + "{\"callbackUrl\":\"${handler.callback.url}\","
-                + "\"callbackMethod\":\"POST\","
-                + "\"name\":\"Matej\"}");
-        parameters.put("method", "POST" );
-        parameters.put("taskTimeout", 10);
-        parameters.put("cancelTimeout", 10);
-        parameters.put("cancelUrlJsonPointer", "/cancelUrl");
-        
-        ProcessInstance processInstance = (ProcessInstance) kieSession.startProcess("execute-rest", parameters);
 
-        boolean completed = processFinished.tryAcquire(30, TimeUnit.SECONDS);
+            public void afterVariableChanged(ProcessVariableChangedEvent event) {
+                String variableId = event.getVariableId();
+                logger.info("Process: {}, variable: {}, changed to: {}.",
+                        event.getProcessInstance().getProcessName(), variableId,
+                        event.getNewValue());
+
+                String[] enqueueEvents = new String[]{
+                        "result"
+                };
+                if (Arrays.asList(enqueueEvents).contains(variableId)) {
+                    variableChangedQueue.add(event);
+                }
+            }
+        };
+        customProcessListeners.add(processEventListener);
+        RuntimeEngine runtimeEngine = getRuntimeEngine();
+        KieSession kieSession = runtimeEngine.getKieSession();
+
+        ProcessInstance processInstance = (ProcessInstance) kieSession.startProcess("kogito.executerest", getExecuteRestParameters());
+        manager.disposeRuntimeEngine(runtimeEngine);
+
+        boolean completed = processFinished.tryAcquire(15, TimeUnit.SECONDS);
         if (!completed) {
             Assert.fail("Failed to complete the process.");
         }
-        
-        kieSession.removeEventListener(processEventListener);
-        assertProcessInstanceCompleted(processInstance.getId());
-        
+
+        Map<String, Object> result  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
+        System.out.println("result: " + result);
+        Assert.assertEquals("new-scm-tag", Maps.getStringObjectMap(Maps.getStringObjectMap(result, "response"), "scm").get("revision"));
+
+        customProcessListeners.remove(processEventListener);
+    }
+
+    private Map<String, Object> getExecuteRestParameters() {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("requestMethod", "POST");
+        parameters.put("requestHeaders", null);
+        parameters.put("requestUrl", "http://localhost:8080/demo-service/service/prebuild");
+        parameters.put("requestTemplate", getPreBuildRequestBody());
+        parameters.put("taskTimeout", "10");
+        parameters.put("cancel", false);
+        parameters.put("cancelTimeout", null);
+        parameters.put("cancelUrlJsonPointer", null);
+        parameters.put("cancelUrlTemplate", null);
+        parameters.put("cancelUrlTemplate", null);
+        parameters.put("cancelMethod", null);
+        parameters.put("cancelHeaders", null);
+        parameters.put("successEvalTemplate", null);
+
+        //kcontext.setVariable("containerId","mock");
+        parameters.put("containerId", "mock");
+        return parameters;
+    }
+
+    private String getPreBuildRequestBody() {
+        PreBuildRequest request = new PreBuildRequest();
+        Scm scm = new Scm();
+        scm.setUrl("https://github.com/kiegroup/jbpm-work-items.git");
+        request.setScm(scm);
+        Callback callback = new Callback();
+        callback.setMethod("POST");
+        callback.setUrl("@{system.callbackUrl}");
+        request.setCallback(callback);
+        try {
+            return objectMapper.writeValueAsString(request);
+        } catch (JsonProcessingException e) {
+            Assert.fail("Cannot serialize preBuildRequest: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private Map<String, Object> getProcessParameters(int preBuildCallbackDelay, int preBuildTimeout) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("containerId", "mock");
+        parameters.put("serviceBaseUrl", "http://localhost:8080/demo-service/service");
+        parameters.put("preBuildServiceUrl", "http://localhost:8080/demo-service/service/prebuild?callbackDelay=" + preBuildCallbackDelay);
+        parameters.put("preBuildTimeout", preBuildTimeout);
+        Map<String, Object> buildConfiguration = new HashMap<>();
+        buildConfiguration.put("id", "1");
+        buildConfiguration.put("scmRepoURL", "https://github.com/kiegroup/jbpm-work-items.git");
+        buildConfiguration.put("scmRevision", "master");
+        buildConfiguration.put("preBuildSyncEnabled", "true");
+        buildConfiguration.put("buildScript", "true");
+        parameters.put("buildConfiguration", buildConfiguration);
+        return parameters;
+    }
+
+    private KieSession getKieSession(long processInstanceId) {
+        RuntimeEngine runtimeEngine = getRuntimeEngine(processInstanceId);
+        return runtimeEngine.getKieSession();
+    }
+
+    private RuntimeEngine getRuntimeEngine(long processInstanceId) {
+        ProcessInstanceIdContext processInstanceContext = ProcessInstanceIdContext.get(processInstanceId);
+        return manager.getRuntimeEngine(processInstanceContext);
     }
 
 }

@@ -299,14 +299,14 @@
       <bpmn2:dataInputAssociation>
         <bpmn2:targetRef>_49EBC507-1EA9-4652-B48C-EEEED0112241_requestUrlInputX</bpmn2:targetRef>
         <bpmn2:assignment>
-          <bpmn2:from xsi:type="bpmn2:tFormalExpression"><![CDATA[#{input.serviceBaseUrl}/prebuild]]></bpmn2:from>
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression"><![CDATA[#{input.preBuildServiceUrl}]]></bpmn2:from>
           <bpmn2:to xsi:type="bpmn2:tFormalExpression"><![CDATA[_49EBC507-1EA9-4652-B48C-EEEED0112241_requestUrlInputX]]></bpmn2:to>
         </bpmn2:assignment>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataInputAssociation>
         <bpmn2:targetRef>_49EBC507-1EA9-4652-B48C-EEEED0112241_taskTimeoutInputX</bpmn2:targetRef>
         <bpmn2:assignment>
-          <bpmn2:from xsi:type="bpmn2:tFormalExpression"><![CDATA[300]]></bpmn2:from>
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression"><![CDATA[#{input.preBuildTimeout}]]></bpmn2:from>
           <bpmn2:to xsi:type="bpmn2:tFormalExpression"><![CDATA[_49EBC507-1EA9-4652-B48C-EEEED0112241_taskTimeoutInputX]]></bpmn2:to>
         </bpmn2:assignment>
       </bpmn2:dataInputAssociation>

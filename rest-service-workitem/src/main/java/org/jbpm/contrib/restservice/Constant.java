@@ -5,7 +5,7 @@ package org.jbpm.contrib.restservice;
  */
 public class Constant {
 
-    public final static String CANCEL_SIGNAL_TYPE = "cancel-all";
+    public final static String CANCEL_SIGNAL_TYPE = "CancelAll";
 
     public final static String OPERATION_FAILED_SIGNAL_TYPE = "operationFailed";
 
