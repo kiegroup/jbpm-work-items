@@ -37,6 +37,7 @@ import org.jbpm.contrib.demoservices.dto.Callback;
 import org.jbpm.contrib.demoservices.dto.CompleteRequest;
 import org.jbpm.contrib.demoservices.dto.PreBuildRequest;
 import org.jbpm.contrib.demoservices.dto.Scm;
+import org.jbpm.contrib.restservice.util.Strings;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -104,13 +105,13 @@ public class Service {
         result.put("scm", scm);
         result.put("status", "SUCCESS");
 
-        int jobId = scheduleCallback(callback.getUrl(), callback.getMethod(),null, callbackDelay, result);
-
-        String cancelUrl = "http://localhost:8080/demo-service/service/cancel/" + jobId;
-        cancelUrl += "?delay=" + cancelDelay;
         Map<String, Object> response = new HashMap<>();
-        response.put("cancelUrl", cancelUrl);
-
+        if (callback != null && !Strings.isEmpty(callback.getUrl())) {
+            int jobId = scheduleCallback(callback.getUrl(), callback.getMethod(),null, callbackDelay, result);
+            String cancelUrl = "http://localhost:8080/demo-service/service/cancel/" + jobId;
+            cancelUrl += "?delay=" + cancelDelay;
+            response.put("cancelUrl", cancelUrl);
+        }
         return Response.status(200).entity(response).build();
     }
 

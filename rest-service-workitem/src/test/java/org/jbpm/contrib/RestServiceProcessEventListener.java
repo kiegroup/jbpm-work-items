@@ -18,7 +18,7 @@ public class RestServiceProcessEventListener extends DefaultProcessEventListener
     private final Logger logger = LoggerFactory.getLogger(RestServiceProcessEventListener.class);
 
     @Override
-    public void afterProcessStarted(ProcessStartedEvent event) {
+    public void beforeProcessStarted(ProcessStartedEvent event) {
         ProcessInstance processInstance = event.getProcessInstance();
         long processInstanceId = processInstance.getId();
         logger.debug("Started processInstance named: {} and id: {}", processInstance.getProcessName(), processInstanceId);
