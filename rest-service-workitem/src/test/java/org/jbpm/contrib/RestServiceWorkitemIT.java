@@ -22,7 +22,9 @@ import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
+import org.jbpm.contrib.demoservices.EventType;
 import org.jbpm.contrib.demoservices.Service;
+import org.jbpm.contrib.demoservices.ServiceListener;
 import org.jbpm.contrib.demoservices.dto.Callback;
 import org.jbpm.contrib.demoservices.dto.PreBuildRequest;
 import org.jbpm.contrib.demoservices.dto.Scm;
@@ -34,8 +36,6 @@ import org.jbpm.test.JbpmJUnitBaseTestCase;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.kie.api.event.process.DefaultProcessEventListener;
 import org.kie.api.event.process.ProcessCompletedEvent;
@@ -56,11 +56,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.jbpm.contrib.restservice.Constant.KIE_HOST_SYSTEM_PROPERTY;
 
@@ -71,20 +69,19 @@ import static org.jbpm.contrib.restservice.Constant.KIE_HOST_SYSTEM_PROPERTY;
  */
 public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
 
-    private static int PORT = 8080;
-    private static String DEFAULT_HOST = "localhost";
     private final Logger logger = LoggerFactory.getLogger(RestServiceWorkitemIT.class);
 
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
+    private static int PORT = 8080;
+    private static String DEFAULT_HOST = "localhost";
+    private Server server;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    private final ActiveTasks activeProcesses = new ActiveTasks();
+    private final ServiceListener serviceListener = new ServiceListener();
+
     public RestServiceWorkitemIT() {
         super(true, true);
-    }
-
-    @BeforeClass
-    public static void mainSetUp() throws Exception {
     }
 
     @Before
@@ -99,29 +96,29 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
         resources.put("test-process.bpmn", ResourceType.BPMN2);
 
         manager = createRuntimeManager(Strategy.PROCESS_INSTANCE, resources);
-        customProcessListeners.add(new RestServiceProcessEventListener());
+        customProcessListeners.add(new RestServiceProcessEventListener(activeProcesses));
         customHandlers.put("SimpleRestService", new SimpleRestServiceWorkItemHandler(manager));
 
         bootUpServices();
     }
 
     @After
-    public void postTestTeardown() {
-        //TODO stop services
+    public void postTestTeardown() throws Exception {
+        server.stop();
     }
 
     private void bootUpServices() throws Exception {
         ContextHandlerCollection contexts = new ContextHandlerCollection();
 
-        final Server server = new Server(PORT);
+        server = new Server(PORT);
         server.setHandler(contexts);
 
         ServletContextHandler demoService = new ServletContextHandler(contexts, "/demo-service", ServletContextHandler.SESSIONS);
-
         ServletHolder servletHolder = demoService.addServlet(org.glassfish.jersey.servlet.ServletContainer.class, "/*");
         servletHolder.setInitOrder(0);
         // Tells the Jersey Servlet which REST service/class to load.
         servletHolder.setInitParameter("jersey.config.server.provider.classnames", Service.class.getCanonicalName());
+        demoService.setAttribute("listener", serviceListener);
 
         // JBPM server mock
         ServletContextHandler jbpmMock = new ServletContextHandler(contexts, "/services/rest", ServletContextHandler.SESSIONS);
@@ -135,35 +132,35 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
     @Test (timeout=15000)
     public void shouldInvokeRemoteServiceAndReceiveCallback() throws Exception {
         BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
-        ProcessEventListener processEventListener = new DefaultProcessEventListener() {
-            public void afterVariableChanged(ProcessVariableChangedEvent event) {
-                String variableId = event.getVariableId();
-                logger.info("Process: {}, variable: {}, changed to: {}.",
-                        event.getProcessInstance().getProcessName(), variableId,
-                        event.getNewValue());
-                String[] enqueueEvents = new String[]{
-                        "preBuildResult",
-                        "buildResult",
-                        "completionResult"
-                };
-                if (Arrays.asList(enqueueEvents).contains(variableId)) {
-                    variableChangedQueue.add(event);
-                }
-            }
-        };
+
+        ProcessEventListener processEventListener = getProcessEventListener(
+                variableChangedQueue,
+                "preBuildResult",
+                "buildResult",
+                "completionResult"
+        );
         customProcessListeners.add(processEventListener);
 
         RuntimeEngine runtimeEngine = getRuntimeEngine();
         KieSession kieSession = runtimeEngine.getKieSession();
 
+        Semaphore callbackCompleted = new Semaphore(0);
+        ServiceListener.Subscription subscription = serviceListener.subscribe(
+                EventType.CALLBACK_COMPLETED,
+                (v) -> callbackCompleted.release());
+
         //when
         ProcessInstance processInstance = kieSession.startProcess(
                 "testProcess",
-                Collections.singletonMap("in_initData", getProcessParameters(1, 30)));
+                Collections.singletonMap("in_initData", getProcessParameters(1, 30, 1, 30)));
 
         manager.disposeRuntimeEngine(runtimeEngine);
 
         //then
+        //skip variable initialization
+        variableChangedQueue.take(); //preBuildResult
+        variableChangedQueue.take(); //buildResult
+
         Map<String, Object> preBuildCallbackResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
         System.out.println("preBuildCallbackResult: " + preBuildCallbackResult);
         Map<String, Object> preBuildResponse = Maps.getStringObjectMap(preBuildCallbackResult, "response");
@@ -180,26 +177,20 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
         System.out.println("completionResult: " + completionResult);
         Assert.assertEquals("SUCCESS", completionResult.get("status"));
 
+        logger.info("Waiting for callback to complete...");
+        callbackCompleted.acquire(2);
+        logger.info("Callback completed.");
+
         customProcessListeners.remove(processEventListener);
+        serviceListener.unsubscribe(subscription);
     }
 
     @Test (timeout=15000)
     public void shouldCatchException() throws Exception {
         BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
-        ProcessEventListener processEventListener = new DefaultProcessEventListener() {
-            public void afterVariableChanged(ProcessVariableChangedEvent event) {
-                String variableId = event.getVariableId();
-                logger.info("Process: {}, variable: {}, changed to: {}.",
-                        event.getProcessInstance().getProcessName(), variableId,
-                        event.getNewValue());
-                String[] enqueueEvents = new String[]{
-                        "preBuildResult"
-                };
-                if (Arrays.asList(enqueueEvents).contains(variableId)) {
-                    variableChangedQueue.add(event);
-                }
-            }
-        };
+
+        ProcessEventListener processEventListener = getProcessEventListener(variableChangedQueue, "preBuildResult");
+
         customProcessListeners.add(processEventListener);
 
         RuntimeEngine runtimeEngine = getRuntimeEngine();
@@ -219,6 +210,9 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
         manager.disposeRuntimeEngine(runtimeEngine);
 
         //then
+        //skip variable initialization
+        variableChangedQueue.take(); //preBuildResult
+
         Map<String, Object> preBuildCallbackResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
         System.out.println("preBuildCallbackResult: " + preBuildCallbackResult);
         WorkItemHandlerRuntimeException exception = (WorkItemHandlerRuntimeException) preBuildCallbackResult.get("error");
@@ -228,125 +222,143 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
         customProcessListeners.remove(processEventListener);
     }
 
-    @Ignore
-    @Test (timeout=15000)
-    public void testCancel() throws InterruptedException {
+    /**
+     * Invoke cancel while first service is running. Cancel completes successfully.
+     */
+    @Test
+    public void testTimeoutServiceDoesNotRespondCancelSuccess() throws InterruptedException {
         BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
-        ProcessEventListener processEventListener = new DefaultProcessEventListener() {
-            public void afterVariableChanged(ProcessVariableChangedEvent event) {
-                String variableId = event.getVariableId();
-                logger.info("Process: {}, variable: {}, changed to: {}.",
-                        event.getProcessInstance().getProcessName(), variableId,
-                        event.getNewValue());
-
-                    String[] enqueueEvents = new String[]{
-                        "restResponse"
-                };
-                if (Arrays.asList(enqueueEvents).contains(variableId)) {
-                    variableChangedQueue.add(event);
-                }
-            }
-        };
+        ProcessEventListener processEventListener = getProcessEventListener(variableChangedQueue, "restResponse", "preBuildResult");
         customProcessListeners.add(processEventListener);
 
         RuntimeEngine runtimeEngine = getRuntimeEngine();
         KieSession kieSession = runtimeEngine.getKieSession();
 
+        Semaphore callbackCompleted = new Semaphore(0);
+        AtomicInteger buildRequested = new AtomicInteger();
+        ServiceListener.Subscription subscription = serviceListener.subscribe(
+                EventType.CALLBACK_COMPLETED,
+                (v) -> callbackCompleted.release());
+        ServiceListener.Subscription buildSubscription = serviceListener.subscribe(
+                EventType.BUILD_REQUESTED,
+                (v) -> buildRequested.incrementAndGet());
+
         //when
         ProcessInstance processInstance = kieSession.startProcess(
                 "testProcess",
-                Collections.singletonMap("in_initData", getProcessParameters(10, 30)));
+                Collections.singletonMap("in_initData", getProcessParameters(10, 30, 1, 30)));
         manager.disposeRuntimeEngine(runtimeEngine);
+
+        //skip variable initialization
+        variableChangedQueue.take(); //preBuildResult
 
         //then wait for first service to start
         variableChangedQueue.take().getNewValue();
         RuntimeEngine runtimeEngineCancel = getRuntimeEngine(processInstance.getId());
+        logger.info("Signalling cancel ...");
         runtimeEngineCancel.getKieSession().signalEvent(Constant.CANCEL_SIGNAL_TYPE, null);
         manager.disposeRuntimeEngine(runtimeEngineCancel);
 
-        //TODO verify result
+        Map<String, Object> preBuildCallbackResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
+        System.out.println("preBuildCallbackResult: " + preBuildCallbackResult);
+        Map<String, Object> preBuildResponse = Maps.getStringObjectMap(preBuildCallbackResult, "response");
+        Assert.assertEquals("true", preBuildResponse.get("cancelled"));
+
+        logger.info("Waiting for all processes to complete...");
+        activeProcesses.waitAllCompleted();
+        logger.info("All processes completed.");
+
+        logger.info("Waiting for callback to complete...");
+        callbackCompleted.acquire();
+        logger.info("Callback completed.");
+
+        //make sure buildResult is not set (build service did not run)
+        Assert.assertTrue(buildRequested.get() == 0);
 
         customProcessListeners.remove(processEventListener);
-    }
-
-    /**
-     * Prebuild service time-out and cancel is invoked on it. Cancel completes successfully.
-     */
-    @Test @Ignore
-    public void testTimeoutServiceDoesNotRespondCancelSuccess() throws InterruptedException {
-        BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
-        ProcessEventListener processEventListener = new DefaultProcessEventListener() {
-            public void afterVariableChanged(ProcessVariableChangedEvent event) {
-                String variableId = event.getVariableId();
-                logger.info("Process: {}, variable: {}, changed to: {}.",
-                        event.getProcessInstance().getProcessName(), variableId,
-                        event.getNewValue());
-
-                String[] enqueueEvents = new String[]{
-                        "restResponse" //TODO get cancel result
-                };
-                if (Arrays.asList(enqueueEvents).contains(variableId)) {
-                    variableChangedQueue.add(event);
-                }
-            }
-        };
-        customProcessListeners.add(processEventListener);
-
-        RuntimeEngine runtimeEngine = getRuntimeEngine();
-        KieSession kieSession = runtimeEngine.getKieSession();
-
-        //when
-        ProcessInstance processInstance = kieSession.startProcess(
-                "testProcess",
-                Collections.singletonMap("in_initData", getProcessParameters(10, 5)));
-        manager.disposeRuntimeEngine(runtimeEngine);
-
-        //then wait for first service to start
-        variableChangedQueue.take().getNewValue();
-
-
-        //TODO verify result
-
-        customProcessListeners.remove(processEventListener);
+        serviceListener.unsubscribe(subscription);
     }
 
     /**
      * The test will execute a process with just one task that is set with 2s timeout while the REST service invoked in it is set with 10sec callback time.
      * After 2 seconds the timeout process will kick in by finishing the REST workitem and setting the information that it has failed.
-     *
-     * @throws InterruptedException
      */
-    @Test(timeout=15000) @Ignore
-    public void testTimeoutServiceDoesNotRespondCancelTimeouts() throws InterruptedException {
+    @Test(timeout=15000)
+    public void serviceTimesOutInternalCancelSucceeds() throws InterruptedException {
+        BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
+        ProcessEventListener processEventListener = getProcessEventListener(variableChangedQueue, "preBuildResult");
+        customProcessListeners.add(processEventListener);
 
-        final Semaphore nodeACompleted = new Semaphore(0);
-        final AtomicReference<String> resultA = new AtomicReference<>();
+        RuntimeEngine runtimeEngine = getRuntimeEngine();
+        KieSession kieSession = runtimeEngine.getKieSession();
 
-        ProcessEventListener processEventListener = new DefaultProcessEventListener() {
-            public void afterVariableChanged(ProcessVariableChangedEvent event) {
-                if (event.getVariableId().equals("resultA")) {
-                    resultA.set(event.getNewValue().toString());
-                    nodeACompleted.release();
-                }
-            }
-        };
+        Semaphore callbackCompleted = new Semaphore(0);
+        ServiceListener.Subscription subscription = serviceListener.subscribe(
+                EventType.CALLBACK_COMPLETED,
+                (v) -> callbackCompleted.release());
 
-        KieSession kieSession = getRuntimeEngine().getKieSession();
-        kieSession.addEventListener(processEventListener);
+        //when
+        ProcessInstance processInstance = kieSession.startProcess(
+                "testProcess",
+                Collections.singletonMap("in_initData", getProcessParameters(10, 2, 1, 30)));
+        manager.disposeRuntimeEngine(runtimeEngine);
+        //skip variable initialization
+        variableChangedQueue.take(); //preBuildResult
 
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("containerId", "mock");
-        ProcessInstance processInstance = (ProcessInstance) kieSession.startProcess("testProcess", parameters);
+        //then wait for first service to start
+        variableChangedQueue.take().getNewValue();
 
-        boolean completed = nodeACompleted.tryAcquire(15, TimeUnit.SECONDS);
-        if (!completed) {
-            Assert.fail("Failed to complete the process.");
-        }
-        kieSession.removeEventListener(processEventListener);
-        Assert.assertEquals("{\"remote-cancel-failed\":true}", resultA.get());
+        Map<String, Object> preBuildResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
+        System.out.println("preBuildResult: " + preBuildResult);
+        Map<String, Object> preBuildResponse = Maps.getStringObjectMap(preBuildResult, "response");
+        Assert.assertEquals("true", preBuildResponse.get("cancelled"));
+        Assert.assertEquals("TIMED_OUT", preBuildResult.get("status"));
 
-        assertProcessInstanceCompleted(processInstance.getId());
-        disposeRuntimeManager();
+        activeProcesses.waitAllCompleted();
+        callbackCompleted.acquire();
+
+        customProcessListeners.remove(processEventListener);
+        serviceListener.unsubscribe(subscription);
+    }
+
+    /**
+     * Exceptions are expected in the log as callback is executed after the cancel completed.
+     */
+    @Test(timeout=15000)
+    public void serviceTimesOutInternalCancelTimesOut() throws InterruptedException {
+        BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
+        ProcessEventListener processEventListener = getProcessEventListener(variableChangedQueue, "preBuildResult");
+        customProcessListeners.add(processEventListener);
+
+        RuntimeEngine runtimeEngine = getRuntimeEngine();
+        KieSession kieSession = runtimeEngine.getKieSession();
+
+        Semaphore callbackCompleted = new Semaphore(0);
+        ServiceListener.Subscription subscription = serviceListener.subscribe(
+                EventType.CALLBACK_COMPLETED,
+                (v) -> callbackCompleted.release());
+
+        //when
+        ProcessInstance processInstance = kieSession.startProcess(
+                "testProcess",
+                Collections.singletonMap("in_initData", getProcessParameters(10, 2, 10, 2)));
+        manager.disposeRuntimeEngine(runtimeEngine);
+        //skip variable initialization
+        variableChangedQueue.take();
+
+        //then wait for first service to start
+        variableChangedQueue.take().getNewValue(); //preBuildResult
+
+        Map<String, Object> preBuildResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
+        System.out.println("preBuildResult: " + preBuildResult);
+        Map<String, Object> preBuildResponse = Maps.getStringObjectMap(preBuildResult, "response");
+        Assert.assertEquals("TIMED_OUT", preBuildResult.get("status"));
+
+        activeProcesses.waitAllCompleted();
+        callbackCompleted.acquire();
+
+        customProcessListeners.remove(processEventListener);
+        serviceListener.unsubscribe(subscription);
     }
 
     @Test(timeout=15000)
@@ -437,12 +449,13 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
         }
     }
 
-    private Map<String, Object> getProcessParameters(int preBuildCallbackDelay, int preBuildTimeout) {
+    private Map<String, Object> getProcessParameters(int preBuildCallbackDelay, int preBuildTimeout, int cancelDelay, int preBuildCancelTimeout) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("containerId", "mock");
         parameters.put("serviceBaseUrl", "http://localhost:8080/demo-service/service");
-        parameters.put("preBuildServiceUrl", "http://localhost:8080/demo-service/service/prebuild?callbackDelay=" + preBuildCallbackDelay);
+        parameters.put("preBuildServiceUrl", "http://localhost:8080/demo-service/service/prebuild?callbackDelay=" + preBuildCallbackDelay + "&cancelDelay=" + cancelDelay);
         parameters.put("preBuildTimeout", preBuildTimeout);
+        parameters.put("preBuildCancelTimeout", preBuildCancelTimeout);
         Map<String, Object> buildConfiguration = new HashMap<>();
         buildConfiguration.put("id", "1");
         buildConfiguration.put("scmRepoURL", "https://github.com/kiegroup/jbpm-work-items.git");
@@ -461,6 +474,20 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
     private RuntimeEngine getRuntimeEngine(long processInstanceId) {
         ProcessInstanceIdContext processInstanceContext = ProcessInstanceIdContext.get(processInstanceId);
         return manager.getRuntimeEngine(processInstanceContext);
+    }
+
+    private ProcessEventListener getProcessEventListener(BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue, String... enqueueEvents) {
+        return new DefaultProcessEventListener() {
+            public void afterVariableChanged(ProcessVariableChangedEvent event) {
+                String variableId = event.getVariableId();
+                logger.info("Process: {}, variable: {}, changed to: {}.",
+                        event.getProcessInstance().getProcessName(), variableId,
+                        event.getNewValue());
+                if (Arrays.asList(enqueueEvents).contains(variableId)) {
+                    variableChangedQueue.add(event);
+                }
+            }
+        };
     }
 
 }

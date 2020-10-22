@@ -12,6 +12,8 @@
   <bpmn2:itemDefinition id="_completionTemplateItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_containerIdItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_functionsItem" structureRef="org.jbpm.contrib.bpm.TestFunctions"/>
+  <bpmn2:itemDefinition id="_thisProcessIdItem" structureRef="java.lang.Long"/>
+  <bpmn2:itemDefinition id="__91C09C53-86B7-411F-84A4-361D54BE7024_signalSourceIdInputXItem" structureRef="java.lang.Long"/>
   <bpmn2:itemDefinition id="__07FB8F17-9DD7-4B55-AF96-48F8CAF7C3BF_resultOutputXItem" structureRef="java.util.Map"/>
   <bpmn2:itemDefinition id="__33038CEB-6813-4DEA-B70B-506D45733803_resultOutputXItem" structureRef="java.util.Map"/>
   <bpmn2:itemDefinition id="__EEF0A8D0-85F3-47F8-AE62-3A56ED4F8900_resultOutputXItem" structureRef="java.util.Map"/>
@@ -313,14 +315,14 @@
       <bpmn2:dataInputAssociation>
         <bpmn2:targetRef>_49EBC507-1EA9-4652-B48C-EEEED0112241_cancelTimeoutInputX</bpmn2:targetRef>
         <bpmn2:assignment>
-          <bpmn2:from xsi:type="bpmn2:tFormalExpression"><![CDATA[5]]></bpmn2:from>
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression"><![CDATA[#{input.preBuildCancelTimeout}]]></bpmn2:from>
           <bpmn2:to xsi:type="bpmn2:tFormalExpression"><![CDATA[_49EBC507-1EA9-4652-B48C-EEEED0112241_cancelTimeoutInputX]]></bpmn2:to>
         </bpmn2:assignment>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataInputAssociation>
         <bpmn2:targetRef>_49EBC507-1EA9-4652-B48C-EEEED0112241_cancelUrlJsonPointerInputX</bpmn2:targetRef>
         <bpmn2:assignment>
-          <bpmn2:from xsi:type="bpmn2:tFormalExpression"><![CDATA[/cancel]]></bpmn2:from>
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression"><![CDATA[/cancelUrl]]></bpmn2:from>
           <bpmn2:to xsi:type="bpmn2:tFormalExpression"><![CDATA[_49EBC507-1EA9-4652-B48C-EEEED0112241_cancelUrlJsonPointerInputX]]></bpmn2:to>
         </bpmn2:assignment>
       </bpmn2:dataInputAssociation>
@@ -473,6 +475,9 @@ kcontext.setVariable("preBuildTemplate",TestFunctions.PREBUILD_TEMPLATE);
 kcontext.setVariable("buildTemplate",TestFunctions.BUILD_TEMPLATE);
 kcontext.setVariable("completionTemplate",TestFunctions.COMPLETION_TEMPLATE);
 
+kcontext.setVariable("preBuildResult",new java.util.HashMap());
+kcontext.setVariable("buildResult",new java.util.HashMap());
+
 </bpmn2:script>
     </bpmn2:scriptTask>
     <bpmn2:endEvent id="_172D9623-532D-4DEB-9EB1-A6BF54AAD530" name="End">
@@ -492,6 +497,7 @@ kcontext.setVariable("completionTemplate",TestFunctions.COMPLETION_TEMPLATE);
           <drools:metaValue><![CDATA[true]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
+      <bpmn2:property id="thisProcessId" itemSubjectRef="_thisProcessIdItem" name="thisProcessId"/>
       <bpmn2:sequenceFlow id="_82254714-A235-451F-8D27-062941A10FB1" sourceRef="_4F4568DD-2158-4686-BAF2-F335357BB019" targetRef="_91C09C53-86B7-411F-84A4-361D54BE7024">
         <bpmn2:extensionElements>
           <drools:metaData name="isAutoConnection.target">
@@ -512,7 +518,20 @@ kcontext.setVariable("completionTemplate",TestFunctions.COMPLETION_TEMPLATE);
 kcontext.setVariable("preBuildCancel",true);</bpmn2:script>
       </bpmn2:scriptTask>
       <bpmn2:endEvent id="_91C09C53-86B7-411F-84A4-361D54BE7024">
+        <bpmn2:extensionElements>
+          <drools:metaData name="customScope">
+            <drools:metaValue><![CDATA[project]]></drools:metaValue>
+          </drools:metaData>
+        </bpmn2:extensionElements>
         <bpmn2:incoming>_82254714-A235-451F-8D27-062941A10FB1</bpmn2:incoming>
+        <bpmn2:dataInput id="_91C09C53-86B7-411F-84A4-361D54BE7024_signalSourceIdInputX" drools:dtype="java.lang.Long" itemSubjectRef="__91C09C53-86B7-411F-84A4-361D54BE7024_signalSourceIdInputXItem" name="signalSourceId"/>
+        <bpmn2:dataInputAssociation>
+          <bpmn2:sourceRef>thisProcessId</bpmn2:sourceRef>
+          <bpmn2:targetRef>_91C09C53-86B7-411F-84A4-361D54BE7024_signalSourceIdInputX</bpmn2:targetRef>
+        </bpmn2:dataInputAssociation>
+        <bpmn2:inputSet>
+          <bpmn2:dataInputRefs>_91C09C53-86B7-411F-84A4-361D54BE7024_signalSourceIdInputX</bpmn2:dataInputRefs>
+        </bpmn2:inputSet>
         <bpmn2:signalEventDefinition signalRef="_712035823"/>
       </bpmn2:endEvent>
       <bpmn2:startEvent id="_5FBF6861-2B85-430F-9FB3-366243303BA2" isInterrupting="false">
@@ -525,7 +544,7 @@ kcontext.setVariable("preBuildCancel",true);</bpmn2:script>
       <bpmn2:dataOutput id="_07FB8F17-9DD7-4B55-AF96-48F8CAF7C3BF_resultOutputX" drools:dtype="java.util.Map" itemSubjectRef="__07FB8F17-9DD7-4B55-AF96-48F8CAF7C3BF_resultOutputXItem" name="result"/>
       <bpmn2:dataOutputAssociation>
         <bpmn2:sourceRef>_07FB8F17-9DD7-4B55-AF96-48F8CAF7C3BF_resultOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>in_initData</bpmn2:targetRef>
+        <bpmn2:targetRef>buildResult</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
       <bpmn2:outputSet>
         <bpmn2:dataOutputRefs>_07FB8F17-9DD7-4B55-AF96-48F8CAF7C3BF_resultOutputX</bpmn2:dataOutputRefs>
@@ -549,7 +568,7 @@ kcontext.setVariable("preBuildCancel",true);</bpmn2:script>
       <bpmn2:dataOutput id="_EEF0A8D0-85F3-47F8-AE62-3A56ED4F8900_resultOutputX" drools:dtype="java.util.Map" itemSubjectRef="__EEF0A8D0-85F3-47F8-AE62-3A56ED4F8900_resultOutputXItem" name="result"/>
       <bpmn2:dataOutputAssociation>
         <bpmn2:sourceRef>_EEF0A8D0-85F3-47F8-AE62-3A56ED4F8900_resultOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>in_initData</bpmn2:targetRef>
+        <bpmn2:targetRef>preBuildResult</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
       <bpmn2:outputSet>
         <bpmn2:dataOutputRefs>_EEF0A8D0-85F3-47F8-AE62-3A56ED4F8900_resultOutputX</bpmn2:dataOutputRefs>
@@ -755,7 +774,7 @@ kcontext.setVariable("preBuildCancel",true);</bpmn2:script>
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_-V8esPQjEDiIwKg3aKWcRw</bpmn2:source>
-    <bpmn2:target>_-V8esPQjEDiIwKg3aKWcRw</bpmn2:target>
+    <bpmn2:source>_G8d2sPbkEDi9G9ko9bHzUA</bpmn2:source>
+    <bpmn2:target>_G8d2sPbkEDi9G9ko9bHzUA</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

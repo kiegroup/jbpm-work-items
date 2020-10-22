@@ -15,13 +15,20 @@ import org.slf4j.LoggerFactory;
  */
 public class RestServiceProcessEventListener extends DefaultProcessEventListener {
 
+    private ActiveTasks activeProcesses;
+
+    public RestServiceProcessEventListener(ActiveTasks activeProcesses) {
+        this.activeProcesses = activeProcesses;
+    }
+
     private final Logger logger = LoggerFactory.getLogger(RestServiceProcessEventListener.class);
 
     @Override
     public void beforeProcessStarted(ProcessStartedEvent event) {
         ProcessInstance processInstance = event.getProcessInstance();
         long processInstanceId = processInstance.getId();
-        logger.debug("Started processInstance named: {} and id: {}", processInstance.getProcessName(), processInstanceId);
+        logger.debug("Started process: {}({})", processInstance.getProcessName(), processInstanceId);
+        activeProcesses.started();
     }
 
     @Override
@@ -38,8 +45,9 @@ public class RestServiceProcessEventListener extends DefaultProcessEventListener
                 processInstance.getId());
     }
 
-    public void beforeProcessCompleted(ProcessCompletedEvent event) {
+    public void afterProcessCompleted(ProcessCompletedEvent event) {
         ProcessInstance processInstance = event.getProcessInstance();
-        logger.info("Process {} instance id {} completed.", processInstance.getProcessName(), processInstance.getId());
+        logger.info("Process completed: {}({})", processInstance.getProcessName(), processInstance.getId());
+        activeProcesses.completed();
     }
 }

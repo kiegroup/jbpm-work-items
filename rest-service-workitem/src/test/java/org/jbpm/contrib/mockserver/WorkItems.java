@@ -57,12 +57,18 @@ public class WorkItems {
             Map<String, Object> result)
     {
         logger.info("Completing workitem id: {}, result: {}.", taskId, result);
-        getKieSession(instanceId).getWorkItemManager().completeWorkItem(taskId, result);
+        RuntimeEngine runtimeEngine = getRuntimeEngine(instanceId);
+        KieSession kieSession = runtimeEngine.getKieSession();
+        kieSession.getWorkItemManager().completeWorkItem(taskId, result);
+        disposeRuntimeEngine(runtimeEngine);
 
         Map<String, Object> response = new HashMap<>();
         return Response.status(200).entity(response).build();
     }
 
+    /**
+     * Receive service response
+     */
     @POST
     @Path("{instanceId}/signal/{signalName}")
     public Response signalProcess(
@@ -71,17 +77,25 @@ public class WorkItems {
             Map<String, Object> result)
     {
         logger.info("Sending {} signal to process id: {}, result: {}.", signalName, instanceId, result);
-        KieSession kieSession = getKieSession(instanceId);
+        RuntimeEngine runtimeEngine = getRuntimeEngine(instanceId);
+        KieSession kieSession = runtimeEngine.getKieSession();
         kieSession.signalEvent(signalName, result);
+        disposeRuntimeEngine(runtimeEngine);
 
         return Response.status(200).entity(result).build();
     }
 
-    private KieSession getKieSession(long processInstanceId) {
-        RuntimeManager manager = (RuntimeManager) servletContext.getAttribute("runtimeManager");
+    private RuntimeEngine getRuntimeEngine(long processInstanceId) {
         ProcessInstanceIdContext processInstanceContext = ProcessInstanceIdContext.get(processInstanceId);
-        RuntimeEngine runtimeEngine = manager.getRuntimeEngine(processInstanceContext);
-        return runtimeEngine.getKieSession();
+        return getRuntimeManager().getRuntimeEngine(processInstanceContext);
+    }
+
+    private void disposeRuntimeEngine(RuntimeEngine runtimeEngine) {
+        getRuntimeManager().disposeRuntimeEngine(runtimeEngine);
+    }
+
+    private RuntimeManager getRuntimeManager() {
+        return (RuntimeManager) servletContext.getAttribute("runtimeManager");
     }
 
 }
