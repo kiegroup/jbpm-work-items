@@ -21,6 +21,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 import org.jbpm.contrib.demoservices.Service;
 import org.jbpm.contrib.demoservices.dto.Callback;
 import org.jbpm.contrib.demoservices.dto.PreBuildRequest;
@@ -178,6 +179,51 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
         Map<String, Object> completionResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
         System.out.println("completionResult: " + completionResult);
         Assert.assertEquals("SUCCESS", completionResult.get("status"));
+
+        customProcessListeners.remove(processEventListener);
+    }
+
+    @Test (timeout=15000)
+    public void shouldCatchException() throws Exception {
+        BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
+        ProcessEventListener processEventListener = new DefaultProcessEventListener() {
+            public void afterVariableChanged(ProcessVariableChangedEvent event) {
+                String variableId = event.getVariableId();
+                logger.info("Process: {}, variable: {}, changed to: {}.",
+                        event.getProcessInstance().getProcessName(), variableId,
+                        event.getNewValue());
+                String[] enqueueEvents = new String[]{
+                        "preBuildResult"
+                };
+                if (Arrays.asList(enqueueEvents).contains(variableId)) {
+                    variableChangedQueue.add(event);
+                }
+            }
+        };
+        customProcessListeners.add(processEventListener);
+
+        RuntimeEngine runtimeEngine = getRuntimeEngine();
+        KieSession kieSession = runtimeEngine.getKieSession();
+
+        //when
+        Map<String, Object> processParameters = new HashMap<>();
+        processParameters.put("containerId", "mock");
+        processParameters.put("serviceBaseUrl", "http://localhost:8080/demo-service/service");
+        processParameters.put("preBuildServiceUrl", "http://localhost:8080/demo-service/service/prebuild");
+        processParameters.put("preBuildTimeout", "not-a-number");
+
+        ProcessInstance processInstance = kieSession.startProcess(
+                "testProcess",
+                Collections.singletonMap("in_initData", processParameters));
+
+        manager.disposeRuntimeEngine(runtimeEngine);
+
+        //then
+        Map<String, Object> preBuildCallbackResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
+        System.out.println("preBuildCallbackResult: " + preBuildCallbackResult);
+        WorkItemHandlerRuntimeException exception = (WorkItemHandlerRuntimeException) preBuildCallbackResult.get("error");
+        logger.info("Expected exception: {}.", exception.getMessage());
+        Assert.assertNotNull(exception);
 
         customProcessListeners.remove(processEventListener);
     }
