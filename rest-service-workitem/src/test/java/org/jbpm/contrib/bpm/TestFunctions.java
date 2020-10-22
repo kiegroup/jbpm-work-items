@@ -45,10 +45,10 @@ public class TestFunctions implements java.io.Serializable {
     public static final String COMPLETION_TEMPLATE =("{ "
             + "   'buildConfigurationId': '@{input.buildConfiguration.id}', "
             + "   'scm': { "
-            + "      'url': '@{preBuildResult.response.scm.url}', "
-            + "      'revision': '@{preBuildResult.response.scm.revision}' "
+            + "      'url': '@{preBuildResult.?response.?scm.url}', "
+            + "      'revision': '@{preBuildResult.?response.?scm.revision}' "
             + "   }, "
-            + "   'completionStatus': '@{functions.getCompletionStatus(preBuildResult.?status, buildResult.?status)}' "
+            + "   'completionStatus': '@{functions.getCompletionStatus(preBuildResult.?status, ?buildResult.?status)}' "
             + "}").replace("'","\"");
 
     public TestFunctions() {
@@ -65,21 +65,37 @@ public class TestFunctions implements java.io.Serializable {
             logger.info("PrebuildStatus: " + prebuildStatus);
             logger.info("BuildStatus: " + buildStatus);
 
-            if (prebuildStatus.equals("FAILED") || buildStatus.equals("FAILED")) {
+            if (prebuildStatus.equals("FAILED")) {
                 logger.info("Operation FAILED.");
                 return ProcessCompletionStatus.FAILED;
             }
 
-            if (prebuildStatus.equals("CANCELLED") || buildStatus.equals("CANCELLED")) {
+            if (prebuildStatus.equals("CANCELLED")) {
                 logger.info("Operation CANCELLED.");
                 return ProcessCompletionStatus.CANCELLED;
             }
 
-            if (prebuildStatus.equals("TIMED_OUT") || buildStatus.equals("TIMED_OUT")) {
+            if (prebuildStatus.equals("TIMED_OUT")) {
                 logger.info("Operation TIMED_OUT.");
                 return ProcessCompletionStatus.TIMED_OUT;
             }
 
+            if (buildStatus != null) { //build task did run
+                if (buildStatus.equals("FAILED")) {
+                    logger.info("Operation FAILED.");
+                    return ProcessCompletionStatus.FAILED;
+                }
+
+                if (buildStatus.equals("CANCELLED")) {
+                    logger.info("Operation CANCELLED.");
+                    return ProcessCompletionStatus.CANCELLED;
+                }
+
+                if (buildStatus.equals("TIMED_OUT")) {
+                    logger.info("Operation TIMED_OUT.");
+                    return ProcessCompletionStatus.TIMED_OUT;
+                }
+            }
             logger.info("Process status SUCCESS.");
             return ProcessCompletionStatus.SUCCESS;
         } catch (Throwable e) {

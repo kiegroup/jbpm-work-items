@@ -50,7 +50,7 @@ public class ProcessVariableResolverFactory extends BaseVariableResolverFactory 
 
     @Override
     public boolean isResolveable(String name) {
-        logger.debug("Is variable {} resolvable in the processInstance {}.", name, processInstance.getId());
+        logger.trace("Is variable {} resolvable in the processInstance {}.", name, processInstance.getId());
         Object processInstanceVariable = null;
         try {
             processInstanceVariable = processInstance.getVariable(name);
@@ -58,20 +58,20 @@ public class ProcessVariableResolverFactory extends BaseVariableResolverFactory 
             //workaround for NPE in processInstance.getVariable
         }
         if (processInstanceVariable != null) {
-            logger.debug("Variable {} is resolvable in the processInstance {}.", name, processInstance.getId());
+            logger.trace("Variable {} is resolvable in the processInstance {}.", name, processInstance.getId());
             return true;
         } else if (nextFactory != null) {
-            logger.debug("Variable {} is NOT resolvable in the processInstance {}, searching in the next factory.", name, processInstance.getId());
+            logger.trace("Variable {} is NOT resolvable in the processInstance {}, searching in the next factory.", name, processInstance.getId());
             return nextFactory.isResolveable(name);
         } else {
-            logger.debug("Variable {} is NOT resolvable in the processInstance {}.", name, processInstance.getId());
+            logger.trace("Variable {} is NOT resolvable in the processInstance {}.", name, processInstance.getId());
             return false;
         }
     }
 
     @Override
     public VariableResolver getVariableResolver(String name) {
-        logger.debug("Getting resolver for {} in the processInstance {}.", name, processInstance.getId());
+        logger.trace("Getting resolver for {} in the processInstance {}.", name, processInstance.getId());
         Object processInstanceVariable = null;
         try {
             processInstanceVariable = processInstance.getVariable(name);
@@ -79,10 +79,10 @@ public class ProcessVariableResolverFactory extends BaseVariableResolverFactory 
             //workaround for NPE in processInstance.getVariable
         }
         if (processInstanceVariable != null) {
-            logger.debug("Returning SimpleValueResolver for {} in the processInstance {}.", name, processInstance.getId());
+            logger.trace("Returning SimpleValueResolver for {} in the processInstance {}.", name, processInstance.getId());
             return new SimpleValueResolver(escape(processInstanceVariable));
         } else if (nextFactory != null) {
-            logger.debug("Looking-up for next variable resolver for {}.", name);
+            logger.trace("Looking-up for next variable resolver for {}.", name);
             return nextFactory.getVariableResolver(name);
         }
         throw new UnresolveablePropertyException("Unable to resolve variable '" + name + "'");
