@@ -132,7 +132,7 @@ public class Service {
             throws JsonProcessingException {
         logger.info("> Build requested.");
         logger.info("> Request object: " + objectMapper.writeValueAsString(request));
-        fileEvent(EventType.BUILD_REQUESTED, request);
+        fireEvent(EventType.BUILD_REQUESTED, request);
         Callback callback = request.getCallback();
 
         Map<String, Object> result = new HashMap<>();
@@ -237,14 +237,14 @@ public class Service {
             request.setEntity(entity);
             HttpResponse response = httpClient.execute(request);
             logger.info("> Callback executed. Returned status: " + response.getStatusLine().getStatusCode());
-            fileEvent(EventType.CALLBACK_COMPLETED, callbackUrl);
+            fireEvent(EventType.CALLBACK_COMPLETED, callbackUrl);
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
         }
 
     }
 
-    private void fileEvent(EventType eventType, Object event) {
+    private void fireEvent(EventType eventType, Object event) {
         ((ServiceListener)servletContext.getAttribute("listener")).fire(eventType, event);
     }
 

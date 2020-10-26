@@ -104,6 +104,7 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
 
     @After
     public void postTestTeardown() throws Exception {
+        logger.info("Stopping http server ...");
         server.stop();
     }
 
@@ -286,7 +287,9 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
     @Test(timeout=15000)
     public void serviceTimesOutInternalCancelSucceeds() throws InterruptedException {
         BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
-        ProcessEventListener processEventListener = getProcessEventListener(variableChangedQueue, "preBuildResult");
+        ProcessEventListener processEventListener = getProcessEventListener(variableChangedQueue,
+                "preBuildResult",
+                "completionResult");
         customProcessListeners.add(processEventListener);
 
         RuntimeEngine runtimeEngine = getRuntimeEngine();
@@ -309,10 +312,17 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
         variableChangedQueue.take().getNewValue();
 
         Map<String, Object> preBuildResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
-        System.out.println("preBuildResult: " + preBuildResult);
+        logger.info("preBuildResult: " + preBuildResult);
         Map<String, Object> preBuildResponse = Maps.getStringObjectMap(preBuildResult, "response");
         Assert.assertEquals("true", preBuildResponse.get("cancelled"));
         Assert.assertEquals("TIMED_OUT", preBuildResult.get("status"));
+
+        //make sure final task (send result) has been called
+        //use getChangedVariable because of there are multiple events of preBuildResult in case of cancel
+        //TODO make sure it's correct that there are multiple events of preBuildResult in case of cancel
+        Map<String, Object> completionResult = getChangedVariable(variableChangedQueue, "completionResult");
+        logger.info("completionResult: " + completionResult);
+        Assert.assertEquals("SUCCESS", completionResult.get("status"));
 
         activeProcesses.waitAllCompleted();
         callbackCompleted.acquire();
@@ -490,4 +500,19 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
         };
     }
 
+    /**
+     * Get variable identified by variableName from the queue.
+     * All queue entries before this variable will be removed from the queue.
+     */
+    private Map<String, Object> getChangedVariable(
+            BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue, String variableName)
+            throws InterruptedException {
+        Map<String, Object> completionResult;
+        while (true) {
+            ProcessVariableChangedEvent event = variableChangedQueue.take();
+            if (event.getVariableId().equals(variableName)) {
+                return (Map<String, Object>) event.getNewValue();
+            }
+        }
+    }
 }
