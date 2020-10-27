@@ -73,9 +73,14 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
+     <dependency>
       <groupId>org.jbpm.contrib</groupId>
       <artifactId>kafka-workitem</artifactId>
+      <scope>test</scope>
+    </dependency>
+     <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-clients</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
