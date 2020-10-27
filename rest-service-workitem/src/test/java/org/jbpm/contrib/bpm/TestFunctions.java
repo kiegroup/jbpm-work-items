@@ -18,7 +18,8 @@ public class TestFunctions implements java.io.Serializable {
 
     private static final ObjectMapper jsonMapper = new ObjectMapper();
 
-    public static final String PREBUILD_TEMPLATE =("{  "
+    public String getPreBuildTemplate() {
+        return ("{  "
             + "   'scm': { "
             + "      'url': '@{input.buildConfiguration.scmRepoURL}', "
             + "      'revision': '@{input.buildConfiguration.scmRevision}' "
@@ -29,27 +30,32 @@ public class TestFunctions implements java.io.Serializable {
             + "      'method': 'POST' "
             + "   } "
             + "}").replace("'","\"");
+    }
 
-    public static final String BUILD_TEMPLATE=("{  "
-            + "   'buildScript': '@{input.buildConfiguration.buildScript}', "
-            + "   'scm': { "
-            + "      'url': '@{preBuildResult.response.scm.url}', "
-            + "      'revision': '@{preBuildResult.response.scm.revision}' "
-            + "   }, "
-            + "   'callback': { "
-            + "      'url': '@{system.callbackUrl}', "
-            + "      'method': 'POST' "
-            + "   } "
-            + "}").replace("'","\"");
+    public String getBuildTemplate() {
+        return ("{  "
+                + "   'buildScript': '@{input.buildConfiguration.buildScript}', "
+                + "   'scm': { "
+                + "      'url': '@{preBuildResult.response.scm.url}', "
+                + "      'revision': '@{preBuildResult.response.scm.revision}' "
+                + "   }, "
+                + "   'callback': { "
+                + "      'url': '@{system.callbackUrl}', "
+                + "      'method': 'POST' "
+                + "   } "
+                + "}").replace("'","\"");
+    }
 
-    public static final String COMPLETION_TEMPLATE =("{ "
-            + "   'buildConfigurationId': '@{input.buildConfiguration.id}', "
-            + "   'scm': { "
-            + "      'url': '@{preBuildResult.?response.?scm.url}', "
-            + "      'revision': '@{preBuildResult.?response.?scm.revision}' "
-            + "   }, "
-            + "   'completionStatus': '@{functions.getCompletionStatus(preBuildResult.?status, ?buildResult.?status)}' "
-            + "}").replace("'","\"");
+    public String getCompletionTemplate() {
+        return ("{ "
+                + "   'buildConfigurationId': '@{input.buildConfiguration.id}', "
+                + "   'scm': { "
+                + "      'url': '@{preBuildResult.?response.?scm.url}', "
+                + "      'revision': '@{preBuildResult.?response.?scm.revision}' "
+                + "   }, "
+                + "   'completionStatus': '@{functions.getCompletionStatus(preBuildResult.?status, ?buildResult.?status)}' "
+                + "}").replace("'","\"");
+    }
 
     public TestFunctions() {
     }

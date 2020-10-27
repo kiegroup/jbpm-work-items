@@ -210,7 +210,7 @@
         </bpmn2:assignment>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataInputAssociation>
-        <bpmn2:sourceRef>buildTemplate</bpmn2:sourceRef>
+        <bpmn2:sourceRef>#{functions.buildTemplate}</bpmn2:sourceRef>
         <bpmn2:targetRef>_16696BFC-5734-41D6-A1EB-790593184022_requestTemplateInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataInputAssociation>
@@ -327,7 +327,7 @@
         </bpmn2:assignment>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataInputAssociation>
-        <bpmn2:sourceRef>preBuildTemplate</bpmn2:sourceRef>
+        <bpmn2:sourceRef>#{functions.preBuildTemplate}</bpmn2:sourceRef>
         <bpmn2:targetRef>_49EBC507-1EA9-4652-B48C-EEEED0112241_requestTemplateInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataInputAssociation>
@@ -402,7 +402,7 @@
         </bpmn2:assignment>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataInputAssociation>
-        <bpmn2:sourceRef>completionTemplate</bpmn2:sourceRef>
+        <bpmn2:sourceRef>#{functions.completionTemplate}</bpmn2:sourceRef>
         <bpmn2:targetRef>_D19D239F-BE13-45E3-90F2-FEF1814939E9_requestTemplateInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataInputAssociation>
@@ -470,10 +470,6 @@ kcontext.setVariable("input",input);
 kcontext.setVariable("containerId","mock");
 
 TestFunctions.logInfo(kcontext,kcontext.getVariable("in_initData"));
-
-kcontext.setVariable("preBuildTemplate",TestFunctions.PREBUILD_TEMPLATE);
-kcontext.setVariable("buildTemplate",TestFunctions.BUILD_TEMPLATE);
-kcontext.setVariable("completionTemplate",TestFunctions.COMPLETION_TEMPLATE);
 
 kcontext.setVariable("preBuildResult",new java.util.HashMap());
 kcontext.setVariable("buildResult",new java.util.HashMap());
