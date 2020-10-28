@@ -159,6 +159,7 @@
     </dependency>
   </dependencies>
 
+  <!-- Meaningless change just to test the builds -->
   <build>
     <pluginManagement>
       <plugins>
@@ -168,7 +169,7 @@
           <executions>
             <execution>
               <id>enforce-direct-dependencies</id>
-              <phase>none</phase>
+              <phase>validate</phase>
               <goals>
                 <goal>enforce</goal>
               </goals>
