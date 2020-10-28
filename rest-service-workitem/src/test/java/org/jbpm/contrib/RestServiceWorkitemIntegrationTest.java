@@ -67,9 +67,9 @@ import static org.jbpm.contrib.restservice.Constant.KIE_HOST_SYSTEM_PROPERTY;
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
  * @author Ryszard Kozmik
  */
-public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
+public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
 
-    private final Logger logger = LoggerFactory.getLogger(RestServiceWorkitemIT.class);
+    private final Logger logger = LoggerFactory.getLogger(RestServiceWorkitemIntegrationTest.class);
 
     private static int PORT = 8080;
     private static String DEFAULT_HOST = "localhost";
@@ -80,7 +80,7 @@ public class RestServiceWorkitemIT extends JbpmJUnitBaseTestCase {
     private final ActiveTasks activeProcesses = new ActiveTasks();
     private final ServiceListener serviceListener = new ServiceListener();
 
-    public RestServiceWorkitemIT() {
+    public RestServiceWorkitemIntegrationTest() {
         super(true, true);
     }
 
