@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
@@ -75,10 +75,10 @@ public class GoogleCalendarWorkitemHandlerTest extends AbstractBaseTest {
             when(auth.getAuthorizedCalendar(anyString(),
                                             anyString())).thenReturn(client);
             when(client.events()).thenReturn(clientEvents);
-            when(clientEvents.insert(anyString(),
-                                     anyObject())).thenReturn(calendarEventsInsert);
+            when(clientEvents.insert(any(),
+                                     any())).thenReturn(calendarEventsInsert);
             when(calendarEventsInsert.execute()).thenReturn(new com.google.api.services.calendar.model.Event());
-            when(clientEvents.list(anyString())).thenReturn(calendarEventsList);
+            when(clientEvents.list(any())).thenReturn(calendarEventsList);
             when(calendarEventsList.execute()).thenReturn(new com.google.api.services.calendar.model.Events());
         } catch (Exception e) {
             fail(e.getMessage());
