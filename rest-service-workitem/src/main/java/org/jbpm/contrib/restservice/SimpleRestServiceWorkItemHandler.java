@@ -207,36 +207,41 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
             throw new IOException(message);
         }
 
-        JsonNode root;
-        Map<String, Object> serviceInvocationResponse;
-        try {
-            root = Mapper.getInstance().readTree(httpResponse.getEntity().getContent());
-            serviceInvocationResponse = Mapper.getInstance().convertValue(root, new TypeReference<Map<String, Object>>(){});
-        } catch (Exception e) {
-            String message = MessageFormat.format("Cannot parse service invocation response. ProcessInstanceId {0}.", processInstance.getId());
-            logger.debug(message);
-            throw e;
-        }
-
-        try {
-            String cancelUrl = "";
-            if (!Strings.isEmpty(cancelUrlTemplate)) {
-                logger.debug("Setting cancel url from template: {}.", cancelUrlTemplate);
-                CompiledTemplate compiled = compileTemplate(cancelUrlTemplate);
-                requestBodyEvaluated = (String) TemplateRuntime
-                        .execute(compiled, null, variableResolverFactory);
-            } else {
-                logger.debug("Setting cancel url from json pointer: {}.", cancelUrlJsonPointer);
-                JsonNode cancelUrlNode = root.at(cancelUrlJsonPointer);
-                if (!cancelUrlNode.isMissingNode()) {
-                    cancelUrl = cancelUrlNode.asText();
-                }
+        if (statusCode == 204) {
+            completeWorkItem(manager, workItemId, Collections.emptyMap(), "");
+        } else {
+            JsonNode root;
+            Map<String, Object> serviceInvocationResponse;
+            try {
+                root = Mapper.getInstance().readTree(httpResponse.getEntity().getContent());
+                serviceInvocationResponse = Mapper.getInstance()
+                        .convertValue(root, new TypeReference<Map<String, Object>>() {});
+            } catch (Exception e) {
+                String message = MessageFormat.format("Cannot parse service invocation response. ProcessInstanceId {0}.",
+                        processInstance.getId());
+                logger.debug(message);
+                throw e;
             }
-            completeWorkItem(manager, workItemId, serviceInvocationResponse, cancelUrl);
-        } catch (Exception e) {
-            String message = MessageFormat.format("Cannot read cancel url from service invocation response. ProcessInstanceId {0}.", processInstance.getId());
-            logger.debug(message);
-            throw e;
+            try {
+                String cancelUrl = "";
+                if (!Strings.isEmpty(cancelUrlTemplate)) {
+                    logger.debug("Setting cancel url from template: {}.", cancelUrlTemplate);
+                    CompiledTemplate compiled = compileTemplate(cancelUrlTemplate);
+                    requestBodyEvaluated = (String) TemplateRuntime
+                            .execute(compiled, null, variableResolverFactory);
+                } else {
+                    logger.debug("Setting cancel url from json pointer: {}.", cancelUrlJsonPointer);
+                    JsonNode cancelUrlNode = root.at(cancelUrlJsonPointer);
+                    if (!cancelUrlNode.isMissingNode()) {
+                        cancelUrl = cancelUrlNode.asText();
+                    }
+                }
+                completeWorkItem(manager, workItemId, serviceInvocationResponse, cancelUrl);
+            } catch (Exception e) {
+                String message = MessageFormat.format("Cannot read cancel url from service invocation response. ProcessInstanceId {0}.", processInstance.getId());
+                logger.debug(message);
+                throw e;
+            }
         }
     }
 
