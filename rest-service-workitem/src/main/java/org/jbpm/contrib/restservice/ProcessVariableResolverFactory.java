@@ -1,6 +1,6 @@
 package org.jbpm.contrib.restservice;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.jbpm.contrib.restservice.util.Json;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.mvel2.ScriptRuntimeException;
 import org.mvel2.UnresolveablePropertyException;
@@ -9,12 +9,6 @@ import org.mvel2.integration.impl.BaseVariableResolverFactory;
 import org.mvel2.integration.impl.SimpleValueResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Process instance variable resolver with chaining (nextFactory) support
@@ -80,7 +74,7 @@ public class ProcessVariableResolverFactory extends BaseVariableResolverFactory 
         }
         if (processInstanceVariable != null) {
             logger.trace("Returning SimpleValueResolver for {} in the processInstance {}.", name, processInstance.getId());
-            return new SimpleValueResolver(escape(processInstanceVariable));
+            return new SimpleValueResolver(Json.escape(processInstanceVariable));
         } else if (nextFactory != null) {
             logger.trace("Looking-up for next variable resolver for {}.", name);
             return nextFactory.getVariableResolver(name);
@@ -88,28 +82,4 @@ public class ProcessVariableResolverFactory extends BaseVariableResolverFactory 
         throw new UnresolveablePropertyException("Unable to resolve variable '" + name + "'");
     }
 
-    private Object escape(Object o) {
-        if (o == null) {
-            return null;
-        } else if (o instanceof String) {
-            return StringEscapeUtils.escapeJson((String) o);
-        } else if (o instanceof Map) {
-            Map<?, ?> m = (Map)o;
-            Map result = new HashMap();
-            for (Map.Entry e : m.entrySet()) {
-                result.put(escape(e.getKey()), escape(e.getValue()));
-            }
-            return result;
-        } else if (o instanceof List) {
-            return ((List<?>) o).stream()
-                    .map(this::escape)
-                    .collect(Collectors.toList());
-        } else if (o instanceof Set) {
-            return ((Set<?>) o).stream()
-                    .map(this::escape)
-                    .collect(Collectors.toSet());
-        } else {
-            return o;
-        }
-    }
 }

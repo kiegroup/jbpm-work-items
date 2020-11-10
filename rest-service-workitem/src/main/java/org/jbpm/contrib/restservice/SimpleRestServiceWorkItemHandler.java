@@ -182,8 +182,7 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
         String requestBodyEvaluated;
         if (requestTemplate != null && !requestTemplate.equals("")) {
             CompiledTemplate compiled = compileTemplate(requestTemplate);
-            requestBodyEvaluated = (String) TemplateRuntime
-                    .execute(compiled, null, variableResolverFactory);
+            requestBodyEvaluated = (String) TemplateRuntime.execute(compiled, null, variableResolverFactory);
         } else {
             requestBodyEvaluated = "";
         }

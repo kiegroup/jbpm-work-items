@@ -460,7 +460,7 @@
       </bpmn2:extensionElements>
       <bpmn2:incoming>_24DD7E30-27CA-4FF0-A6F2-50687F1F10D3</bpmn2:incoming>
       <bpmn2:outgoing>_832D797F-E2C9-4D6A-BEB3-260A99659ACE</bpmn2:outgoing>
-      <bpmn2:script>com.fasterxml.jackson.databind.ObjectMapper mapper = new ObjectMapper();
+      <bpmn2:script>org.jbpm.contrib.restservice.util.Mapper mapper = new org.jbpm.contrib.restservice.util.Mapper();
 kcontext.setVariable("jsonMapper",mapper);
 
 kcontext.setVariable("functions",new TestFunctions());

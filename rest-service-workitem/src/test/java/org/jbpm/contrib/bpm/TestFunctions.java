@@ -53,7 +53,8 @@ public class TestFunctions implements java.io.Serializable {
                 + "      'url': '@{preBuildResult.?response.?scm.url}', "
                 + "      'revision': '@{preBuildResult.?response.?scm.revision}' "
                 + "   }, "
-                + "   'completionStatus': '@{functions.getCompletionStatus(preBuildResult.?status, ?buildResult.?status)}' "
+                + "   'completionStatus': '@{functions.getCompletionStatus(preBuildResult.?status, ?buildResult.?status)}', "
+                + "   'labels': @{jsonMapper.writeValueAsString(input.buildConfiguration.labels, true)} "
                 + "}").replace("'","\"");
     }
 
