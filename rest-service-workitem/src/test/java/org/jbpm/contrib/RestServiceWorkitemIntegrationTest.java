@@ -151,9 +151,14 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
                 (v) -> callbackCompleted.release());
 
         //when
+        Map<String,Object> labels = new HashMap<>();
+        labels.put("A", 1);
+        labels.put("lines", "two\nlines");
+        labels.put("quote", "String \"literal\".");
+
         ProcessInstance processInstance = kieSession.startProcess(
                 "testProcess",
-                Collections.singletonMap("in_initData", getProcessParameters(1, 30, 1, 30)));
+                Collections.singletonMap("in_initData", getProcessParameters(1, 30, 1, 30, labels)));
 
         manager.disposeRuntimeEngine(runtimeEngine);
 
@@ -177,6 +182,9 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         Map<String, Object> completionResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
         System.out.println("completionResult: " + completionResult);
         Assert.assertEquals("SUCCESS", completionResult.get("status"));
+        Map<String, Object> responseLabels = (Map<String, Object>) ((Map<String, Object>) completionResult.get("response")).get("labels");
+        Assert.assertEquals(labels.get("lines"), responseLabels.get("lines"));
+        Assert.assertEquals(labels.get("quote"), responseLabels.get("quote"));
 
         logger.info("Waiting for callback to complete...");
         callbackCompleted.acquire(2);
@@ -247,7 +255,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         //when
         ProcessInstance processInstance = kieSession.startProcess(
                 "testProcess",
-                Collections.singletonMap("in_initData", getProcessParameters(10, 30, 1, 30)));
+                Collections.singletonMap("in_initData", getProcessParameters(10, 30, 1, 30, Collections.emptyMap())));
         manager.disposeRuntimeEngine(runtimeEngine);
 
         //skip variable initialization
@@ -303,7 +311,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         //when
         ProcessInstance processInstance = kieSession.startProcess(
                 "testProcess",
-                Collections.singletonMap("in_initData", getProcessParameters(10, 2, 1, 30)));
+                Collections.singletonMap("in_initData", getProcessParameters(10, 2, 1, 30, Collections.emptyMap())));
         manager.disposeRuntimeEngine(runtimeEngine);
         //skip variable initialization
         variableChangedQueue.take(); //preBuildResult
@@ -351,7 +359,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         //when
         ProcessInstance processInstance = kieSession.startProcess(
                 "testProcess",
-                Collections.singletonMap("in_initData", getProcessParameters(10, 2, 10, 2)));
+                Collections.singletonMap("in_initData", getProcessParameters(10, 2, 10, 2, Collections.emptyMap())));
         manager.disposeRuntimeEngine(runtimeEngine);
         //skip variable initialization
         variableChangedQueue.take();
@@ -459,7 +467,12 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         }
     }
 
-    private Map<String, Object> getProcessParameters(int preBuildCallbackDelay, int preBuildTimeout, int cancelDelay, int preBuildCancelTimeout) {
+    private Map<String, Object> getProcessParameters(
+            int preBuildCallbackDelay,
+            int preBuildTimeout,
+            int cancelDelay,
+            int preBuildCancelTimeout,
+            Map<String, Object> labels) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("containerId", "mock");
         parameters.put("serviceBaseUrl", "http://localhost:8080/demo-service/service");
@@ -472,6 +485,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         buildConfiguration.put("scmRevision", "master");
         buildConfiguration.put("preBuildSyncEnabled", "true");
         buildConfiguration.put("buildScript", "true");
+        buildConfiguration.put("labels", labels);
         parameters.put("buildConfiguration", buildConfiguration);
         return parameters;
     }

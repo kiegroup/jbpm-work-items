@@ -153,6 +153,7 @@ public class Service {
         logger.info("> Complete requested.");
         logger.info("> Request object: " + objectMapper.writeValueAsString(completeRequest));
         Map<String, Object> response = new HashMap<>();
+        response.put("labels", completeRequest.getLabels());
         return Response.status(200).entity(response).build();
     }
 
