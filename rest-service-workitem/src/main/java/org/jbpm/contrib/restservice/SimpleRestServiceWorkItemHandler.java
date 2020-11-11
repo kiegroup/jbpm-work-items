@@ -50,6 +50,7 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.mvel2.templates.TemplateCompiler.compileTemplate;
 
@@ -131,14 +132,18 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
                         cancelUrlJsonPointer,
                         cancelUrlTemplate,
                         requestHeaders);
-            } catch (Exception e) {
+            } catch (RemoteInvocationException e) {
                 String message = MessageFormat.format("Failed to invoke remote service. ProcessInstanceId {0}.", processInstanceId);
                 logger.warn(message, e);
-                handleException(e);
+                completeWorkItem(manager, workItem.getId(), e);
+            } catch (ResponseProcessingException e) {
+                String message = MessageFormat.format("Failed to process response. ProcessInstanceId {0}.", processInstanceId);
+                logger.warn(message, e);
+                completeWorkItem(manager, workItem.getId(), e);
             }
         } catch(Throwable cause) {
-            logger.error("Failed to execute workitem handler due to the following error.",cause);
-            handleException(cause);
+            logger.error("Failed to execute workitem handler due to the following error.", cause);
+            completeWorkItem(manager, workItem.getId(), cause);
         }
     }
 
@@ -173,7 +178,7 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
             String containerId,
             String cancelUrlJsonPointer,
             String cancelUrlTemplate,
-            String requestHeaders) throws IOException {
+            String requestHeaders) throws RemoteInvocationException, ResponseProcessingException {
 
         logger.info("requestTemplate: {}", requestTemplate);
 
@@ -202,12 +207,11 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
 
         if (statusCode < 200 || statusCode >= 300 ) {
             String message = MessageFormat.format("Remote service responded with error status code {0} and reason: {1}. ProcessInstanceId {2}.", statusCode, httpResponse.getStatusLine().getReasonPhrase(), processInstance.getId());
-            logger.debug(message);
-            throw new IOException(message);
+            throw new RemoteInvocationException(message);
         }
 
         if (statusCode == 204) {
-            completeWorkItem(manager, workItemId, Collections.emptyMap(), "");
+            completeWorkItem(manager, workItemId, statusCode, Collections.emptyMap(), "");
         } else {
             JsonNode root;
             Map<String, Object> serviceInvocationResponse;
@@ -218,11 +222,10 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
             } catch (Exception e) {
                 String message = MessageFormat.format("Cannot parse service invocation response. ProcessInstanceId {0}.",
                         processInstance.getId());
-                logger.debug(message);
-                throw e;
+                throw new ResponseProcessingException(message, e);
             }
+            String cancelUrl = "";
             try {
-                String cancelUrl = "";
                 if (!Strings.isEmpty(cancelUrlTemplate)) {
                     logger.debug("Setting cancel url from template: {}.", cancelUrlTemplate);
                     CompiledTemplate compiled = compileTemplate(cancelUrlTemplate);
@@ -235,12 +238,11 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
                         cancelUrl = cancelUrlNode.asText();
                     }
                 }
-                completeWorkItem(manager, workItemId, serviceInvocationResponse, cancelUrl);
             } catch (Exception e) {
                 String message = MessageFormat.format("Cannot read cancel url from service invocation response. ProcessInstanceId {0}.", processInstance.getId());
-                logger.debug(message);
-                throw e;
+                throw new ResponseProcessingException(message, e);
             }
+            completeWorkItem(manager, workItemId, statusCode, serviceInvocationResponse, cancelUrl);
         }
     }
 
@@ -289,7 +291,7 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
             Map<String,String> requestHeaders,
             int readTimeout,
             int connectTimeout,
-            int requestTimeout) throws IOException {
+            int requestTimeout) throws RemoteInvocationException {
         RequestConfig config = RequestConfig.custom()
                 .setSocketTimeout(readTimeout)
                 .setConnectTimeout(connectTimeout)
@@ -315,7 +317,13 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
 
         logger.info("Invoking remote endpoint {} {} Headers: {} Body: {}.", httpMethod, url, requestHeaders, jsonContent);
 
-        return httpClient.execute(requestBuilder.build());
+        HttpResponse httpResponse;
+        try {
+            httpResponse = httpClient.execute(requestBuilder.build());
+        } catch (IOException e) {
+            throw new RemoteInvocationException("Unable to invoke remote endpoint.", e);
+        }
+        return httpResponse;
     }
 
 
@@ -334,23 +342,55 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
     }
 
     /**
-     * Complete WorkItem and store the result.
+     * Complete WorkItem and store the http service response.
      * Long running operations are not completed using this handler but via REST api call.
-     * This method it used to complete the task in case of internal timeout/cancel or skipped execution.
      */
     private void completeWorkItem(
             WorkItemManager manager,
             long workItemId,
+            int responseCode,
             Map<String, Object> serviceInvocationResult,
             String cancelUrl) {
+        completeWorkItem(
+                manager,
+                workItemId,
+                responseCode,
+                serviceInvocationResult,
+                cancelUrl,
+                Optional.empty());
+    }
+
+    private void completeWorkItem(WorkItemManager manager, long workItemId, Throwable cause) {
+        completeWorkItem(
+                manager,
+                workItemId,
+                -1,
+                Collections.emptyMap(),
+                "",
+                Optional.ofNullable(cause));
+    }
+
+    private void completeWorkItem(
+            WorkItemManager manager,
+            long workItemId,
+            int responseCode,
+            Map<String, Object> serviceInvocationResult,
+            String cancelUrl,
+            Optional<Throwable> cause) {
         Map<String, Object> results = new HashMap<>();
+        results.put("responseCode", responseCode);
         results.put("result", serviceInvocationResult);
         results.put("cancelUrl", cancelUrl);
+        cause.ifPresent(c -> {
+            results.put("error", c);
+        });
+        logger.info("Rest service workitem completion result {}.", results);
         manager.completeWorkItem(workItemId, results);
     }
 
+
     @Override
     public void abortWorkItem(WorkItem workItem, WorkItemManager manager) {
-        completeWorkItem(manager, workItem.getId(), Collections.singletonMap("aborted", "true"), "");
+        completeWorkItem(manager, workItem.getId(), new WorkitemAbortedException());
     }
 }

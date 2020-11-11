@@ -21,7 +21,6 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 import org.jbpm.contrib.demoservices.EventType;
 import org.jbpm.contrib.demoservices.Service;
 import org.jbpm.contrib.demoservices.ServiceListener;
@@ -30,6 +29,7 @@ import org.jbpm.contrib.demoservices.dto.PreBuildRequest;
 import org.jbpm.contrib.demoservices.dto.Scm;
 import org.jbpm.contrib.mockserver.WorkItems;
 import org.jbpm.contrib.restservice.Constant;
+import org.jbpm.contrib.restservice.RemoteInvocationException;
 import org.jbpm.contrib.restservice.SimpleRestServiceWorkItemHandler;
 import org.jbpm.contrib.restservice.util.Maps;
 import org.jbpm.test.JbpmJUnitBaseTestCase;
@@ -194,7 +194,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         serviceListener.unsubscribe(subscription);
     }
 
-    @Test (timeout=15000)
+    @Test (timeout=30000)
     public void shouldCatchException() throws Exception {
         BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
 
@@ -206,11 +206,8 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         KieSession kieSession = runtimeEngine.getKieSession();
 
         //when
-        Map<String, Object> processParameters = new HashMap<>();
-        processParameters.put("containerId", "mock");
-        processParameters.put("serviceBaseUrl", "http://localhost:8080/demo-service/service");
-        processParameters.put("preBuildServiceUrl", "http://localhost:8080/demo-service/service/prebuild");
-        processParameters.put("preBuildTimeout", "not-a-number");
+        Map<String, Object> processParameters = getProcessParameters(2, 10, 10, 10, Collections.emptyMap());
+        processParameters.put("preBuildServiceUrl", "http://host-not-found:8080/");
 
         ProcessInstance processInstance = kieSession.startProcess(
                 "testProcess",
@@ -224,7 +221,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
 
         Map<String, Object> preBuildCallbackResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
         System.out.println("preBuildCallbackResult: " + preBuildCallbackResult);
-        WorkItemHandlerRuntimeException exception = (WorkItemHandlerRuntimeException) preBuildCallbackResult.get("error");
+        RemoteInvocationException exception = (RemoteInvocationException) preBuildCallbackResult.get("error");
         logger.info("Expected exception: {}.", exception.getMessage());
         Assert.assertNotNull(exception);
 
@@ -399,7 +396,8 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
             public void afterVariableChanged(ProcessVariableChangedEvent event) {
                 String variableId = event.getVariableId();
                 logger.info("Process: {}, variable: {}, changed to: {}.",
-                        event.getProcessInstance().getProcessName(), variableId,
+                        event.getProcessInstance().getProcessName(),
+                        variableId,
                         event.getNewValue());
 
                 String[] enqueueEvents = new String[]{
@@ -505,7 +503,8 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
             public void afterVariableChanged(ProcessVariableChangedEvent event) {
                 String variableId = event.getVariableId();
                 logger.info("Process: {}, variable: {}, changed to: {}.",
-                        event.getProcessInstance().getProcessName(), variableId,
+                        event.getProcessInstance().getProcessName(),
+                        variableId,
                         event.getNewValue());
                 if (Arrays.asList(enqueueEvents).contains(variableId)) {
                     variableChangedQueue.add(event);
