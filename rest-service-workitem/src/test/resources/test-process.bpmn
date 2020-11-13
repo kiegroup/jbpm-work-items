@@ -30,11 +30,13 @@
   <bpmn2:itemDefinition id="__49EBC507-1EA9-4652-B48C-EEEED0112241_taskTimeoutInputXItem" structureRef="Integer"/>
   <bpmn2:itemDefinition id="__49EBC507-1EA9-4652-B48C-EEEED0112241_cancelTimeoutInputXItem" structureRef="Integer"/>
   <bpmn2:itemDefinition id="__49EBC507-1EA9-4652-B48C-EEEED0112241_cancelUrlJsonPointerInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__49EBC507-1EA9-4652-B48C-EEEED0112241_requestTemplateInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__49EBC507-1EA9-4652-B48C-EEEED0112241_requestHeadersInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__49EBC507-1EA9-4652-B48C-EEEED0112241_cancelMethodInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__49EBC507-1EA9-4652-B48C-EEEED0112241_cancelHeadersInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__49EBC507-1EA9-4652-B48C-EEEED0112241_successEvalTemplateInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__49EBC507-1EA9-4652-B48C-EEEED0112241_requestTemplateInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__49EBC507-1EA9-4652-B48C-EEEED0112241_retryDelayInputXItem" structureRef="Integer"/>
+  <bpmn2:itemDefinition id="__49EBC507-1EA9-4652-B48C-EEEED0112241_maxRetriesInputXItem" structureRef="Integer"/>
   <bpmn2:itemDefinition id="__49EBC507-1EA9-4652-B48C-EEEED0112241_resultOutputXItem" structureRef="java.util.Map"/>
   <bpmn2:itemDefinition id="__16696BFC-5734-41D6-A1EB-790593184022_cancelInputXItem" structureRef="Boolean"/>
   <bpmn2:itemDefinition id="__16696BFC-5734-41D6-A1EB-790593184022_requestMethodInputXItem" structureRef="String"/>
@@ -264,11 +266,13 @@
         <bpmn2:dataInput id="_49EBC507-1EA9-4652-B48C-EEEED0112241_taskTimeoutInputX" drools:dtype="Integer" itemSubjectRef="__49EBC507-1EA9-4652-B48C-EEEED0112241_taskTimeoutInputXItem" name="taskTimeout"/>
         <bpmn2:dataInput id="_49EBC507-1EA9-4652-B48C-EEEED0112241_cancelTimeoutInputX" drools:dtype="Integer" itemSubjectRef="__49EBC507-1EA9-4652-B48C-EEEED0112241_cancelTimeoutInputXItem" name="cancelTimeout"/>
         <bpmn2:dataInput id="_49EBC507-1EA9-4652-B48C-EEEED0112241_cancelUrlJsonPointerInputX" drools:dtype="String" itemSubjectRef="__49EBC507-1EA9-4652-B48C-EEEED0112241_cancelUrlJsonPointerInputXItem" name="cancelUrlJsonPointer"/>
-        <bpmn2:dataInput id="_49EBC507-1EA9-4652-B48C-EEEED0112241_requestTemplateInputX" drools:dtype="String" itemSubjectRef="__49EBC507-1EA9-4652-B48C-EEEED0112241_requestTemplateInputXItem" name="requestTemplate"/>
         <bpmn2:dataInput id="_49EBC507-1EA9-4652-B48C-EEEED0112241_requestHeadersInputX" drools:dtype="String" itemSubjectRef="__49EBC507-1EA9-4652-B48C-EEEED0112241_requestHeadersInputXItem" name="requestHeaders"/>
         <bpmn2:dataInput id="_49EBC507-1EA9-4652-B48C-EEEED0112241_cancelMethodInputX" drools:dtype="String" itemSubjectRef="__49EBC507-1EA9-4652-B48C-EEEED0112241_cancelMethodInputXItem" name="cancelMethod"/>
         <bpmn2:dataInput id="_49EBC507-1EA9-4652-B48C-EEEED0112241_cancelHeadersInputX" drools:dtype="String" itemSubjectRef="__49EBC507-1EA9-4652-B48C-EEEED0112241_cancelHeadersInputXItem" name="cancelHeaders"/>
         <bpmn2:dataInput id="_49EBC507-1EA9-4652-B48C-EEEED0112241_successEvalTemplateInputX" drools:dtype="String" itemSubjectRef="__49EBC507-1EA9-4652-B48C-EEEED0112241_successEvalTemplateInputXItem" name="successEvalTemplate"/>
+        <bpmn2:dataInput id="_49EBC507-1EA9-4652-B48C-EEEED0112241_requestTemplateInputX" drools:dtype="String" itemSubjectRef="__49EBC507-1EA9-4652-B48C-EEEED0112241_requestTemplateInputXItem" name="requestTemplate"/>
+        <bpmn2:dataInput id="_49EBC507-1EA9-4652-B48C-EEEED0112241_retryDelayInputX" drools:dtype="Integer" itemSubjectRef="__49EBC507-1EA9-4652-B48C-EEEED0112241_retryDelayInputXItem" name="retryDelay"/>
+        <bpmn2:dataInput id="_49EBC507-1EA9-4652-B48C-EEEED0112241_maxRetriesInputX" drools:dtype="Integer" itemSubjectRef="__49EBC507-1EA9-4652-B48C-EEEED0112241_maxRetriesInputXItem" name="maxRetries"/>
         <bpmn2:dataOutput id="_49EBC507-1EA9-4652-B48C-EEEED0112241_resultOutputX" drools:dtype="java.util.Map" itemSubjectRef="__49EBC507-1EA9-4652-B48C-EEEED0112241_resultOutputXItem" name="result"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_49EBC507-1EA9-4652-B48C-EEEED0112241_requestMethodInputX</bpmn2:dataInputRefs>
@@ -277,11 +281,13 @@
           <bpmn2:dataInputRefs>_49EBC507-1EA9-4652-B48C-EEEED0112241_taskTimeoutInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_49EBC507-1EA9-4652-B48C-EEEED0112241_cancelTimeoutInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_49EBC507-1EA9-4652-B48C-EEEED0112241_cancelUrlJsonPointerInputX</bpmn2:dataInputRefs>
-          <bpmn2:dataInputRefs>_49EBC507-1EA9-4652-B48C-EEEED0112241_requestTemplateInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_49EBC507-1EA9-4652-B48C-EEEED0112241_requestHeadersInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_49EBC507-1EA9-4652-B48C-EEEED0112241_cancelMethodInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_49EBC507-1EA9-4652-B48C-EEEED0112241_cancelHeadersInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_49EBC507-1EA9-4652-B48C-EEEED0112241_successEvalTemplateInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_49EBC507-1EA9-4652-B48C-EEEED0112241_requestTemplateInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_49EBC507-1EA9-4652-B48C-EEEED0112241_retryDelayInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_49EBC507-1EA9-4652-B48C-EEEED0112241_maxRetriesInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
           <bpmn2:dataOutputRefs>_49EBC507-1EA9-4652-B48C-EEEED0112241_resultOutputX</bpmn2:dataOutputRefs>
@@ -356,6 +362,20 @@
         <bpmn2:assignment>
           <bpmn2:from xsi:type="bpmn2:tFormalExpression"><![CDATA[@{status=="SUCCESS"}]]></bpmn2:from>
           <bpmn2:to xsi:type="bpmn2:tFormalExpression"><![CDATA[_49EBC507-1EA9-4652-B48C-EEEED0112241_successEvalTemplateInputX]]></bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation>
+        <bpmn2:targetRef>_49EBC507-1EA9-4652-B48C-EEEED0112241_retryDelayInputX</bpmn2:targetRef>
+        <bpmn2:assignment>
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression"><![CDATA[#{input.retryDelay}]]></bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression"><![CDATA[_49EBC507-1EA9-4652-B48C-EEEED0112241_retryDelayInputX]]></bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation>
+        <bpmn2:targetRef>_49EBC507-1EA9-4652-B48C-EEEED0112241_maxRetriesInputX</bpmn2:targetRef>
+        <bpmn2:assignment>
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression"><![CDATA[#{input.maxRetries}]]></bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression"><![CDATA[_49EBC507-1EA9-4652-B48C-EEEED0112241_maxRetriesInputX]]></bpmn2:to>
         </bpmn2:assignment>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
@@ -770,7 +790,7 @@ kcontext.setVariable("preBuildCancel",true);</bpmn2:script>
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_G8d2sPbkEDi9G9ko9bHzUA</bpmn2:source>
-    <bpmn2:target>_G8d2sPbkEDi9G9ko9bHzUA</bpmn2:target>
+    <bpmn2:source>_qy_1AAcSEDm0HdFLC5_UVw</bpmn2:source>
+    <bpmn2:target>_qy_1AAcSEDm0HdFLC5_UVw</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

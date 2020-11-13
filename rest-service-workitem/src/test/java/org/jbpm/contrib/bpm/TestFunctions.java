@@ -72,6 +72,11 @@ public class TestFunctions implements java.io.Serializable {
             logger.info("PrebuildStatus: " + prebuildStatus);
             logger.info("BuildStatus: " + buildStatus);
 
+            if (prebuildStatus == null) {
+                logger.info("Operation failed with SYSTEM_ERROR.");
+                return ProcessCompletionStatus.SYSTEM_ERROR;
+            }
+
             if (prebuildStatus.equals("FAILED")) {
                 logger.info("Operation FAILED.");
                 return ProcessCompletionStatus.FAILED;

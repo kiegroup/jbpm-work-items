@@ -168,19 +168,19 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         variableChangedQueue.take(); //buildResult
 
         Map<String, Object> preBuildCallbackResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
-        System.out.println("preBuildCallbackResult: " + preBuildCallbackResult);
+        logger.info("preBuildCallbackResult: " + preBuildCallbackResult);
         Map<String, Object> preBuildResponse = Maps.getStringObjectMap(preBuildCallbackResult, "response");
         Assert.assertEquals("new-scm-tag", Maps.getStringObjectMap(preBuildResponse, "scm").get("revision"));
         Map<String, Object> initialResponse = Maps.getStringObjectMap(preBuildCallbackResult, "initialResponse");
         Assert.assertTrue(initialResponse.get("cancelUrl").toString().startsWith("http://localhost:8080/demo-service/service/cancel/"));
 
         Map<String, Object> buildCallbackResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
-        System.out.println("buildCallbackResult: " + buildCallbackResult);
+        logger.info("buildCallbackResult: " + buildCallbackResult);
         Map<String, Object> buildResponse = Maps.getStringObjectMap(preBuildCallbackResult, "response");
         Assert.assertEquals("SUCCESS", buildResponse.get("status"));
 
         Map<String, Object> completionResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
-        System.out.println("completionResult: " + completionResult);
+        logger.info("completionResult: " + completionResult);
         Assert.assertEquals("SUCCESS", completionResult.get("status"));
         Map<String, Object> responseLabels = (Map<String, Object>) ((Map<String, Object>) completionResult.get("response")).get("labels");
         Assert.assertEquals(labels.get("lines"), responseLabels.get("lines"));
@@ -194,7 +194,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         serviceListener.unsubscribe(subscription);
     }
 
-    @Test (timeout=30000)
+    @Test (timeout=20000)
     public void shouldCatchException() throws Exception {
         BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
 
@@ -220,10 +220,59 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         variableChangedQueue.take(); //preBuildResult
 
         Map<String, Object> preBuildCallbackResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
-        System.out.println("preBuildCallbackResult: " + preBuildCallbackResult);
+        logger.info("preBuildCallbackResult: " + preBuildCallbackResult);
         RemoteInvocationException exception = (RemoteInvocationException) preBuildCallbackResult.get("error");
         logger.info("Expected exception: {}.", exception.getMessage());
         Assert.assertNotNull(exception);
+
+        customProcessListeners.remove(processEventListener);
+    }
+
+    @Test (timeout=20000)
+    public void shouldRetryFailedRequest() throws Exception {
+        BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
+
+        ProcessEventListener processEventListener = getProcessEventListener(variableChangedQueue, "preBuildResult", "retryAttempt", "completionResult");
+
+        customProcessListeners.add(processEventListener);
+
+        RuntimeEngine runtimeEngine = getRuntimeEngine();
+        KieSession kieSession = runtimeEngine.getKieSession();
+
+        //when
+        Map<String, Object> processParameters = getProcessParameters(2, 10, 10, 10, Collections.emptyMap());
+        processParameters.put("preBuildServiceUrl", "http://host-not-found:8080/");
+        processParameters.put("retryDelay", 250);
+        processParameters.put("maxRetries", 3);
+
+        ProcessInstance processInstance = kieSession.startProcess(
+                "testProcess",
+                Collections.singletonMap("in_initData", processParameters));
+
+        manager.disposeRuntimeEngine(runtimeEngine);
+
+        //then
+        //skip variable initialization
+        variableChangedQueue.take(); //preBuildResult
+        variableChangedQueue.take(); //retryAttempt
+        variableChangedQueue.take(); //retryAttempt
+        variableChangedQueue.take(); //retryAttempt
+
+        Integer retryAttempt = (Integer) variableChangedQueue.take().getNewValue();//retryAttempt
+        Assert.assertEquals("3", retryAttempt.toString());
+
+        Map<String, Object> preBuildCallbackResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
+        logger.info("preBuildCallbackResult: " + preBuildCallbackResult);
+        RemoteInvocationException exception = (RemoteInvocationException) preBuildCallbackResult.get("error");
+        logger.info("Expected exception: {}.", exception.getMessage());
+        Assert.assertNotNull(exception);
+
+        //wait for completionResult
+        variableChangedQueue.take(); //preBuildResult
+        variableChangedQueue.take(); //preBuildResult
+        variableChangedQueue.take(); //retryAttempt
+        ProcessVariableChangedEvent event = variableChangedQueue.take();
+        Object newValue = event.getNewValue();//completionResult
 
         customProcessListeners.remove(processEventListener);
     }
@@ -266,7 +315,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         manager.disposeRuntimeEngine(runtimeEngineCancel);
 
         Map<String, Object> preBuildCallbackResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
-        System.out.println("preBuildCallbackResult: " + preBuildCallbackResult);
+        logger.info("preBuildCallbackResult: " + preBuildCallbackResult);
         Map<String, Object> preBuildResponse = Maps.getStringObjectMap(preBuildCallbackResult, "response");
         Assert.assertEquals("true", preBuildResponse.get("cancelled"));
 
@@ -365,7 +414,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         variableChangedQueue.take().getNewValue(); //preBuildResult
 
         Map<String, Object> preBuildResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
-        System.out.println("preBuildResult: " + preBuildResult);
+        logger.info("preBuildResult: " + preBuildResult);
         Map<String, Object> preBuildResponse = Maps.getStringObjectMap(preBuildResult, "response");
         Assert.assertEquals("TIMED_OUT", preBuildResult.get("status"));
 
@@ -421,7 +470,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         }
 
         Map<String, Object> result  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
-        System.out.println("result: " + result);
+        logger.info("result: " + result);
         Assert.assertEquals("new-scm-tag", Maps.getStringObjectMap(Maps.getStringObjectMap(result, "response"), "scm").get("revision"));
 
         customProcessListeners.remove(processEventListener);
@@ -477,6 +526,8 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         parameters.put("preBuildServiceUrl", "http://localhost:8080/demo-service/service/prebuild?callbackDelay=" + preBuildCallbackDelay + "&cancelDelay=" + cancelDelay);
         parameters.put("preBuildTimeout", preBuildTimeout);
         parameters.put("preBuildCancelTimeout", preBuildCancelTimeout);
+        parameters.put("retryDelay", 0);
+        parameters.put("maxRetries", 0);
         Map<String, Object> buildConfiguration = new HashMap<>();
         buildConfiguration.put("id", "1");
         buildConfiguration.put("scmRepoURL", "https://github.com/kiegroup/jbpm-work-items.git");
