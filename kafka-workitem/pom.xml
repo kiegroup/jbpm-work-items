@@ -8,15 +8,12 @@
   <artifactId>kafka-workitem</artifactId>
   <name>Kafka</name>
   <description>publish kafka messages from a process</description>
-  <organization>
-    <name>pnairatl@gmail.com</name>
-  </organization>
-
   <dependencies>
     <!-- needed for kafka  -->
     <dependency>
       <groupId>org.apache.kafka</groupId>
       <artifactId>kafka-clients</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
