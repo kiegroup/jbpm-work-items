@@ -10,7 +10,9 @@ public class PreBuildRequest {
 
     private Scm scm;
 
-    private Callback callback;
+    private Request callback;
+
+    private Request heartBeat;
 
     private Boolean syncEnabled;
 
@@ -22,12 +24,20 @@ public class PreBuildRequest {
         this.scm = scm;
     }
 
-    public Callback getCallback() {
+    public Request getCallback() {
         return callback;
     }
 
-    public void setCallback(Callback callback) {
+    public void setCallback(Request callback) {
         this.callback = callback;
+    }
+
+    public void setHeartBeat(Request heartBeat) {
+        this.heartBeat = heartBeat;
+    }
+
+    public Request getHeartBeat() {
+        return heartBeat;
     }
 
     public Boolean getSyncEnabled() {

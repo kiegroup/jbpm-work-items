@@ -17,9 +17,10 @@ public class TestFunctions implements java.io.Serializable {
     public static final Logger logger = Logger.getLogger(TestFunctions.class.getName());
 
     private static final ObjectMapper jsonMapper = new ObjectMapper();
+    public static boolean addHeartBeatToRequest = false;
 
     public String getPreBuildTemplate() {
-        return ("{  "
+        String template = "{  "
             + "   'scm': { "
             + "      'url': '@{input.buildConfiguration.scmRepoURL}', "
             + "      'revision': '@{input.buildConfiguration.scmRevision}' "
@@ -27,9 +28,17 @@ public class TestFunctions implements java.io.Serializable {
             + "   'syncEnabled': @{input.buildConfiguration.preBuildSyncEnabled}, "
             + "   'callback': { "
             + "      'url': '@{system.callbackUrl}', "
-            + "      'method': 'POST' "
-            + "   } "
-            + "}").replace("'","\"");
+            + "      'method': '@{system.callbackMethod}' ";
+            if (addHeartBeatToRequest) {
+                template = template
+            + "   }, "
+            + "   'heartBeat': { "
+            + "      'url': '@{system.heartBeatUrl}', "
+            + "      'method': '@{system.heartBeatMethod}' ";
+            }
+            template = template +  "   } "
+            + "}";
+        return template.replace("'","\"");
     }
 
     public String getBuildTemplate() {

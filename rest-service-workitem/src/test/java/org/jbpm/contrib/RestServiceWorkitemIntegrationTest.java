@@ -21,11 +21,13 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.jbpm.bpmn2.handler.SendTaskHandler;
+import org.jbpm.contrib.bpm.TestFunctions;
 import org.jbpm.contrib.demoservices.EventType;
 import org.jbpm.contrib.demoservices.Service;
 import org.jbpm.contrib.demoservices.ServiceListener;
-import org.jbpm.contrib.demoservices.dto.Callback;
 import org.jbpm.contrib.demoservices.dto.PreBuildRequest;
+import org.jbpm.contrib.demoservices.dto.Request;
 import org.jbpm.contrib.demoservices.dto.Scm;
 import org.jbpm.contrib.mockserver.WorkItems;
 import org.jbpm.contrib.restservice.Constant;
@@ -98,6 +100,10 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         manager = createRuntimeManager(Strategy.PROCESS_INSTANCE, resources);
         customProcessListeners.add(new RestServiceProcessEventListener(activeProcesses));
         customHandlers.put("SimpleRestService", new SimpleRestServiceWorkItemHandler(manager));
+        customHandlers.put("Send Task", new SendTaskHandler());
+//        RuntimeEngine runtimeEngine = getRuntimeEngine();
+//        KieSession kieSession = runtimeEngine.getKieSession();
+//        customHandlers.put("Receive Task", new ReceiveTaskHandler(kieSession));
 
         bootUpServices();
     }
@@ -476,6 +482,46 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         customProcessListeners.remove(processEventListener);
     }
 
+    @Test(timeout=15000)
+    public void shouldFailWhenThereIsNoHeartBeat() throws InterruptedException {
+        BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
+        ProcessEventListener processEventListener = getProcessEventListener(variableChangedQueue, "preBuildResult");
+        customProcessListeners.add(processEventListener);
+
+        RuntimeEngine runtimeEngine = getRuntimeEngine();
+        KieSession kieSession = runtimeEngine.getKieSession();
+
+        Semaphore callbackCompleted = new Semaphore(0);
+        ServiceListener.Subscription subscription = serviceListener.subscribe(
+                EventType.CALLBACK_COMPLETED,
+                (v) -> callbackCompleted.release());
+
+        TestFunctions.addHeartBeatToRequest = true;
+        try {
+            //when
+            ProcessInstance processInstance = kieSession.startProcess(
+                    "testProcess",
+                    Collections.singletonMap("in_initData", getProcessParameters(10, 10, 10, 2, 2, 4, Collections.emptyMap())));
+            manager.disposeRuntimeEngine(runtimeEngine);
+            //skip variable initialization
+            variableChangedQueue.take();
+
+             Map<String, Object> preBuildResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
+            logger.info("preBuildResult: " + preBuildResult);
+            Map<String, Object> preBuildResponse = Maps.getStringObjectMap(preBuildResult, "response");
+            Assert.assertEquals("DIED", preBuildResult.get("status"));
+
+            activeProcesses.waitAllCompleted();
+            callbackCompleted.acquire();
+
+            customProcessListeners.remove(processEventListener);
+            serviceListener.unsubscribe(subscription);
+        } finally {
+            TestFunctions.addHeartBeatToRequest = false;
+        }
+
+    }
+
     private Map<String, Object> getExecuteRestParameters() {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("requestMethod", "POST");
@@ -502,7 +548,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         Scm scm = new Scm();
         scm.setUrl("https://github.com/kiegroup/jbpm-work-items.git");
         request.setScm(scm);
-        Callback callback = new Callback();
+        Request callback = new Request();
         callback.setMethod("POST");
         callback.setUrl("@{system.callbackUrl}");
         request.setCallback(callback);
@@ -520,14 +566,29 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
             int cancelDelay,
             int preBuildCancelTimeout,
             Map<String, Object> labels) {
+        return getProcessParameters(preBuildCallbackDelay, preBuildTimeout, cancelDelay, preBuildCancelTimeout, 10, 0, labels);
+    }
+
+    private Map<String, Object> getProcessParameters(
+            int preBuildCallbackDelay,
+            int preBuildTimeout,
+            int cancelDelay,
+            int preBuildCancelTimeout,
+            int cancelHeartBeatAfter,
+            int heartbeatTimeout,
+            Map<String, Object> labels) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("containerId", "mock");
         parameters.put("serviceBaseUrl", "http://localhost:8080/demo-service/service");
-        parameters.put("preBuildServiceUrl", "http://localhost:8080/demo-service/service/prebuild?callbackDelay=" + preBuildCallbackDelay + "&cancelDelay=" + cancelDelay);
+        parameters.put("preBuildServiceUrl", "http://localhost:8080/demo-service/service/prebuild?"
+                + "callbackDelay=" + preBuildCallbackDelay
+                + "&cancelDelay=" + cancelDelay
+                + "&cancelHeartBeatAfter=" + cancelHeartBeatAfter);
         parameters.put("preBuildTimeout", preBuildTimeout);
         parameters.put("preBuildCancelTimeout", preBuildCancelTimeout);
         parameters.put("retryDelay", 0);
         parameters.put("maxRetries", 0);
+        parameters.put("heartbeatTimeout", heartbeatTimeout);
         Map<String, Object> buildConfiguration = new HashMap<>();
         buildConfiguration.put("id", "1");
         buildConfiguration.put("scmRepoURL", "https://github.com/kiegroup/jbpm-work-items.git");

@@ -81,6 +81,7 @@ import static org.mvel2.templates.TemplateCompiler.compileTemplate;
 public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(SimpleRestServiceWorkItemHandler.class);
+    private static final String HEARTH_BEAT_PROCESS_ID_VARIABLE_NAME = "heartbeatWatcherId";
 
     private final RuntimeManager runtimeManager;
 
@@ -249,11 +250,14 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
     private VariableResolverFactory getVariableResolverFactory(
             WorkflowProcessInstance processInstance, String containerId) {
         Map<String, Object> systemVariables = new HashMap<>();
+        String baseUrl = getKieHost() + "/services/rest/server/containers/" + containerId + "/processes/instances/";
         systemVariables.put(
-                "callbackUrl",
-                getKieHost() + "/services/rest/server/containers/" + containerId + //TODO configurable base path
-                        "/processes/instances/" + processInstance.getId() + "/signal/RESTResponded");
+                "callbackUrl", baseUrl + processInstance.getId() + "/signal/RESTResponded");
         systemVariables.put("callbackMethod", "POST");
+        systemVariables.put(
+                "heartBeatUrl",
+                baseUrl + processInstance.getVariable(HEARTH_BEAT_PROCESS_ID_VARIABLE_NAME) + "/signal/imAlive");
+        systemVariables.put("heartBeatMethod", "POST");
         return getVariableResolverFactoryChain(
                 systemVariables,
                 processInstance);
