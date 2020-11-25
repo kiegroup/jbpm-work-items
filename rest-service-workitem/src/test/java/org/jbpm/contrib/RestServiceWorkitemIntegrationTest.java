@@ -21,7 +21,6 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.jbpm.bpmn2.handler.SendTaskHandler;
 import org.jbpm.contrib.bpm.TestFunctions;
 import org.jbpm.contrib.demoservices.EventType;
 import org.jbpm.contrib.demoservices.Service;
@@ -100,10 +99,6 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         manager = createRuntimeManager(Strategy.PROCESS_INSTANCE, resources);
         customProcessListeners.add(new RestServiceProcessEventListener(activeProcesses));
         customHandlers.put("SimpleRestService", new SimpleRestServiceWorkItemHandler(manager));
-        customHandlers.put("Send Task", new SendTaskHandler());
-//        RuntimeEngine runtimeEngine = getRuntimeEngine();
-//        KieSession kieSession = runtimeEngine.getKieSession();
-//        customHandlers.put("Receive Task", new ReceiveTaskHandler(kieSession));
 
         bootUpServices();
     }
