@@ -33,7 +33,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.jbpm.contrib.demoservices.dto.BuildRequest;
-import org.jbpm.contrib.demoservices.dto.Callback;
+import org.jbpm.contrib.demoservices.dto.Request;
 import org.jbpm.contrib.demoservices.dto.CompleteRequest;
 import org.jbpm.contrib.demoservices.dto.PreBuildRequest;
 import org.jbpm.contrib.demoservices.dto.Scm;
@@ -56,6 +56,7 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -101,11 +102,12 @@ public class Service {
     public Response prebuild(
             PreBuildRequest request,
             @QueryParam("callbackDelay") @DefaultValue("3") int callbackDelay,
-            @QueryParam("cancelDelay") @DefaultValue("1") String cancelDelay)
+            @QueryParam("cancelDelay") @DefaultValue("1") String cancelDelay,
+            @QueryParam("cancelHeartBeatAfter") @DefaultValue("5") String cancelHeartBeatAfter)
             throws JsonProcessingException {
         logger.info("> PreBuild requested.");
         logger.info("> Request object: " + objectMapper.writeValueAsString(request));
-        Callback callback = request.getCallback();
+        Request callback = request.getCallback();
 
         Scm scm = new Scm();
         scm.setUrl(request.getScm().getUrl());
@@ -113,6 +115,13 @@ public class Service {
         Map<String, Object> result = new HashMap<>();
         result.put("scm", scm);
         result.put("status", "SUCCESS");
+
+        if (request.getHeartBeat() != null) {
+            ScheduledFuture<?> heartBeat = startHeartBeat(request.getHeartBeat().getUrl());
+            //end hearth beat after cancelHeartBeatAfter
+            executorService.schedule(
+                    () -> heartBeat.cancel(true), Long.parseLong(cancelHeartBeatAfter), TimeUnit.SECONDS);
+        }
 
         Map<String, Object> response = new HashMap<>();
         if (callback != null && !Strings.isEmpty(callback.getUrl())) {
@@ -133,7 +142,7 @@ public class Service {
         logger.info("> Build requested.");
         logger.info("> Request object: " + objectMapper.writeValueAsString(request));
         fireEvent(EventType.BUILD_REQUESTED, request);
-        Callback callback = request.getCallback();
+        Request callback = request.getCallback();
 
         Map<String, Object> result = new HashMap<>();
         result.put("status", "SUCCESS");
@@ -176,10 +185,16 @@ public class Service {
     }
 
     private int scheduleCallback(String callbackUrl, String callbackMethod, List<NameValuePair> callbackParams, int delay, Object result) {
-        ScheduledFuture<?> future = executorService.schedule(() -> executeCallback(callbackUrl, callbackMethod, callbackParams, result), delay, TimeUnit.SECONDS);
+        ScheduledFuture<?> future = executorService.schedule(() -> executeRequest(callbackUrl, callbackMethod, callbackParams, result), delay, TimeUnit.SECONDS);
         int id = sequence.getAndIncrement();
         runningJobs.put(id, new RunningJob(future, callbackUrl));
         return id;
+    }
+
+    private ScheduledFuture<?> startHeartBeat(String url) {
+        ScheduledFuture<?> future = executorService.scheduleAtFixedRate(()
+                -> executeRequest(url, "POST", Collections.emptyList(), null), 300L,300L, TimeUnit.MILLISECONDS);
+        return future;
     }
 
     private class RunningJob {
@@ -192,7 +207,7 @@ public class Service {
         }
     }
 
-    private void executeCallback(String callbackUrl,String callbackMethod, List<NameValuePair> callbackParams, Object result) {
+    private void executeRequest(String url,String method, List<NameValuePair> parameters, Object result) {
 
         RequestConfig config = RequestConfig.custom()
                 .setSocketTimeout(5000)
@@ -203,7 +218,7 @@ public class Service {
 
         try {
 
-            URI requestUri = new URI(callbackUrl);
+            URI requestUri = new URI(url);
 
             CredentialsProvider credsProvider = new BasicCredentialsProvider();
             credsProvider.setCredentials(new AuthScope(requestUri.getHost(),
@@ -218,27 +233,27 @@ public class Service {
 
             HttpClient httpClient = clientBuilder.build();
             HttpEntityEnclosingRequestBase request = null;
-            if(callbackMethod==null || callbackMethod.contentEquals(HttpPut.METHOD_NAME)) {
+            if(method==null || method.contentEquals(HttpPut.METHOD_NAME)) {
                 request = new HttpPut(requestUri);
-            } else if(callbackMethod.contentEquals(HttpPost.METHOD_NAME)) {
+            } else if(method.contentEquals(HttpPost.METHOD_NAME)) {
                 request = new HttpPost(requestUri);
             } else {
-                throw new NotYetImplementedException("This callback HTTP method is not implemented yet in this dummy service handler: "+callbackMethod);
+                throw new NotYetImplementedException("This HTTP method is not implemented yet in this dummy service handler: " + method);
             }
 
             request.setHeader("Content-Type","application/json");
 
-            logger.info("> Calling back to: " + requestUri);
+            logger.info("> Invoking to: " + requestUri);
 
             String jsonContent = objectMapper.writeValueAsString(result);
 
-            logger.info("> Result data:" + jsonContent);
+            logger.info("> Data:" + jsonContent);
 
             StringEntity entity = new StringEntity(jsonContent, ContentType.APPLICATION_JSON);
             request.setEntity(entity);
             HttpResponse response = httpClient.execute(request);
-            logger.info("> Callback executed. Returned status: " + response.getStatusLine().getStatusCode());
-            fireEvent(EventType.CALLBACK_COMPLETED, callbackUrl);
+            logger.info("> Invocation executed. Returned status: " + response.getStatusLine().getStatusCode());
+            fireEvent(EventType.CALLBACK_COMPLETED, url);
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
         }

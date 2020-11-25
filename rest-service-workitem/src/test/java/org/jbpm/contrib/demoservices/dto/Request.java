@@ -3,7 +3,7 @@ package org.jbpm.contrib.demoservices.dto;
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
  */
-public class Callback {
+public class Request {
     String url;
     String method;
 

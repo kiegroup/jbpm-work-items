@@ -7,7 +7,7 @@ public class BuildRequest {
 
     private Scm scm;
 
-    private Callback callback;
+    private Request callback;
 
     private String buildScript;
 
@@ -19,11 +19,11 @@ public class BuildRequest {
         this.scm = scm;
     }
 
-    public Callback getCallback() {
+    public Request getCallback() {
         return callback;
     }
 
-    public void setCallback(Callback callback) {
+    public void setCallback(Request callback) {
         this.callback = callback;
     }
 
