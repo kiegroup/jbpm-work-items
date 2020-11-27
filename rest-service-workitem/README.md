@@ -122,3 +122,12 @@ if the time-out is reached, the task completes with status "DIED".
 
 When everything goes well the final status "SUCCESS" or "FAILED" is determined based on boolean condition defined in `successEvalTemplate`.
 Sample temaplte: `@{status=="SUCCESS"}`, where a `status` field is a field in the result's response (from a remote task).
+
+
+Setting up
+==========
+Upload this work item handler to your JBPM server and import the `execute-rest.bpmn` (src/test/resources/execute-rest.bpmn) process.
+
+To design your task invocation process use the execute-rest as a sub-process.
+
+See a usage example in `rest-service-workitem/src/test/resources/test-process.bpmn` and `org.jbpm.contrib.bpm.TestFunctions`.
