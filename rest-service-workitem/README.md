@@ -23,6 +23,8 @@ In a business process use execute-rest sub-process to invoke a remote task and w
   - requestMethod
   - requestHeaders
   - requestTemplate (request body)
+  - maxRetries
+  - retryDelay
 - Cancel (request to cancel remote task)
   - cancelUrlJsonPointer (json path to extract cancel url form the invocation response)
   - cancelUrlTemplate (alternative to cancelUrlJsonPointer)
@@ -81,7 +83,7 @@ Result example:
             url=https://github.com/kiegroup/jbpm-work-items.git, 
             revision=new-scm-tag
         }, 
-    status=SUCCESS
+        status=SUCCESS
     }, 
     callbackResponse={
         scm={
@@ -102,3 +104,21 @@ Result example:
   while the one under the response is the result which has been returned from the remote service and coincidently has the same name
 - we see that the `response` is the same as `callbackResponse`, that's because `noCallback` has not been set
 
+
+Task invocation details
+=======================
+The execute-rest sub-process is used to start the remote task and wait for its completion either by a http response or an async callback.
+
+If the task invocation fail due to an error and the `maxRetries` is greater than 0 the invocation is re-tried. 
+The invocation retry is delayed for `retryDelay * retry-attmpt` millis. 
+
+When the operation cancel request is received, the remote task is tried to be gracefully cancelled by invoking the cancelUrl which is defined by `cancelUrlJsonPointer` or `cancelUrlTemplate`.
+If the `cancelTimeout` is reached, the graceful cancel attempt is ignored. The task completes with status "CANCELLED" regardless of the success of graceful cancel.
+
+If the `taskTimeout` is reached, the cancel procedure is triggered. The task completes with status "TIMED_OUT".
+
+When the process is waiting for a callback, there is an active internal heart-beat monitor (enabled by setting a `heartbeatTimeout`), 
+if the time-out is reached, the task completes with status "DIED".
+
+When everything goes well the final status "SUCCESS" or "FAILED" is determined based on boolean condition defined in `successEvalTemplate`.
+Sample temaplte: `@{status=="SUCCESS"}`, where a `status` field is a field in the result's response (from a remote task).
