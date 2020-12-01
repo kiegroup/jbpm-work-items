@@ -230,7 +230,7 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
                 if (!Strings.isEmpty(cancelUrlTemplate)) {
                     logger.debug("Setting cancel url from template: {}.", cancelUrlTemplate);
                     CompiledTemplate compiled = compileTemplate(cancelUrlTemplate);
-                    requestBodyEvaluated = (String) TemplateRuntime
+                    cancelUrl = (String) TemplateRuntime
                             .execute(compiled, null, variableResolverFactory);
                 } else {
                     logger.debug("Setting cancel url from json pointer: {}.", cancelUrlJsonPointer);
