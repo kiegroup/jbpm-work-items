@@ -19,12 +19,12 @@ Task Definition
 In a business process use execute-rest sub-process to invoke a remote task and wait for completion. 
 
 - Request (request to start remote task)
-  - requestUrl
-  - requestMethod
+  - requestUrl*
+  - requestMethod*
   - requestHeaders
   - requestTemplate (request body)
-  - maxRetries
-  - retryDelay
+  - maxRetries (default 0 - disabled)
+  - retryDelay (default 0)
 - Cancel (request to cancel remote task)
   - cancelUrlJsonPointer (json path to extract cancel url form the invocation response)
   - cancelUrlTemplate (alternative to cancelUrlJsonPointer)
@@ -32,9 +32,9 @@ In a business process use execute-rest sub-process to invoke a remote task and w
   - cancelHeaders
   - cancelTimeout (time to wait for a graceful cancel)
   - ignoreCancelSignals (task run also when cancel has been requested)
-- successEvalTemplate (boolean condition to determine task completion status)
-- noCallback (task result is send as invocation response)
-- taskTimeout (time to wait for remote result before triggering cancel)
+- successEvalTemplate* (boolean condition to determine task completion status)
+- noCallback (task result is send as invocation response, default: false)
+- taskTimeout* (time to wait for remote result before triggering cancel)
 - heartbeatTimeout (mark service as DIED when there is no heart-beat, disabled if not set)
 
 
@@ -122,6 +122,23 @@ if the time-out is reached, the task completes with status "DIED".
 
 When everything goes well the final status "SUCCESS" or "FAILED" is determined based on boolean condition defined in `successEvalTemplate`.
 Sample temaplte: `@{status=="SUCCESS"}`, where a `status` field is a field in the result's response (from a remote task).
+
+## Error handling
+
+execute-rest sub-process error exit conditions:
+- `successEvalTemplate` evaluates to `false`
+- `taskTimeout` is reached
+- `heartbeatTimeout` is reached
+- cancel requested
+- communication error with remote service
+
+When any of the error exit conditions happen the error completion event can be caught with an error catching boundary event of type `operationFailed`. 
+
+## Heart-beat
+
+Hearth-beat monitor is integrated in the execute-rest sub-process. It is enabled by setting the `heartbeatTimeout` variable.
+When enabled a remote task have to periodically notify the process that the task is still running.
+The url to send the beat is provided by the system variables `system.heartBeatUrl` and `system.heartBeatMethod` that can be used in the remote task invocation template.
 
 
 Setting up
