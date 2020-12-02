@@ -218,6 +218,7 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
             Map<String, Object> serviceInvocationResponse;
             try {
                 root = Mapper.getInstance().readTree(httpResponse.getEntity().getContent());
+                logger.debug("Invocation response: {}.", root.textValue());
                 serviceInvocationResponse = Mapper.getInstance()
                         .convertValue(root, new TypeReference<Map<String, Object>>() {});
             } catch (Exception e) {
