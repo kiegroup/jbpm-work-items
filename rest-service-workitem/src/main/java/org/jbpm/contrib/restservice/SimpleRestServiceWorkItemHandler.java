@@ -239,6 +239,7 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
                         cancelUrl = cancelUrlNode.asText();
                     }
                 }
+                logger.debug("Cancel url: {}.", cancelUrlTemplate);
             } catch (Exception e) {
                 String message = MessageFormat.format("Cannot read cancel url from service invocation response. ProcessInstanceId {0}.", processInstance.getId());
                 throw new ResponseProcessingException(message, e);

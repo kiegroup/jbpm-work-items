@@ -1142,6 +1142,7 @@
         <module>repository-springboot</module>
         <module>repository-wildfly</module>
         <module>karaf-itests</module>
+        <module>rest-service-workitem</module>
         <module>jbpm-workitem-itests</module>
       </modules>
     </profile>
