@@ -16,11 +16,11 @@ public class Mapper implements Serializable {
         return objectMapper;
     }
 
-    public String writeValueAsString(Object value) throws JsonProcessingException {
+    public static String writeValueAsString(Object value) throws JsonProcessingException {
         return getInstance().writeValueAsString(value);
     }
 
-    public String writeValueAsString(Object value, boolean unescapeBefore) throws JsonProcessingException {
+    public static String writeValueAsString(Object value, boolean unescapeBefore) throws JsonProcessingException {
         if (unescapeBefore) {
             return getInstance().writeValueAsString(Json.unescape(value));
         } else {

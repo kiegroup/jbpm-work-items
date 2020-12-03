@@ -22,19 +22,19 @@ public class TestFunctions implements java.io.Serializable {
     public String getPreBuildTemplate() {
         String template = "{  "
             + "   'scm': { "
-            + "      'url': '@{input.buildConfiguration.scmRepoURL}', "
-            + "      'revision': '@{input.buildConfiguration.scmRevision}' "
+            + "      'url': @{quote(input.buildConfiguration.scmRepoURL)}, "
+            + "      'revision': @{quote(input.buildConfiguration.scmRevision)} "
             + "   }, "
-            + "   'syncEnabled': @{input.buildConfiguration.preBuildSyncEnabled}, "
+            + "   'syncEnabled': @{quote(input.buildConfiguration.preBuildSyncEnabled)}, "
             + "   'callback': { "
-            + "      'url': '@{system.callbackUrl}', "
-            + "      'method': '@{system.callbackMethod}' ";
+            + "      'url': @{quote(system.callbackUrl)}, "
+            + "      'method': @{quote(system.callbackMethod)} ";
             if (addHeartBeatToRequest) {
                 template = template
             + "   }, "
             + "   'heartBeat': { "
-            + "      'url': '@{system.heartBeatUrl}', "
-            + "      'method': '@{system.heartBeatMethod}' ";
+            + "      'url': @{quote(system.heartBeatUrl)}, "
+            + "      'method': @{quote(system.heartBeatMethod)} ";
             }
             template = template +  "   } "
             + "}";
@@ -43,27 +43,27 @@ public class TestFunctions implements java.io.Serializable {
 
     public String getBuildTemplate() {
         return ("{  "
-                + "   'buildScript': '@{input.buildConfiguration.buildScript}', "
+                + "   'buildScript': @{quote(input.buildConfiguration.buildScript)}, "
                 + "   'scm': { "
-                + "      'url': '@{preBuildResult.response.scm.url}', "
-                + "      'revision': '@{preBuildResult.response.scm.revision}' "
+                + "      'url': @{quote(preBuildResult.response.scm.url)}, "
+                + "      'revision': @{quote(preBuildResult.response.scm.revision)} "
                 + "   }, "
                 + "   'callback': { "
-                + "      'url': '@{system.callbackUrl}', "
-                + "      'method': 'POST' "
+                + "      'url': @{quote(system.callbackUrl)}, "
+                + "      'method': @{quote(system.callbackMethod)} "
                 + "   } "
                 + "}").replace("'","\"");
     }
 
     public String getCompletionTemplate() {
         return ("{ "
-                + "   'buildConfigurationId': '@{input.buildConfiguration.id}', "
+                + "   'buildConfigurationId': @{quote(input.buildConfiguration.id)}, "
                 + "   'scm': { "
-                + "      'url': '@{preBuildResult.?response.?scm.url}', "
-                + "      'revision': '@{preBuildResult.?response.?scm.revision}' "
+                + "      'url': @{quote(preBuildResult.?response.?scm.url)}, "
+                + "      'revision': @{quote(preBuildResult.?response.?scm.revision)} "
                 + "   }, "
                 + "   'completionStatus': '@{functions.getCompletionStatus(preBuildResult.?status, ?buildResult.?status)}', "
-                + "   'labels': @{jsonMapper.writeValueAsString(input.buildConfiguration.labels, true)} "
+                + "   'labels': @{asJson(input.buildConfiguration.labels, true)} "
                 + "}").replace("'","\"");
     }
 

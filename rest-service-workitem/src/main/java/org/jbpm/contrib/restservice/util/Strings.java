@@ -51,4 +51,15 @@ public class Strings {
             return "".equals(string);
         }
     }
+
+    public static Object quoteString(Object o) {
+        if (o == null) {
+            return null;
+        }
+        if (o instanceof String) {
+            return "\"" + o + "\"";
+        } else {
+            return o;
+        }
+    }
 }
