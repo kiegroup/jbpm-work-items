@@ -17,6 +17,8 @@ package org.jbpm.contrib.restservice;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -24,6 +26,7 @@ import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.jbpm.contrib.restservice.util.Mapper;
 import org.jbpm.contrib.restservice.util.ProcessUtils;
 import org.jbpm.contrib.restservice.util.Strings;
@@ -38,6 +41,8 @@ import org.kie.api.runtime.manager.RuntimeManager;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
+import org.mvel2.MVEL;
+import org.mvel2.ParserContext;
 import org.mvel2.integration.VariableResolverFactory;
 import org.mvel2.integration.impl.MapVariableResolverFactory;
 import org.mvel2.templates.CompiledTemplate;
@@ -49,6 +54,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -85,16 +91,30 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
 
     private final RuntimeManager runtimeManager;
 
+    ParserContext mvelContext = new ParserContext();
+
     public SimpleRestServiceWorkItemHandler(RuntimeManager runtimeManager) {
         this.runtimeManager = runtimeManager;
         logger.info(">>> Constructing with runtimeManager ...");
+        initializeMvelContext();
         setLogThrownException(false);
     }
 
     public SimpleRestServiceWorkItemHandler() {
         logger.info(">>> Constructing without runtimeManager ...");
         runtimeManager = null;
+        initializeMvelContext();
         setLogThrownException(false);
+    }
+
+    private void initializeMvelContext() {
+        mvelContext.addImport(
+                "quote",
+                MVEL.getStaticMethod(Strings.class, "quoteString", new Class[] { Object.class }));
+        mvelContext.addImport("asJson",
+                MVEL.getStaticMethod(Mapper.class, "writeValueAsString", new Class[] { Object.class, boolean.class }));
+        mvelContext.addImport("asJson",
+                MVEL.getStaticMethod(Mapper.class, "writeValueAsString", new Class[] { Object.class}));
     }
 
     public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
@@ -187,8 +207,8 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
 
         String requestBodyEvaluated;
         if (requestTemplate != null && !requestTemplate.equals("")) {
-            CompiledTemplate compiled = compileTemplate(requestTemplate);
-            requestBodyEvaluated = (String) TemplateRuntime.execute(compiled, null, variableResolverFactory);
+            CompiledTemplate compiled = compileTemplate(requestTemplate, mvelContext);
+            requestBodyEvaluated = (String) TemplateRuntime.execute(compiled, mvelContext, variableResolverFactory);
         } else {
             requestBodyEvaluated = "";
         }
@@ -211,16 +231,32 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
             throw new RemoteInvocationException(message);
         }
 
-        if (statusCode == 204) {
+        HttpEntity responseEntity = httpResponse.getEntity();
+        if (statusCode == 204 || responseEntity.getContentLength() == 0L) {
             completeWorkItem(manager, workItemId, statusCode, Collections.emptyMap(), "");
         } else {
+            String responseString;
+            try {
+                responseString = EntityUtils.toString(responseEntity, "UTF-8");
+                logger.debug("Invocation response: {}", responseString);
+            } catch (IOException e) {
+                throw new ResponseProcessingException("Cannot read remote entity.", e);
+            }
             JsonNode root;
             Map<String, Object> serviceInvocationResponse;
             try {
-                root = Mapper.getInstance().readTree(httpResponse.getEntity().getContent());
-                logger.debug("Invocation response: {}.", root.textValue());
-                serviceInvocationResponse = Mapper.getInstance()
-                        .convertValue(root, new TypeReference<Map<String, Object>>() {});
+                root = Mapper.getInstance().readTree(responseString);
+                if (JsonNodeType.ARRAY.equals(root.getNodeType())) {
+                    //convert array to indexed map
+                    serviceInvocationResponse = new LinkedHashMap<>();
+                    Object[] array = Mapper.getInstance().convertValue(root, new TypeReference<Object[]>() {});
+                    for (int i = 0; i < array.length; i++) {
+                        serviceInvocationResponse.put(Integer.toString(i), array[i]);
+                    }
+                } else {
+                    serviceInvocationResponse = Mapper.getInstance()
+                            .convertValue(root, new TypeReference<Map<String, Object>>() {});
+                }
             } catch (Exception e) {
                 String message = MessageFormat.format("Cannot parse service invocation response. ProcessInstanceId {0}.",
                         processInstance.getId());
@@ -233,14 +269,14 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
                     CompiledTemplate compiled = compileTemplate(cancelUrlTemplate);
                     cancelUrl = (String) TemplateRuntime
                             .execute(compiled, null, variableResolverFactory);
-                } else {
+                } else if (!Strings.isEmpty(cancelUrlJsonPointer)) {
                     logger.debug("Setting cancel url from json pointer: {}.", cancelUrlJsonPointer);
                     JsonNode cancelUrlNode = root.at(cancelUrlJsonPointer);
                     if (!cancelUrlNode.isMissingNode()) {
                         cancelUrl = cancelUrlNode.asText();
                     }
                 }
-                logger.debug("Cancel url: {}.", cancelUrlTemplate);
+                logger.debug("Cancel url: {}.", cancelUrl);
             } catch (Exception e) {
                 String message = MessageFormat.format("Cannot read cancel url from service invocation response. ProcessInstanceId {0}.", processInstance.getId());
                 throw new ResponseProcessingException(message, e);
@@ -265,9 +301,18 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
                 processInstance);
     }
 
+    public Object quote(Object o) {
+        if (o instanceof String) {
+            return "\"" + o + "\"";
+        } else {
+            return o;
+        }
+    }
+
     private VariableResolverFactory getVariableResolverFactoryChain(
             Map<String, Object> systemVariables,
             WorkflowProcessInstance processInstance) {
+
         VariableResolverFactory variableResolverFactory = new MapVariableResolverFactory(
                 Collections.singletonMap("system", systemVariables));
 
