@@ -34,6 +34,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.api.runtime.KieSession;
@@ -58,6 +59,7 @@ import static org.ops4j.pax.tinybundles.core.TinyBundles.bundle;
 /**
  * Uploading a file via File endpoint using Camel in Fuse.
  */
+@Ignore
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
 public class CamelWorkitemIntegrationTest extends AbstractKarafIntegrationTest {
