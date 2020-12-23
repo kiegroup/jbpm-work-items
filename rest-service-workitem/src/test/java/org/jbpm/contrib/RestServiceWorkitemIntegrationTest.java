@@ -532,9 +532,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         parameters.put("cancelMethod", null);
         parameters.put("cancelHeaders", null);
         parameters.put("successEvalTemplate", null);
-
-        //kcontext.setVariable("containerId","mock");
-        parameters.put("containerId", "mock");
+        
         return parameters;
     }
 
@@ -573,7 +571,6 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
             int heartbeatTimeout,
             Map<String, Object> labels) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("containerId", "mock");
         parameters.put("serviceBaseUrl", "http://localhost:8080/demo-service/service");
         parameters.put("preBuildServiceUrl", "http://localhost:8080/demo-service/service/prebuild?"
                 + "callbackDelay=" + preBuildCallbackDelay

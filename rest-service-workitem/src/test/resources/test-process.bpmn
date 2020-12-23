@@ -10,7 +10,6 @@
   <bpmn2:itemDefinition id="_preBuildTemplateItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_buildTemplateItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_completionTemplateItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="_containerIdItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_functionsItem" structureRef="org.jbpm.contrib.bpm.TestFunctions"/>
   <bpmn2:itemDefinition id="_thisProcessIdItem" structureRef="java.lang.Long"/>
   <bpmn2:itemDefinition id="__91C09C53-86B7-411F-84A4-361D54BE7024_signalSourceIdInputXItem" structureRef="java.lang.Long"/>
@@ -75,7 +74,6 @@
     <bpmn2:property id="preBuildTemplate" itemSubjectRef="_preBuildTemplateItem" name="preBuildTemplate"/>
     <bpmn2:property id="buildTemplate" itemSubjectRef="_buildTemplateItem" name="buildTemplate"/>
     <bpmn2:property id="completionTemplate" itemSubjectRef="_completionTemplateItem" name="completionTemplate"/>
-    <bpmn2:property id="containerId" itemSubjectRef="_containerIdItem" name="containerId"/>
     <bpmn2:property id="functions" itemSubjectRef="_functionsItem" name="functions"/>
     <bpmn2:sequenceFlow id="_E78634BB-6238-45A4-8337-8B01C8F4F752" sourceRef="_49EBC507-1EA9-4652-B48C-EEEED0112241" targetRef="_16696BFC-5734-41D6-A1EB-790593184022">
       <bpmn2:extensionElements>
@@ -494,7 +492,6 @@
 
 input = kcontext.getVariable("in_initData");
 kcontext.setVariable("input",input);
-kcontext.setVariable("containerId","mock");
 
 TestFunctions.logInfo(kcontext,kcontext.getVariable("in_initData"));
 
@@ -538,7 +535,8 @@ kcontext.setVariable("buildResult",new java.util.HashMap());
         <bpmn2:incoming>_DFFCE719-1F80-4E02-8040-D90E85C6C495</bpmn2:incoming>
         <bpmn2:outgoing>_82254714-A235-451F-8D27-062941A10FB1</bpmn2:outgoing>
         <bpmn2:script>kcontext.setVariable("buildCancel",true);
-kcontext.setVariable("preBuildCancel",true);</bpmn2:script>
+kcontext.setVariable("preBuildCancel",true);
+kcontext.setVariable("thisProcessId",Long.valueOf(kcontext.getProcessInstance().getId()));</bpmn2:script>
       </bpmn2:scriptTask>
       <bpmn2:endEvent id="_91C09C53-86B7-411F-84A4-361D54BE7024">
         <bpmn2:extensionElements>

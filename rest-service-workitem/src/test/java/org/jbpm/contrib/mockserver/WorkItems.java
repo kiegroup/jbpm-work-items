@@ -39,7 +39,7 @@ import java.util.Map;
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
  * @author Ryszard Kozmik
  */
-@Path("/server/containers/mock/processes/instances/")
+@Path("/server/containers/default-per-pinstance/processes/instances/")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class WorkItems {
