@@ -37,6 +37,7 @@ import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
 import org.jbpm.process.workitem.core.util.service.WidService;
+import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.manager.RuntimeManager;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -133,10 +134,8 @@ public class SimpleRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItem
             String requestTemplate = ProcessUtils.getStringParameter(workItem,"template");
             String requestHeaders = ProcessUtils.getStringParameter(workItem,"headers");
 
-            //TODO get without parameters
-            //kcontext.getKieRuntime().getEnvironment().get("deploymentId"));
-
-            String containerId = (String) getProcessVariable("containerId", processInstance);
+            KieSession kieSession = ProcessUtils.getKsession(runtimeManager, processInstanceId);
+            String containerId = (String)kieSession.getEnvironment().get("deploymentId");
 
             //should this service run
             logger.debug("Should run ProcessInstance.id: {}.", processInstance.getId());
