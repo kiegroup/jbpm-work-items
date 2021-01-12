@@ -50,6 +50,7 @@ import static org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CL
 import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 import static org.kie.internal.runtime.conf.RuntimeStrategy.SINGLETON;
 
 public class KafkaFixture {
@@ -77,6 +78,9 @@ public class KafkaFixture {
     
     
     public void generalSetup() {
+        // Currently testcontainers are not supported out-of-the-box on Windows and RHEL8
+        assumeTrue(!System.getProperty("os.name").toLowerCase().contains("win") 
+                && !System.getProperty("os.version").toLowerCase().contains("el8"));
         EntityManagerFactoryManager.get().clear();
     }
 
