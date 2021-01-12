@@ -12,6 +12,9 @@ Feature set
 - Internal request retry 
 - Completion status conditional execution (success/failed/timeout/cancel) 
 
+A process example from the test cases
+![example-process](src/test/resources/test-process.svg)
+
 
 Task Definition
 ===============
@@ -123,6 +126,10 @@ if the time-out is reached, the task completes with status "DIED".
 When everything goes well the final status "SUCCESS" or "FAILED" is determined based on boolean condition defined in `successEvalTemplate`.
 Sample temaplte: `@{status=="SUCCESS"}`, where a `status` field is a field in the result's response (from a remote task).
 
+Implementation detail (execute-rest sub-process)
+![execute-rest](src/test/resources/execute-rest.svg)
+
+
 ## Error handling
 
 execute-rest sub-process error exit conditions:
@@ -147,4 +154,4 @@ Upload this work item handler to your JBPM server and import the `execute-rest.b
 
 To design your task invocation process use the execute-rest as a sub-process.
 
-See a usage example in `rest-service-workitem/src/test/resources/test-process.bpmn` and `org.jbpm.contrib.bpm.TestFunctions`.
+See a usage example in `src/test/resources/test-process.bpmn` and `org.jbpm.contrib.bpm.TestFunctions`.
