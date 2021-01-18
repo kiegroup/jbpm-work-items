@@ -689,12 +689,7 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
-        <artifactId>rest-service-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>rest-service-workitem-demo</artifactId>
+        <artifactId>long-running-rest-workitem</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -1142,7 +1137,7 @@
         <module>repository-springboot</module>
         <module>repository-wildfly</module>
         <module>karaf-itests</module>
-        <module>rest-service-workitem</module>
+        <module>long-running-rest-workitem</module>
         <module>jbpm-workitem-itests</module>
       </modules>
     </profile>
