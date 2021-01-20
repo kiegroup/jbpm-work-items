@@ -18,6 +18,7 @@ package org.jbpm.contrib.longrest;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -52,12 +53,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.HttpCookie;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.mvel2.templates.TemplateCompiler.compileTemplate;
 
@@ -94,6 +98,11 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
 
     private static final Logger logger = LoggerFactory.getLogger(LongRunningRestServiceWorkItemHandler.class);
     private static final String HEARTH_BEAT_PROCESS_ID_VARIABLE_NAME = "heartbeatWatcherId";
+
+    /**
+     * Cookies are required for sticky session in cases where cancel request must hit the same node behind the load balancer.
+     */
+    private static final String COOKIES_KEY = "cookies";
 
     private final RuntimeManager runtimeManager;
 
@@ -217,7 +226,16 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
             requestBodyEvaluated = "";
         }
 
-        Map<String, String> requestHeadersMap = Strings.toMap(requestHeaders);
+        Map<String, String> requestHeadersMap = new HashMap<>();
+        // Add cookies to the request
+        Map<String, String> cookies = (Map<String, String>) processInstance.getVariable(COOKIES_KEY);
+        if (cookies != null) {
+            String cookieHeader = cookies.entrySet().stream()
+                    .map(c -> c.getKey() + "=" + c.getValue())
+                    .collect(Collectors.joining("; "));
+            requestHeadersMap.put("Cookie", cookieHeader);
+        }
+        requestHeadersMap.putAll(Strings.toMap(requestHeaders));
         HttpResponse httpResponse = httpRequest(
                 requestUrl,
                 requestBodyEvaluated,
@@ -234,6 +252,8 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
             String message = MessageFormat.format("Remote service responded with error status code {0} and reason: {1}. ProcessInstanceId {2}.", statusCode, httpResponse.getStatusLine().getReasonPhrase(), processInstance.getId());
             throw new RemoteInvocationException(message);
         }
+
+        storeCookies(httpResponse, processInstance);
 
         HttpEntity responseEntity = httpResponse.getEntity();
         if (statusCode == 204 || responseEntity.getContentLength() == 0L) {
@@ -287,6 +307,19 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
             }
             completeWorkItem(manager, workItemId, statusCode, serviceInvocationResponse, cancelUrl);
         }
+    }
+
+    private void storeCookies(
+            HttpResponse response, WorkflowProcessInstance processInstance) {
+        Map<String, String> cookies = new HashMap<>();
+        Header[] cookieHeaders = response.getHeaders("Set-Cookie");
+        for (Header cookieHeader : cookieHeaders) {
+            List<HttpCookie> cookiesInTheHeader = HttpCookie.parse(cookieHeader.getValue());
+            Map<String, String> cookiesMap = cookiesInTheHeader.stream()
+                    .collect(Collectors.toMap(HttpCookie::getName, HttpCookie::getValue));
+            cookies.putAll(cookiesMap);
+        }
+        processInstance.setVariable(COOKIES_KEY, cookies);
     }
 
     private VariableResolverFactory getVariableResolverFactory(

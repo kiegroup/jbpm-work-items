@@ -33,9 +33,9 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.jbpm.contrib.demoservices.dto.BuildRequest;
-import org.jbpm.contrib.demoservices.dto.Request;
 import org.jbpm.contrib.demoservices.dto.CompleteRequest;
 import org.jbpm.contrib.demoservices.dto.PreBuildRequest;
+import org.jbpm.contrib.demoservices.dto.Request;
 import org.jbpm.contrib.demoservices.dto.Scm;
 import org.jbpm.contrib.longrest.util.Strings;
 import org.slf4j.Logger;
@@ -51,6 +51,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
@@ -77,7 +78,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Consumes(MediaType.APPLICATION_JSON)
 public class Service {
 
+    public static final String SERVICE_LISTENER_KEY = "serviceListener";
+    public static final String HEADERS_LISTENER_KEY = "headersListener";
+
     private static final Logger logger = LoggerFactory.getLogger(Service.class);
+    public static final String PRE_BUILD_COOKIE_NAME = "myCookieName";
+    public static final String PRE_BUILD_COOKIE_VALUE = "myCookieValue";
 
     ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     ObjectMapper objectMapper = new ObjectMapper();
@@ -130,7 +136,9 @@ public class Service {
             cancelUrl += "?delay=" + cancelDelay;
             response.put("cancelUrl", cancelUrl);
         }
-        return Response.status(200).entity(response).build();
+        return Response.status(200)
+                .header("Set-Cookie", PRE_BUILD_COOKIE_NAME + "=" + PRE_BUILD_COOKIE_VALUE)
+                .entity(response).build();
     }
 
     @POST
@@ -168,9 +176,14 @@ public class Service {
 
     @POST
     @Path("/cancel/{id}")
-    public Response cancelAction(@PathParam("id") int jobId, @QueryParam("delay") @DefaultValue("1") int delay)
+    public Response cancelAction(
+            @PathParam("id") int jobId,
+            @QueryParam("delay") @DefaultValue("1") int delay,
+            @Context HttpHeaders httpHeaders)
             throws JsonProcessingException {
         logger.info("> Action Cancel requested for job:" + jobId);
+
+        headersListener().accept(httpHeaders);
 
         RunningJob runningJob = runningJobs.get(jobId);
         runningJob.future.cancel(true);
@@ -261,7 +274,11 @@ public class Service {
     }
 
     private void fireEvent(EventType eventType, Object event) {
-        ((ServiceListener)servletContext.getAttribute("listener")).fire(eventType, event);
+        ((ServiceListener)servletContext.getAttribute(SERVICE_LISTENER_KEY)).fire(eventType, event);
+    }
+
+    private HeadersListener headersListener() {
+        return ((HeadersListener)servletContext.getAttribute(HEADERS_LISTENER_KEY));
     }
 
 }

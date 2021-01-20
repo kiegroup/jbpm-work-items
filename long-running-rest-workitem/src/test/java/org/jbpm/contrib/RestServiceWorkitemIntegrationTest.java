@@ -23,16 +23,17 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.jbpm.contrib.bpm.TestFunctions;
 import org.jbpm.contrib.demoservices.EventType;
+import org.jbpm.contrib.demoservices.HeadersListener;
 import org.jbpm.contrib.demoservices.Service;
 import org.jbpm.contrib.demoservices.ServiceListener;
 import org.jbpm.contrib.demoservices.dto.PreBuildRequest;
 import org.jbpm.contrib.demoservices.dto.Request;
 import org.jbpm.contrib.demoservices.dto.Scm;
-import org.jbpm.contrib.longrest.LongRunningRestServiceWorkItemHandler;
-import org.jbpm.contrib.mockserver.WorkItems;
 import org.jbpm.contrib.longrest.Constant;
+import org.jbpm.contrib.longrest.LongRunningRestServiceWorkItemHandler;
 import org.jbpm.contrib.longrest.RemoteInvocationException;
 import org.jbpm.contrib.longrest.util.Maps;
+import org.jbpm.contrib.mockserver.WorkItems;
 import org.jbpm.test.JbpmJUnitBaseTestCase;
 import org.junit.After;
 import org.junit.Assert;
@@ -51,9 +52,12 @@ import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.HttpHeaders;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -80,6 +84,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
 
     private final ActiveTasks activeProcesses = new ActiveTasks();
     private final ServiceListener serviceListener = new ServiceListener();
+    private final HeadersListener headersListener = new HeadersListener();
 
     public RestServiceWorkitemIntegrationTest() {
         super(true, true);
@@ -120,7 +125,8 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         servletHolder.setInitOrder(0);
         // Tells the Jersey Servlet which REST service/class to load.
         servletHolder.setInitParameter("jersey.config.server.provider.classnames", Service.class.getCanonicalName());
-        demoService.setAttribute("listener", serviceListener);
+        demoService.setAttribute(Service.SERVICE_LISTENER_KEY, serviceListener);
+        demoService.setAttribute(Service.HEADERS_LISTENER_KEY, headersListener);
 
         // JBPM server mock
         ServletContextHandler jbpmMock = new ServletContextHandler(contexts, "/services/rest", ServletContextHandler.SESSIONS);
@@ -355,6 +361,9 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
                 EventType.CALLBACK_COMPLETED,
                 (v) -> callbackCompleted.release());
 
+        List<HttpHeaders> headers = new ArrayList<>();
+        headersListener.addConsumer(h -> headers.add(h));
+
         //when
         ProcessInstance processInstance = kieSession.startProcess(
                 "testProcess",
@@ -381,6 +390,10 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
 
         activeProcesses.waitAllCompleted();
         callbackCompleted.acquire();
+
+        //make sure cookie header has been used in the cancel request
+        Assert.assertTrue(!headers.isEmpty());
+        Assert.assertEquals(Service.PRE_BUILD_COOKIE_VALUE, headers.get(0).getCookies().get(Service.PRE_BUILD_COOKIE_NAME).getValue());
 
         customProcessListeners.remove(processEventListener);
         serviceListener.unsubscribe(subscription);
