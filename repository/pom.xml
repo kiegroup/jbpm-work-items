@@ -230,7 +230,7 @@
   </build>
 
   <dependencies>
-    
+
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>template-resources</artifactId>
@@ -327,7 +327,7 @@
     </dependency>
 
   </dependencies>
-  
+
     <profiles>
     <profile>
       <id>all</id>
@@ -594,6 +594,12 @@
         <dependency>
           <groupId>org.jbpm</groupId>
           <artifactId>jbpm-workitems-email</artifactId>
+          <exclusions>
+            <exclusion>
+              <groupId>javax.activation</groupId>
+              <artifactId>activation</artifactId>
+            </exclusion>
+          </exclusions>
           <type>zip</type>
           <scope>provided</scope>
         </dependency>
@@ -643,6 +649,12 @@
         <dependency>
           <groupId>org.jbpm</groupId>
           <artifactId>jbpm-workitems-email</artifactId>
+          <exclusions>
+            <exclusion>
+              <groupId>javax.activation</groupId>
+              <artifactId>activation</artifactId>
+            </exclusion>
+          </exclusions>
           <type>zip</type>
           <scope>provided</scope>
         </dependency>
@@ -671,7 +683,7 @@
           <scope>provided</scope>
         </dependency>
       </dependencies>
-    
+
       <build>
         <plugins>
           <plugin>
