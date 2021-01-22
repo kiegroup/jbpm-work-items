@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.contrib.demoservices;
+package org.jbpm.contrib.longrest.demoservices;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,11 +32,11 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.hibernate.cfg.NotYetImplementedException;
-import org.jbpm.contrib.demoservices.dto.BuildRequest;
-import org.jbpm.contrib.demoservices.dto.CompleteRequest;
-import org.jbpm.contrib.demoservices.dto.PreBuildRequest;
-import org.jbpm.contrib.demoservices.dto.Request;
-import org.jbpm.contrib.demoservices.dto.Scm;
+import org.jbpm.contrib.longrest.demoservices.dto.BuildRequest;
+import org.jbpm.contrib.longrest.demoservices.dto.CompleteRequest;
+import org.jbpm.contrib.longrest.demoservices.dto.PreBuildRequest;
+import org.jbpm.contrib.longrest.demoservices.dto.Request;
+import org.jbpm.contrib.longrest.demoservices.dto.Scm;
 import org.jbpm.contrib.longrest.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

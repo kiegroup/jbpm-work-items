@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.contrib;
+package org.jbpm.contrib.longrest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,19 +21,16 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.jbpm.contrib.bpm.TestFunctions;
-import org.jbpm.contrib.demoservices.EventType;
-import org.jbpm.contrib.demoservices.HeadersListener;
-import org.jbpm.contrib.demoservices.Service;
-import org.jbpm.contrib.demoservices.ServiceListener;
-import org.jbpm.contrib.demoservices.dto.PreBuildRequest;
-import org.jbpm.contrib.demoservices.dto.Request;
-import org.jbpm.contrib.demoservices.dto.Scm;
-import org.jbpm.contrib.longrest.Constant;
-import org.jbpm.contrib.longrest.LongRunningRestServiceWorkItemHandler;
-import org.jbpm.contrib.longrest.RemoteInvocationException;
+import org.jbpm.contrib.longrest.bpm.TestFunctions;
+import org.jbpm.contrib.longrest.demoservices.EventType;
+import org.jbpm.contrib.longrest.demoservices.HeadersListener;
+import org.jbpm.contrib.longrest.demoservices.Service;
+import org.jbpm.contrib.longrest.demoservices.ServiceListener;
+import org.jbpm.contrib.longrest.demoservices.dto.PreBuildRequest;
+import org.jbpm.contrib.longrest.demoservices.dto.Request;
+import org.jbpm.contrib.longrest.demoservices.dto.Scm;
 import org.jbpm.contrib.longrest.util.Maps;
-import org.jbpm.contrib.mockserver.WorkItems;
+import org.jbpm.contrib.longrest.mockserver.WorkItems;
 import org.jbpm.test.JbpmJUnitBaseTestCase;
 import org.junit.After;
 import org.junit.Assert;
@@ -65,8 +62,6 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.jbpm.contrib.longrest.Constant.KIE_HOST_SYSTEM_PROPERTY;
-
 /**
  * 
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
@@ -92,7 +87,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
 
     @Before
     public void preTestSetup() throws Exception {
-        System.setProperty(KIE_HOST_SYSTEM_PROPERTY, "localhost:8080");
+        System.setProperty(Constant.KIE_HOST_SYSTEM_PROPERTY, "localhost:8080");
 
         // Configure jBPM server with all the test processes, workitems and event listeners.
         setupPoolingDataSource();

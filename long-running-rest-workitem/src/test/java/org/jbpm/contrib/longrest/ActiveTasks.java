@@ -1,4 +1,4 @@
-package org.jbpm.contrib;
+package org.jbpm.contrib.longrest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

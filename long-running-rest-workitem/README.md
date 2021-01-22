@@ -45,7 +45,7 @@ Request template
 ================
 Is a message body sent when invoking remote task.
 In the template you can use process input parameters, values from other task results and predefined _system_ properties.
-For an example see `org.jbpm.contrib.bpm.TestFunctions.getPreBuildTemplate()`.
+For an example see `org.jbpm.contrib.longrest.bpm.TestFunctions.getPreBuildTemplate()`.
 
 **System properties**
 - system.callbackUrl
@@ -56,8 +56,8 @@ For an example see `org.jbpm.contrib.bpm.TestFunctions.getPreBuildTemplate()`.
 **Including whole object map**
 Note that all values are stored as nested maps, 
 to include the whole object in the template you have to serialize it and to unescape it, to prevet double json escape.
-Use `org.jbpm.contrib.restservice.util.Mapper().writeValueAsString(object, true)` to unescape the serialized object.
-See `org.jbpm.contrib.bpm.TestFunctions.getCompletionTemplate()`.
+Use `org.jbpm.contrib.longrest.util.Mapper().writeValueAsString(object, true)` to unescape the serialized object.
+See `org.jbpm.contrib.longrest.bpm.TestFunctions.getCompletionTemplate()`.
 
 
 Task Result
@@ -154,4 +154,4 @@ Upload this work item handler to your JBPM server and import the `execute-rest.b
 
 To design your task invocation process use the execute-rest as a sub-process.
 
-See a usage example in `src/test/resources/test-process.bpmn` and `org.jbpm.contrib.bpm.TestFunctions`.
+See a usage example in `src/test/resources/test-process.bpmn` and `org.jbpm.contrib.longrest.bpm.TestFunctions`.

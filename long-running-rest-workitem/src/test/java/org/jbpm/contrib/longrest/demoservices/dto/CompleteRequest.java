@@ -1,4 +1,4 @@
-package org.jbpm.contrib.demoservices.dto;
+package org.jbpm.contrib.longrest.demoservices.dto;
 
 import java.util.Map;
 

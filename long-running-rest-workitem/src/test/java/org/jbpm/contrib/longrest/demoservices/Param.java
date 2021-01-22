@@ -1,4 +1,4 @@
-package org.jbpm.contrib.demoservices;
+package org.jbpm.contrib.longrest.demoservices;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;

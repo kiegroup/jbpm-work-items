@@ -1,4 +1,4 @@
-package org.jbpm.contrib.bpm;
+package org.jbpm.contrib.longrest.bpm;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kie.api.runtime.process.ProcessContext;

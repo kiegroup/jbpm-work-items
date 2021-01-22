@@ -1,4 +1,4 @@
-package org.jbpm.contrib.demoservices;
+package org.jbpm.contrib.longrest.demoservices;
 
 import java.util.Collection;
 import java.util.HashSet;

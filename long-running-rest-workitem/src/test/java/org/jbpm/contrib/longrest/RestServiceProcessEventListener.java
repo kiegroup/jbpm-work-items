@@ -1,4 +1,4 @@
-package org.jbpm.contrib;
+package org.jbpm.contrib.longrest;
 
 import org.kie.api.event.process.DefaultProcessEventListener;
 import org.kie.api.event.process.ProcessCompletedEvent;
