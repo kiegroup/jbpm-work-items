@@ -10,7 +10,7 @@
   <bpmn2:itemDefinition id="_preBuildTemplateItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_buildTemplateItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_completionTemplateItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="_functionsItem" structureRef="org.jbpm.contrib.bpm.TestFunctions"/>
+  <bpmn2:itemDefinition id="_functionsItem" structureRef="org.jbpm.contrib.longrest.bpm.TestFunctions"/>
   <bpmn2:itemDefinition id="_thisProcessIdItem" structureRef="java.lang.Long"/>
   <bpmn2:itemDefinition id="__91C09C53-86B7-411F-84A4-361D54BE7024_signalSourceIdInputXItem" structureRef="java.lang.Long"/>
   <bpmn2:itemDefinition id="__07FB8F17-9DD7-4B55-AF96-48F8CAF7C3BF_resultOutputXItem" structureRef="java.util.Map"/>
@@ -60,7 +60,7 @@
       <drools:import name="java.util.Map"/>
       <drools:import name="java.util.HashMap"/>
       <drools:import name="com.fasterxml.jackson.databind.ObjectMapper"/>
-      <drools:import name="org.jbpm.contrib.bpm.TestFunctions"/>
+      <drools:import name="org.jbpm.contrib.longrest.bpm.TestFunctions"/>
       <drools:import name="java.util.logging.Logger"/>
     </bpmn2:extensionElements>
     <bpmn2:property id="in_initData" itemSubjectRef="_in_initDataItem" name="in_initData"/>
