@@ -15,7 +15,7 @@
   <parent>
     <groupId>org.jbpm.contrib</groupId>
     <artifactId>workitems</artifactId>
-    <version>7.49.0-SNAPSHOT</version>
+    <version>7.50.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>jbpm-workitem-itests</artifactId>
@@ -70,10 +70,6 @@
         <exclusion>
           <groupId>javax.activation</groupId>
           <artifactId>javax.activation-api</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>org.jboss.spec.javax.el</groupId>
-            <artifactId>jboss-el-api_3.0_spec</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
