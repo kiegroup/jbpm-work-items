@@ -398,7 +398,7 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
         }
 
         if (jsonContent != null && !jsonContent.equals("")) {
-            requestBuilder.addHeader("Content-Type","application/json");
+            requestBuilder.setHeader("Content-Type","application/json");
             StringEntity entity = new StringEntity(jsonContent, ContentType.APPLICATION_JSON);
             requestBuilder.setEntity(entity);
         }
