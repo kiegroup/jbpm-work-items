@@ -9,24 +9,24 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Json {
-    public static Object escape(Object o) {
+    public static <T> T escape(T o) {
         if (o == null) {
             return null;
         } else if (o instanceof String) {
-            return StringEscapeUtils.escapeJson((String) o);
+            return (T) StringEscapeUtils.escapeJson((String) o);
         } else if (o instanceof Map) {
             Map<?, ?> m = (Map)o;
             Map result = new HashMap();
             for (Map.Entry e : m.entrySet()) {
                 result.put(escape(e.getKey()), escape(e.getValue()));
             }
-            return result;
+            return (T) result;
         } else if (o instanceof List) {
-            return ((List<?>) o).stream()
+            return (T) ((List<?>) o).stream()
                     .map(e -> escape(e))
                     .collect(Collectors.toList());
         } else if (o instanceof Set) {
-            return ((Set<?>) o).stream()
+            return (T) ((Set<?>) o).stream()
                     .map(e -> escape(e))
                     .collect(Collectors.toSet());
         } else {
@@ -34,24 +34,24 @@ public class Json {
         }
     }
 
-    public static Object unescape(Object o) {
+    public static <T> T unescape(T o) {
         if (o == null) {
             return null;
         } else if (o instanceof String) {
-            return StringEscapeUtils.unescapeJson((String) o);
+            return (T) StringEscapeUtils.unescapeJson((String) o);
         } else if (o instanceof Map) {
             Map<?, ?> m = (Map)o;
             Map result = new HashMap();
             for (Map.Entry e : m.entrySet()) {
                 result.put(unescape(e.getKey()), unescape(e.getValue()));
             }
-            return result;
+            return (T) result;
         } else if (o instanceof List) {
-            return ((List<?>) o).stream()
+            return (T) ((List<?>) o).stream()
                     .map(e -> unescape(e))
                     .collect(Collectors.toList());
         } else if (o instanceof Set) {
-            return ((Set<?>) o).stream()
+            return (T) ((Set<?>) o).stream()
                     .map(e -> unescape(e))
                     .collect(Collectors.toSet());
         } else {
