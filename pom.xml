@@ -688,7 +688,7 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.jbpm.contrib</groupId>
+        <groupId>org.jbpm.process</groupId>
         <artifactId>long-running-rest-workitem</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -852,7 +852,49 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
-        <artifactId>rest-service-workitem</artifactId>
+        <artifactId>slack-workitem</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>pdf-workitem</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>execute-sql-workitem</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>riot-workitem</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>pastebin-workitem</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>vimeo-workitem</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>kafka-workitem</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>google-maps-workitem</artifactId>
         <version>${project.version}</version>
         <type>zip</type>
       </dependency>
@@ -898,21 +940,6 @@
         <artifactId>jbpm-workitems-webservice</artifactId>
         <version>${version.org.kie}</version>
         <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpclient</artifactId>
-        <version>4.5.1</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>2.5.4</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss</groupId>
-        <artifactId>jboss-common-core</artifactId>
-        <version>2.6.0.Final-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
