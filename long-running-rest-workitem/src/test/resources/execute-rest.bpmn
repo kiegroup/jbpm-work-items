@@ -124,7 +124,7 @@
           <drools:metaValue><![CDATA[no more retries]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" id="_cSEOlDiQEeu03PtRy_pLzA" language="http://www.mvel.org/2.0"><![CDATA[(retryAttempt >= maxRetries) || !(errorCause instanceof org.jbpm.contrib.longrest.RemoteInvocationException);]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" id="_cSEOlDiQEeu03PtRy_pLzA" language="http://www.mvel.org/2.0"><![CDATA[(retryAttempt >= maxRetries) || !(errorCause instanceof org.jbpm.process.longrest.RemoteInvocationException);]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_69C6E7FE-AB3D-471D-8684-E87F6B0A3706" drools:priority="1" name="success" sourceRef="_0BACD7E2-BEBF-44C1-97CC-2EFD76EC635D" targetRef="_54DCBCA9-70AF-4C00-9255-E83AD8F806E7">
       <bpmn2:extensionElements>
@@ -190,7 +190,7 @@
           <drools:metaValue><![CDATA[retry]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" id="_cSEOmTiQEeu03PtRy_pLzA" language="http://www.java.com/java"><![CDATA[return (kcontext.getVariable("errorCause") instanceof org.jbpm.contrib.longrest.RemoteInvocationException);]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" id="_cSEOmTiQEeu03PtRy_pLzA" language="http://www.java.com/java"><![CDATA[return (kcontext.getVariable("errorCause") instanceof org.jbpm.process.longrest.RemoteInvocationException);]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_8128F2DB-EE05-4701-BA62-B18CB1B19C9D" sourceRef="_60B07AB0-DDEC-4E70-B20F-45DBB0271AE3" targetRef="_B3F35FB1-3C9F-41CA-8E5A-0A19A80F67F6"/>
     <bpmn2:sequenceFlow id="_438EEA88-72A0-4799-A082-403D722B9C59" sourceRef="_2DE6E484-2D92-4182-A67A-193335CE4BA6" targetRef="_263CB4B8-12C4-4162-AC05-B5D1F40DE233"/>
