@@ -693,7 +693,7 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.jbpm.process</groupId>
+        <groupId>org.jbpm.contrib</groupId>
         <artifactId>long-running-rest-workitem</artifactId>
         <version>${project.version}</version>
       </dependency>
