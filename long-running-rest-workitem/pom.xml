@@ -30,12 +30,6 @@
       <artifactId>jbpm-workitems-core</artifactId>
       <scope>provided</scope>
     </dependency>
-<!--    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-workitems-rest</artifactId>
-      <scope>provided</scope>
-      <version>${project.parent.version}</version>
-    </dependency> -->
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-document</artifactId>
@@ -47,13 +41,6 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-<!--    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-workitems-rest</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
-      <version>${project.parent.version}</version>
-    </dependency> -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
