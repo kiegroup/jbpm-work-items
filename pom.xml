@@ -136,6 +136,11 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-executor</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-document</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
