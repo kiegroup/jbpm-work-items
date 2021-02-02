@@ -7,9 +7,6 @@ import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 
-/**
- * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
- */
 public class ProcessUtils {
 
     public static WorkflowProcessInstance getProcessInstance(RuntimeManager runtimeManager, long processInstanceId) {

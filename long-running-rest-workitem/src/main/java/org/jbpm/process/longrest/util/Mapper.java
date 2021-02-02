@@ -5,9 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.Serializable;
 
-/**
- * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
- */
 public class Mapper implements Serializable {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();

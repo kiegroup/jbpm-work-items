@@ -1,9 +1,5 @@
 package org.jbpm.process.longrest.demoservices.dto;
 
-/**
- * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
- * @author Ryszard Kozmik
- */
 public class PreBuildRequest {
     
     //protected static ObjectMapper objectMapper = new ObjectMapper();

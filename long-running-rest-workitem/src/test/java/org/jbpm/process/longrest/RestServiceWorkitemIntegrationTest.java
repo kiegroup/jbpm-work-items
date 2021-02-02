@@ -62,11 +62,6 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * 
- * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
- * @author Ryszard Kozmik
- */
 public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
 
     private final Logger logger = LoggerFactory.getLogger(RestServiceWorkitemIntegrationTest.class);

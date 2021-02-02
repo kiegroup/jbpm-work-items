@@ -69,10 +69,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
- * @author Ryszard Kozmik
- */
 @Path("/service")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

@@ -2,9 +2,6 @@ package org.jbpm.process.longrest.util;
 
 import java.util.*;
 
-/**
- * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
- */
 public class Strings {
 
     /**

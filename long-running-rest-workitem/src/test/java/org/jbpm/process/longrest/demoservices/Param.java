@@ -3,10 +3,6 @@ package org.jbpm.process.longrest.demoservices;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
-/**
- * @author Ryszard Kozmik
- *
- */
 public class Param {
 
     private String name;

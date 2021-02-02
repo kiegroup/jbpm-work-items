@@ -35,10 +35,6 @@ import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
- * @author Ryszard Kozmik
- */
 @Path("/server/containers/default-per-pinstance/processes/instances/")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

@@ -1,8 +1,5 @@
 package org.jbpm.process.longrest.demoservices.dto;
 
-/**
- * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
- */
 public class Scm {
 
     String url;
