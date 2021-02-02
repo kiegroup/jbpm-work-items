@@ -37,6 +37,7 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
 import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
+import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.manager.RuntimeManager;
@@ -91,7 +92,8 @@ import static org.mvel2.templates.TemplateCompiler.compileTemplate;
         },
         serviceInfo = @WidService(category = "REST service", description = "",
                 keywords = "rest,long-running",
-                action = @WidAction(title = "Long running REST service handler ver. ${version}")
+                action = @WidAction(title = "Long running REST service handler ver. ${version}"),
+                authinfo = @WidAuth(required = true, params = {"url"})
         )
 )
 public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
