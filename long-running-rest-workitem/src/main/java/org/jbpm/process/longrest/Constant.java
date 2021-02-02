@@ -1,8 +1,5 @@
 package org.jbpm.process.longrest;
 
-/**
- * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
- */
 public class Constant {
 
     public final static String CANCEL_SIGNAL_TYPE = "CancelAll";

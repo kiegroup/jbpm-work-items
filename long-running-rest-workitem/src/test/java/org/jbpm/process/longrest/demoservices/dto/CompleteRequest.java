@@ -2,9 +2,6 @@ package org.jbpm.process.longrest.demoservices.dto;
 
 import java.util.Map;
 
-/**
- * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
- */
 public class CompleteRequest {
 
     private String buildConfigurationId;

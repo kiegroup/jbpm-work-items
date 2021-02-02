@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
  * Process instance variable resolver with chaining (nextFactory) support
  *
  * @see org.jbpm.workflow.instance.impl.ProcessInstanceResolverFactory
- * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
  */
 public class ProcessVariableResolverFactory extends BaseVariableResolverFactory {
 

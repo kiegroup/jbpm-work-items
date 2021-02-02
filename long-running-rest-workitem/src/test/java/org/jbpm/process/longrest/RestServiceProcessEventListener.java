@@ -10,9 +10,6 @@ import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
- */
 public class RestServiceProcessEventListener extends DefaultProcessEventListener {
 
     private ActiveTasks activeProcesses;
