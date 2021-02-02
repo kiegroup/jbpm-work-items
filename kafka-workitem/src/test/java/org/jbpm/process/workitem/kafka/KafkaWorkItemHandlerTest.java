@@ -16,6 +16,7 @@
 package org.jbpm.process.workitem.kafka;
 
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +39,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.kie.api.executor.Executor;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -133,7 +135,7 @@ public class KafkaWorkItemHandlerTest {
         when(mockProducerKafka.send(any())).thenReturn(future);
         when(future.get()).thenThrow(new TimeoutException("timeout"));
 
-        handler = new KafkaWorkItemHandler(mockProducerKafka);
+        handler = new KafkaWorkItemHandler(new Properties(), mockProducerKafka);
 
         assertExceptionAfterExecuteWorkItem(workItem);
     }
@@ -177,7 +179,7 @@ public class KafkaWorkItemHandlerTest {
         mockProducerString = new MockProducer<>(autocomplete, 
                                                 new StringSerializer(), 
                                                 new StringSerializer());
-        handler = new KafkaWorkItemHandler(mockProducerString);
+        handler = new KafkaWorkItemHandler(new Properties(), mockProducerString);
     }
     
     private void buildKafkaWIHInteger(boolean autocomplete) {
@@ -191,7 +193,7 @@ public class KafkaWorkItemHandlerTest {
                                                  new IntegerSerializer(), 
                                                  new IntegerSerializer());
         
-        handler = new KafkaWorkItemHandler(mockProducerInteger);
+        handler = new KafkaWorkItemHandler(new Properties(), mockProducerInteger);
     }
     
     private void assertResultSuccessAfterExecuteWorkItem() {
