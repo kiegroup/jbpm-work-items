@@ -75,7 +75,7 @@
     <version.docker-java>3.0.14</version.docker-java>
     <!-- OSGI tests properties -->
     <version.org.apache.karaf>4.2.0</version.org.apache.karaf>
-    <version.org.ops4j.pax.exam>4.11.0</version.org.ops4j.pax.exam>
+    <version.org.ops4j.pax.exam>4.13.4</version.org.ops4j.pax.exam>
     <version.org.apache.servicemix.bundles.javax-inject>1_2</version.org.apache.servicemix.bundles.javax-inject>
 
     <!-- Failsafe plugin-related properties -->

@@ -25,7 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -45,12 +45,12 @@ public class VimeoWorkitemHandlerTest {
             when(vimeo.addVideo(any(File.class),
                                 anyBoolean())).thenReturn("testVideEndPoint");
 
-            when(vimeo.updateVideoMetadata(anyString(),
-                                           anyString(),
-                                           anyString(),
-                                           anyString(),
-                                           anyString(),
-                                           anyString(),
+            when(vimeo.updateVideoMetadata(any(),
+                                           any(),
+                                           any(),
+                                           any(),
+                                           any(),
+                                           any(),
                                            anyBoolean())).thenReturn(vimeoResponse);
 
             when(vimeo.getVideoInfo(anyString())).thenReturn(vimeoResponse);
