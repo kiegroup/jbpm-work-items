@@ -18,7 +18,7 @@ public class ProcessUtils {
             RuntimeEngine engine = runtimeManager.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId));
             return engine.getKieSession();
         }
-        return null; //TODO
+        return null;
     }
 
     public static long getLongParameter(WorkItem workItem, String parameterName) {

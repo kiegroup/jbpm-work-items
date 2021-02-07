@@ -35,12 +35,14 @@ import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
 
-@Path("/server/containers/default-per-pinstance/processes/instances/")
+@Path("/services/rest/server/containers/default-per-pinstance/processes/instances/")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class WorkItems {
 
     private final Logger logger = LoggerFactory.getLogger(WorkItems.class);
+
+    public static final String RUNTIME_MANAGER_KEY = "runtimeManager";
 
     @Context
     ServletContext servletContext;
@@ -72,7 +74,7 @@ public class WorkItems {
             @PathParam("instanceId") long instanceId,
             Map<String, Object> result)
     {
-        logger.info("Sending {} signal to process id: {}, result: {}.", signalName, instanceId, result);
+        logger.info("Mock server received signal {} and sending it to process id: {}, result: {}.", signalName, instanceId, result);
         RuntimeEngine runtimeEngine = getRuntimeEngine(instanceId);
         KieSession kieSession = runtimeEngine.getKieSession();
         kieSession.signalEvent(signalName, result);
@@ -91,7 +93,7 @@ public class WorkItems {
     }
 
     private RuntimeManager getRuntimeManager() {
-        return (RuntimeManager) servletContext.getAttribute("runtimeManager");
+        return (RuntimeManager) servletContext.getAttribute(RUNTIME_MANAGER_KEY);
     }
 
 }

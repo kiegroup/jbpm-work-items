@@ -69,7 +69,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Path("/service")
+@Path("/demo-service")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class Service {
@@ -128,7 +128,7 @@ public class Service {
         Map<String, Object> response = new HashMap<>();
         if (callback != null && !Strings.isEmpty(callback.getUrl())) {
             int jobId = scheduleCallback(callback.getUrl(), callback.getMethod(),null, callbackDelay, result);
-            String cancelUrl = "http://localhost:8080/demo-service/service/cancel/" + jobId;
+            String cancelUrl = "http://localhost:8080/demo-service/cancel/" + jobId;
             cancelUrl += "?delay=" + cancelDelay;
             response.put("cancelUrl", cancelUrl);
         }
@@ -153,7 +153,7 @@ public class Service {
 
         int jobId = scheduleCallback(callback.getUrl(), callback.getMethod(),null, callbackDelay, result);
 
-        String cancelUrl = "http://localhost:8080/demo-service/service/cancel/" + jobId;
+        String cancelUrl = "http://localhost:8080/demo-service/cancel/" + jobId;
         Map<String, Object> response = new HashMap<>();
         response.put("cancelUrl", cancelUrl);
 

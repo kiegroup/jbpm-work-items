@@ -54,14 +54,9 @@
   <bpmn2:signal id="_f6bba4f3-f076-3cf7-9325-51d4c2fb74cf" name="startHeartMonitor"/>
   <bpmn2:signal id="_9acf92fe-7abd-308d-978c-fe9c8cae620a" name="stopHeartMonitor"/>
   <bpmn2:signal id="_4bf78022-ff53-3148-88a8-f7857d9797d6" name="CancelExecuteRest"/>
-  <bpmn2:signal id="_58e059bc-e7f6-3d5f-a2bd-7c3d5097a174" name="died"/>
   <bpmn2:error id="operationFailed" errorCode="operationFailed"/>
   <bpmn2:signal id="_97d9ab07-cb81-3f8a-aa7b-89986a346cfa" name="RESTResponded"/>
-  <bpmn2:signal id="_97d9ab07-cb81-3f8a-aa7b-89986a346cfa" name="RESTResponded"/>
-  <bpmn2:signal id="_544258f3-60d2-3388-9b0c-9b8130566202" name="activateHeartMonitor"/>
-  <bpmn2:signal id="_f6bba4f3-f076-3cf7-9325-51d4c2fb74cf" name="startHeartMonitor"/>
-  <bpmn2:signal id="_9acf92fe-7abd-308d-978c-fe9c8cae620a" name="stopHeartMonitor"/>
-  <bpmn2:process id="kogito.executerest" drools:packageName="org.jboss.pnc" drools:version="1.0" drools:adHoc="false" name="executerest" isExecutable="true">
+  <bpmn2:process id="org.jbpm.process.longrest.executerest" drools:packageName="org.jbpm.process.longrest" drools:version="1.0" drools:adHoc="false" name="executerest" isExecutable="true">
     <bpmn2:extensionElements>
       <drools:import name="org.mvel2.templates.TemplateRuntime"/>
       <drools:import name="java.util.Map"/>
@@ -879,7 +874,7 @@ or canceling is disabled]]></drools:metaValue>
     </bpmn2:subProcess>
   </bpmn2:process>
   <bpmndi:BPMNDiagram id="_cSE1wziQEeu03PtRy_pLzA">
-    <bpmndi:BPMNPlane id="_cSE1xDiQEeu03PtRy_pLzA" bpmnElement="kogito.executerest">
+    <bpmndi:BPMNPlane id="_cSE1xDiQEeu03PtRy_pLzA" bpmnElement="executerest">
       <bpmndi:BPMNShape id="shape__D70F9EF3-163D-42A2-80D6-5403D9A632CA" bpmnElement="_D70F9EF3-163D-42A2-80D6-5403D9A632CA" isExpanded="true">
         <dc:Bounds height="417.0" width="1137.0" x="449.0" y="763.0"/>
       </bpmndi:BPMNShape>
