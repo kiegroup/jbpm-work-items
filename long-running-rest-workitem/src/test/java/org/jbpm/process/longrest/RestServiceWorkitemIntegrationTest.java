@@ -21,6 +21,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.glassfish.jersey.servlet.ServletProperties;
 import org.jbpm.process.longrest.bpm.TestFunctions;
 import org.jbpm.process.longrest.demoservices.EventType;
 import org.jbpm.process.longrest.demoservices.HeadersListener;
@@ -29,8 +30,8 @@ import org.jbpm.process.longrest.demoservices.ServiceListener;
 import org.jbpm.process.longrest.demoservices.dto.PreBuildRequest;
 import org.jbpm.process.longrest.demoservices.dto.Request;
 import org.jbpm.process.longrest.demoservices.dto.Scm;
-import org.jbpm.process.longrest.util.Maps;
 import org.jbpm.process.longrest.mockserver.WorkItems;
+import org.jbpm.process.longrest.util.Maps;
 import org.jbpm.test.JbpmJUnitBaseTestCase;
 import org.junit.After;
 import org.junit.Assert;
@@ -82,7 +83,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
 
     @Before
     public void preTestSetup() throws Exception {
-        System.setProperty(Constant.KIE_HOST_SYSTEM_PROPERTY, "localhost:8080");
+        System.setProperty(Constant.HOSTNAME_HTTP, "localhost:8080");
 
         // Configure jBPM server with all the test processes, workitems and event listeners.
         setupPoolingDataSource();
@@ -110,20 +111,15 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         server = new Server(PORT);
         server.setHandler(contexts);
 
-        ServletContextHandler demoService = new ServletContextHandler(contexts, "/demo-service", ServletContextHandler.SESSIONS);
-        ServletHolder servletHolder = demoService.addServlet(org.glassfish.jersey.servlet.ServletContainer.class, "/*");
+        ServletContextHandler rest = new ServletContextHandler(contexts, "/", ServletContextHandler.SESSIONS);
+        ServletHolder servletHolder = rest.addServlet(org.glassfish.jersey.servlet.ServletContainer.class, "/*");
         servletHolder.setInitOrder(0);
-        // Tells the Jersey Servlet which REST service/class to load.
-        servletHolder.setInitParameter("jersey.config.server.provider.classnames", Service.class.getCanonicalName());
-        demoService.setAttribute(Service.SERVICE_LISTENER_KEY, serviceListener);
-        demoService.setAttribute(Service.HEADERS_LISTENER_KEY, headersListener);
+        servletHolder.setInitParameter(ServletProperties.JAXRS_APPLICATION_CLASS, JaxRsActivator.class.getName());
+        rest.setAttribute(Service.SERVICE_LISTENER_KEY, serviceListener);
+        rest.setAttribute(Service.HEADERS_LISTENER_KEY, headersListener);
 
-        // JBPM server mock
-        ServletContextHandler jbpmMock = new ServletContextHandler(contexts, "/services/rest", ServletContextHandler.SESSIONS);
-        jbpmMock.setAttribute("runtimeManager", manager);
-        ServletHolder jbpmMockServlet = jbpmMock.addServlet(org.glassfish.jersey.servlet.ServletContainer.class, "/*");
-        jbpmMockServlet.setInitOrder(0);
-        jbpmMockServlet.setInitParameter("jersey.config.server.provider.classnames", WorkItems.class.getCanonicalName());
+        rest.setAttribute(WorkItems.RUNTIME_MANAGER_KEY, manager);
+
         server.start();
     }
 
@@ -155,7 +151,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
 
         ProcessInstance processInstance = kieSession.startProcess(
                 "testProcess",
-                Collections.singletonMap("in_initData", getProcessParameters(1, 30, 1, 30, labels)));
+                Collections.singletonMap("input", getProcessParameters(1, 30, 1, 30, labels)));
 
         manager.disposeRuntimeEngine(runtimeEngine);
 
@@ -169,7 +165,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         Map<String, Object> preBuildResponse = Maps.getStringObjectMap(preBuildCallbackResult, "response");
         Assert.assertEquals("new-scm-tag", Maps.getStringObjectMap(preBuildResponse, "scm").get("revision"));
         Map<String, Object> initialResponse = Maps.getStringObjectMap(preBuildCallbackResult, "initialResponse");
-        Assert.assertTrue(initialResponse.get("cancelUrl").toString().startsWith("http://localhost:8080/demo-service/service/cancel/"));
+        Assert.assertTrue(initialResponse.get("cancelUrl").toString().startsWith("http://localhost:8080/demo-service/cancel/"));
 
         Map<String, Object> buildCallbackResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
         logger.info("buildCallbackResult: " + buildCallbackResult);
@@ -208,7 +204,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
 
         ProcessInstance processInstance = kieSession.startProcess(
                 "testProcess",
-                Collections.singletonMap("in_initData", processParameters));
+                Collections.singletonMap("input", processParameters));
 
         manager.disposeRuntimeEngine(runtimeEngine);
 
@@ -244,7 +240,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
 
         ProcessInstance processInstance = kieSession.startProcess(
                 "testProcess",
-                Collections.singletonMap("in_initData", processParameters));
+                Collections.singletonMap("input", processParameters));
 
         manager.disposeRuntimeEngine(runtimeEngine);
 
@@ -298,7 +294,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         //when
         ProcessInstance processInstance = kieSession.startProcess(
                 "testProcess",
-                Collections.singletonMap("in_initData", getProcessParameters(10, 30, 1, 30, Collections.emptyMap())));
+                Collections.singletonMap("input", getProcessParameters(10, 30, 1, 30, Collections.emptyMap())));
         manager.disposeRuntimeEngine(runtimeEngine);
 
         //skip variable initialization
@@ -357,7 +353,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         //when
         ProcessInstance processInstance = kieSession.startProcess(
                 "testProcess",
-                Collections.singletonMap("in_initData", getProcessParameters(10, 2, 1, 30, Collections.emptyMap())));
+                Collections.singletonMap("input", getProcessParameters(10, 2, 1, 30, Collections.emptyMap())));
         manager.disposeRuntimeEngine(runtimeEngine);
         //skip variable initialization
         variableChangedQueue.take(); //preBuildResult
@@ -373,7 +369,6 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
 
         //make sure final task (send result) has been called
         //use getChangedVariable because of there are multiple events of preBuildResult in case of cancel
-        //TODO make sure it's correct that there are multiple events of preBuildResult in case of cancel
         Map<String, Object> completionResult = getChangedVariable(variableChangedQueue, "completionResult");
         logger.info("completionResult: " + completionResult);
         Assert.assertEquals("SUCCESS", completionResult.get("status"));
@@ -409,7 +404,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         //when
         ProcessInstance processInstance = kieSession.startProcess(
                 "testProcess",
-                Collections.singletonMap("in_initData", getProcessParameters(10, 2, 10, 2, Collections.emptyMap())));
+                Collections.singletonMap("input", getProcessParameters(10, 2, 10, 2, Collections.emptyMap())));
         manager.disposeRuntimeEngine(runtimeEngine);
         //skip variable initialization
         variableChangedQueue.take();
@@ -465,7 +460,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         RuntimeEngine runtimeEngine = getRuntimeEngine();
         KieSession kieSession = runtimeEngine.getKieSession();
 
-        ProcessInstance processInstance = (ProcessInstance) kieSession.startProcess("kogito.executerest", getExecuteRestParameters());
+        ProcessInstance processInstance = (ProcessInstance) kieSession.startProcess("org.jbpm.process.longrest.executerest", getExecuteRestParameters());
         manager.disposeRuntimeEngine(runtimeEngine);
 
         boolean completed = processFinished.tryAcquire(15, TimeUnit.SECONDS);
@@ -499,7 +494,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
             //when
             ProcessInstance processInstance = kieSession.startProcess(
                     "testProcess",
-                    Collections.singletonMap("in_initData", getProcessParameters(10, 10, 10, 2, 2, 4, Collections.emptyMap())));
+                    Collections.singletonMap("input", getProcessParameters(10, 10, 10, 2, 2, 4, Collections.emptyMap())));
             manager.disposeRuntimeEngine(runtimeEngine);
             //skip variable initialization
             variableChangedQueue.take();
@@ -524,7 +519,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("requestMethod", "POST");
         parameters.put("requestHeaders", null);
-        parameters.put("requestUrl", "http://localhost:8080/demo-service/service/prebuild");
+        parameters.put("requestUrl", "http://localhost:8080/demo-service/prebuild");
         parameters.put("requestTemplate", getPreBuildRequestBody());
         parameters.put("taskTimeout", "10");
         parameters.put("cancel", false);
@@ -574,8 +569,8 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
             int heartbeatTimeout,
             Map<String, Object> labels) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("serviceBaseUrl", "http://localhost:8080/demo-service/service");
-        parameters.put("preBuildServiceUrl", "http://localhost:8080/demo-service/service/prebuild?"
+        parameters.put("serviceBaseUrl", "http://localhost:8080/demo-service");
+        parameters.put("preBuildServiceUrl", "http://localhost:8080/demo-service/prebuild?"
                 + "callbackDelay=" + preBuildCallbackDelay
                 + "&cancelDelay=" + cancelDelay
                 + "&cancelHeartBeatAfter=" + cancelHeartBeatAfter);

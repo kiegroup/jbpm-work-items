@@ -55,7 +55,7 @@
   <bpmn2:error id="operationFailed" errorCode="operationFailed"/>
   <bpmn2:error id="operationFailed" errorCode="operationFailed"/>
   <bpmn2:error id="operationFailed" errorCode="operationFailed"/>
-  <bpmn2:process id="testProcess" drools:packageName="org.jboss.pnc.bpm" drools:version="1.0" drools:adHoc="false" name="testProcess" isExecutable="true" processType="Public">
+  <bpmn2:process id="testProcess" drools:packageName="org.jbpm.process.longrest" drools:version="1.0" drools:adHoc="false" name="testProcess" isExecutable="true" processType="Public">
     <bpmn2:extensionElements>
       <drools:import name="java.util.Map"/>
       <drools:import name="java.util.HashMap"/>
@@ -130,7 +130,7 @@
       </bpmn2:extensionElements>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_5D3EB892-5A7C-4948-B37D-CD3ECD1086D5" sourceRef="_07FB8F17-9DD7-4B55-AF96-48F8CAF7C3BF" targetRef="_9BA738C4-9B6C-4442-8D61-06641852CFEE"/>
-    <bpmn2:callActivity id="_16696BFC-5734-41D6-A1EB-790593184022" drools:independent="false" drools:waitForCompletion="true" name="Build" calledElement="kogito.executerest">
+    <bpmn2:callActivity id="_16696BFC-5734-41D6-A1EB-790593184022" drools:independent="false" drools:waitForCompletion="true" name="Build" calledElement="org.jbpm.process.longrest.executerest">
       <bpmn2:extensionElements>
         <drools:metaData name="elementname">
           <drools:metaValue><![CDATA[Build]]></drools:metaValue>
@@ -247,7 +247,7 @@
         <bpmn2:targetRef>buildResult</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:callActivity>
-    <bpmn2:callActivity id="_49EBC507-1EA9-4652-B48C-EEEED0112241" drools:independent="false" drools:waitForCompletion="true" name="Pre build" calledElement="kogito.executerest">
+    <bpmn2:callActivity id="_49EBC507-1EA9-4652-B48C-EEEED0112241" drools:independent="false" drools:waitForCompletion="true" name="Pre build" calledElement="org.jbpm.process.longrest.executerest">
       <bpmn2:extensionElements>
         <drools:metaData name="elementname">
           <drools:metaValue><![CDATA[Pre build]]></drools:metaValue>
@@ -391,7 +391,7 @@
         <bpmn2:targetRef>preBuildResult</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:callActivity>
-    <bpmn2:callActivity id="_D19D239F-BE13-45E3-90F2-FEF1814939E9" drools:independent="false" drools:waitForCompletion="true" name="Send result" calledElement="kogito.executerest">
+    <bpmn2:callActivity id="_D19D239F-BE13-45E3-90F2-FEF1814939E9" drools:independent="false" drools:waitForCompletion="true" name="Send result" calledElement="org.jbpm.process.longrest.executerest">
       <bpmn2:extensionElements>
         <drools:metaData name="elementname">
           <drools:metaValue><![CDATA[Send result]]></drools:metaValue>
@@ -490,10 +490,7 @@
       <bpmn2:outgoing>_832D797F-E2C9-4D6A-BEB3-260A99659ACE</bpmn2:outgoing>
       <bpmn2:script>kcontext.setVariable("functions",new TestFunctions());
 
-input = kcontext.getVariable("in_initData");
-kcontext.setVariable("input",input);
-
-TestFunctions.logInfo(kcontext,kcontext.getVariable("in_initData"));
+TestFunctions.logInfo(kcontext,kcontext.getVariable("input"));
 
 kcontext.setVariable("preBuildResult",new java.util.HashMap());
 kcontext.setVariable("buildResult",new java.util.HashMap());

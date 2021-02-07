@@ -34,7 +34,7 @@ In a business process use execute-rest sub-process to invoke a remote task and w
   - cancelMethod
   - cancelHeaders
   - cancelTimeout (time to wait for a graceful cancel)
-  - ignoreCancelSignals (task run also when cancel has been requested)
+  - ignoreCancelSignals (remote task is invoked also when cancel has been requested, useful for sending the final result of the process)
 - successEvalTemplate* (boolean condition to determine task completion status)
 - noCallback (task result is send as invocation response, default: false)
 - taskTimeout* (time to wait for remote result before triggering cancel)
@@ -55,7 +55,7 @@ For an example see `org.jbpm.contrib.longrest.bpm.TestFunctions.getPreBuildTempl
 
 **Including whole object map**
 Note that all values are stored as nested maps, 
-to include the whole object in the template you have to serialize it and to unescape it, to prevet double json escape.
+to include the whole object in the template you have to serialize it and to unescape it, to prevent double json escape.
 Use `org.jbpm.contrib.longrest.util.Mapper().writeValueAsString(object, true)` to unescape the serialized object.
 See `org.jbpm.contrib.longrest.bpm.TestFunctions.getCompletionTemplate()`.
 
@@ -96,7 +96,7 @@ Result example:
         status=SUCCESS
     }, 
     initialResponse={
-        cancelUrl=http://localhost:8080/demo-service/service/cancel/0?delay=1
+        cancelUrl=http://localhost:8080/demo-service/cancel/0?delay=1
     }, 
     cancelResponse=null, 
     error=null
@@ -113,7 +113,7 @@ Task invocation details
 The execute-rest sub-process is used to start the remote task and wait for its completion either by a http response or an async callback.
 
 If the task invocation fail due to an error and the `maxRetries` is greater than 0 the invocation is re-tried. 
-The invocation retry is delayed for `retryDelay * retry-attmpt` millis. 
+The invocation retry is delayed for `retryDelay * retryAttempt` millis.
 
 When the operation cancel request is received, the remote task is tried to be gracefully cancelled by invoking the cancelUrl which is defined by `cancelUrlJsonPointer` or `cancelUrlTemplate`.
 If the `cancelTimeout` is reached, the graceful cancel attempt is ignored. The task completes with status "CANCELLED" regardless of the success of graceful cancel.
@@ -124,10 +124,10 @@ When the process is waiting for a callback, there is an active internal heart-be
 if the time-out is reached, the task completes with status "DIED".
 
 When everything goes well the final status "SUCCESS" or "FAILED" is determined based on boolean condition defined in `successEvalTemplate`.
-Sample temaplte: `@{status=="SUCCESS"}`, where a `status` field is a field in the result's response (from a remote task).
+Sample template: `@{status=="SUCCESS"}`, where a `status` field is a field in the result's response (from a remote task).
 
 Implementation detail (execute-rest sub-process)
-![execute-rest](src/test/resources/execute-rest.svg)
+![execute-rest](src/main/resources/execute-rest.svg)
 
 
 ## Error handling
@@ -150,7 +150,7 @@ The url to send the beat is provided by the system variables `system.heartBeatUr
 
 Setting up
 ==========
-Upload this work item handler to your JBPM server and import the `execute-rest.bpmn` (src/test/resources/execute-rest.bpmn) process.
+Upload this work item handler to your JBPM server and import the `execute-rest.bpmn` (src/main/resources/execute-rest.bpmn) process as an asset to your project.
 
 To design your task invocation process use the execute-rest as a sub-process.
 
