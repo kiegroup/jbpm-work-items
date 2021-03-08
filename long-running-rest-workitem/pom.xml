@@ -7,17 +7,12 @@
   <parent>
     <groupId>org.jbpm.contrib</groupId>
     <artifactId>workitems</artifactId>
-    <version>7.50.0-SNAPSHOT</version>
+    <version>7.51.0-SNAPSHOT</version>
   </parent>
   
   <artifactId>long-running-rest-workitem</artifactId>
-  <name>Long running rest workitem</name>
-  <description>Workitem for invoking long-running REST tasks with callback.</description>
-
-  <properties>
-    <enforcer.skip>true</enforcer.skip>
-    <checkstyle.skip>true</checkstyle.skip>
-  </properties>
+  <name>Long Running REST</name>
+  <description>Workitem for invoking long-running REST tasks with callback</description>
 
   <dependencies>
     <dependency>
@@ -72,73 +67,25 @@
       </exclusions>
       <scope>provided</scope>
     </dependency>
-
-<!-- This dependency is to enforce same jackson version as the one used by 
-     jersey 2.27 later. Otherwise maven gets lost in various versions that
-     other dependencies here also refer for fasterxml. Later this would cause
-     issues in tests. --> 
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <scope>provided</scope>
-    </dependency> 
-    <dependency>
-      <groupId>com.fasterxml.jackson.module</groupId>
-      <artifactId>jackson-module-jaxb-annotations</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>template-resources</artifactId>
       <scope>provided</scope>
     </dependency>
+
     <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-servlet</artifactId>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-undertow</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.jboss.spec.javax.ws.rs</groupId>
-      <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jackson2-provider</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-server</artifactId>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.eclipse.jetty.orbit</groupId>
-          <artifactId>javax.servlet</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-servlets</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.main.extras</groupId>
-      <artifactId>glassfish-embedded-all</artifactId>
-      <version>5.1.0</version> <!-- TODO remove when the version is updated in the parent. Required by JAXRS in ServletContainer. -->
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Service {
 
     public static final String SERVICE_LISTENER_KEY = "serviceListener";
-    public static final String HEADERS_LISTENER_KEY = "headersListener";
+    public static final String COOKIE_LISTENER_KEY = "cookieListener";
 
     private static final Logger logger = LoggerFactory.getLogger(Service.class);
     public static final String PRE_BUILD_COOKIE_NAME = "myCookieName";
@@ -145,7 +145,7 @@ public class Service {
             throws JsonProcessingException {
         logger.info("> Build requested.");
         logger.info("> Request object: " + objectMapper.writeValueAsString(request));
-        fireEvent(EventType.BUILD_REQUESTED, request);
+        serviceListener().fire(EventType.BUILD_REQUESTED, request);
         Request callback = request.getCallback();
 
         Map<String, Object> result = new HashMap<>();
@@ -175,11 +175,10 @@ public class Service {
     public Response cancelAction(
             @PathParam("id") int jobId,
             @QueryParam("delay") @DefaultValue("1") int delay,
-            @Context HttpHeaders httpHeaders)
-            throws JsonProcessingException {
+            @Context HttpHeaders httpHeaders) {
         logger.info("> Action Cancel requested for job:" + jobId);
 
-        headersListener().accept(httpHeaders);
+        cookieListener().accept(httpHeaders.getCookies());
 
         RunningJob runningJob = runningJobs.get(jobId);
         runningJob.future.cancel(true);
@@ -194,15 +193,17 @@ public class Service {
     }
 
     private int scheduleCallback(String callbackUrl, String callbackMethod, List<NameValuePair> callbackParams, int delay, Object result) {
-        ScheduledFuture<?> future = executorService.schedule(() -> executeRequest(callbackUrl, callbackMethod, callbackParams, result), delay, TimeUnit.SECONDS);
+        ServiceListener serviceListener = serviceListener();
+        ScheduledFuture<?> future = executorService.schedule(() -> executeRequest(callbackUrl, callbackMethod, callbackParams, result, serviceListener), delay, TimeUnit.SECONDS);
         int id = sequence.getAndIncrement();
         runningJobs.put(id, new RunningJob(future, callbackUrl));
         return id;
     }
 
     private ScheduledFuture<?> startHeartBeat(String url) {
+        ServiceListener serviceListener = serviceListener();
         ScheduledFuture<?> future = executorService.scheduleAtFixedRate(()
-                -> executeRequest(url, "POST", Collections.emptyList(), null), 300L,300L, TimeUnit.MILLISECONDS);
+                -> executeRequest(url, "POST", Collections.emptyList(), null, serviceListener), 300L,300L, TimeUnit.MILLISECONDS);
         return future;
     }
 
@@ -216,8 +217,7 @@ public class Service {
         }
     }
 
-    private void executeRequest(String url,String method, List<NameValuePair> parameters, Object result) {
-
+    private void executeRequest(String url,String method, List<NameValuePair> parameters, Object result, ServiceListener serviceListener) {
         RequestConfig config = RequestConfig.custom()
                 .setSocketTimeout(5000)
                 .setConnectTimeout(5000)
@@ -226,7 +226,6 @@ public class Service {
                 .build();
 
         try {
-
             URI requestUri = new URI(url);
 
             CredentialsProvider credsProvider = new BasicCredentialsProvider();
@@ -262,19 +261,28 @@ public class Service {
             request.setEntity(entity);
             HttpResponse response = httpClient.execute(request);
             logger.info("> Invocation executed. Returned status: " + response.getStatusLine().getStatusCode());
-            fireEvent(EventType.CALLBACK_COMPLETED, url);
+            serviceListener.fire(EventType.CALLBACK_COMPLETED, url);
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
         }
-
     }
 
-    private void fireEvent(EventType eventType, Object event) {
-        ((ServiceListener)servletContext.getAttribute(SERVICE_LISTENER_KEY)).fire(eventType, event);
+    private ServiceListener serviceListener() {
+        try {
+            return (ServiceListener) servletContext.getAttribute(SERVICE_LISTENER_KEY);
+        } catch (Throwable t) {
+            logger.error("> Cannot get service listener.", t);
+            return null;
+        }
     }
 
-    private HeadersListener headersListener() {
-        return ((HeadersListener)servletContext.getAttribute(HEADERS_LISTENER_KEY));
+    private CookieListener cookieListener() {
+        try {
+            return ((CookieListener)servletContext.getAttribute(COOKIE_LISTENER_KEY));
+        } catch (Throwable t) {
+            logger.error("> Cannot get cookie listener.", t);
+            return null;
+        }
     }
 
 }

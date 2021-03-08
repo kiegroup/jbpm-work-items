@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,14 +25,12 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.HashMap;
 import java.util.Map;
 
 @Path("/services/rest/server/containers/default-per-pinstance/processes/instances/")
@@ -47,23 +45,6 @@ public class WorkItems {
     @Context
     ServletContext servletContext;
 
-    @PUT
-    @Path("{instanceId}/workitems/{id}/completed")
-    public Response complete(
-            @PathParam("id") int taskId,
-            @PathParam("instanceId") int instanceId,
-            Map<String, Object> result)
-    {
-        logger.info("Completing workitem id: {}, result: {}.", taskId, result);
-        RuntimeEngine runtimeEngine = getRuntimeEngine(instanceId);
-        KieSession kieSession = runtimeEngine.getKieSession();
-        kieSession.getWorkItemManager().completeWorkItem(taskId, result);
-        disposeRuntimeEngine(runtimeEngine);
-
-        Map<String, Object> response = new HashMap<>();
-        return Response.status(200).entity(response).build();
-    }
-
     /**
      * Receive service response
      */
@@ -72,8 +53,7 @@ public class WorkItems {
     public Response signalProcess(
             @PathParam("signalName") String signalName,
             @PathParam("instanceId") long instanceId,
-            Map<String, Object> result)
-    {
+            Map<String, Object> result) {
         logger.info("Mock server received signal {} and sending it to process id: {}, result: {}.", signalName, instanceId, result);
         RuntimeEngine runtimeEngine = getRuntimeEngine(instanceId);
         KieSession kieSession = runtimeEngine.getKieSession();

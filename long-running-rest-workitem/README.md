@@ -1,5 +1,5 @@
-Long running REST task handler
-===================
+Long running REST work item handler
+===================================
 
 
 Feature set
@@ -19,7 +19,7 @@ A process example from the test cases
 Task Definition
 ===============
 
-In a business process use execute-rest sub-process to invoke a remote task and wait for completion. 
+Sub-process input parameters, to configure the remote service invocation. (* = mandatory parameter)
 
 - Request (request to start remote task)
   - requestUrl*
@@ -39,7 +39,9 @@ In a business process use execute-rest sub-process to invoke a remote task and w
 - noCallback (task result is send as invocation response, default: false)
 - taskTimeout* (time to wait for remote result before triggering cancel)
 - heartbeatTimeout (mark service as DIED when there is no heart-beat, disabled if not set)
-
+- socketTimeout (maximum inactivity period between two consecutive data packets in milliseconds, default 5000, 0 = infinite)
+- connectTimeout (timeout in milliseconds until a connection is established, default 5000, 0 = infinite)
+- connectionRequestTimeout(timeout in milliseconds used when requesting a connection from the connection manager, default 5000, 0 = infinite)
 
 Request template
 ================
@@ -144,7 +146,7 @@ When any of the error exit conditions happen the error completion event can be c
 ## Heart-beat
 
 Hearth-beat monitor is integrated in the execute-rest sub-process. It is enabled by setting the `heartbeatTimeout` variable.
-When enabled a remote task have to periodically notify the process that the task is still running.
+When enabled a remote task has to periodically notify the process that the task is still running.
 The url to send the beat is provided by the system variables `system.heartBeatUrl` and `system.heartBeatMethod` that can be used in the remote task invocation template.
 
 
@@ -155,3 +157,16 @@ Upload this work item handler to your JBPM server and import the `execute-rest.b
 To design your task invocation process use the execute-rest as a sub-process.
 
 See a usage example in `src/test/resources/test-process.bpmn` and `org.jbpm.contrib.longrest.bpm.TestFunctions`.
+
+## Environment set-up
+
+To generate a callback urls a WIH needs a kie hostname, it has to be set as the environment variable or a java system property, 
+where system property overrides the environment variable and `HOSTNAME_HTTPS` has a priority over `HOSTNAME_HTTP`.
+
+Look-up order (first found is used):
+```
+- System.getProperty("HOSTNAME_HTTPS")
+- System.getProperty("HOSTNAME_HTTP")
+- System.getenv("HOSTNAME_HTTPS")
+- System.getenv("HOSTNAME_HTTP")
+```

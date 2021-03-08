@@ -584,12 +584,12 @@
           <type>zip</type>
           <scope>provided</scope>
         </dependency>
-          <dependency>
-              <groupId>org.jbpm.contrib</groupId>
-              <artifactId>long-running-rest-workitem</artifactId>
-              <type>zip</type>
-              <scope>provided</scope>
-          </dependency>
+        <dependency>
+          <groupId>org.jbpm.contrib</groupId>
+          <artifactId>long-running-rest-workitem</artifactId>
+          <type>zip</type>
+          <scope>provided</scope>
+        </dependency>
         <!-- jbpm workitems dependencies -->
         <dependency>
           <groupId>org.jbpm</groupId>
