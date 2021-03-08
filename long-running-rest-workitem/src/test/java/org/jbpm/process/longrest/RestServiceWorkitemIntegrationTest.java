@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,13 @@ package org.jbpm.process.longrest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
-import org.glassfish.jersey.servlet.ServletProperties;
+import io.undertow.Undertow;
+import io.undertow.servlet.api.DeploymentInfo;
+import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jbpm.process.longrest.bpm.TestFunctions;
 import org.jbpm.process.longrest.demoservices.EventType;
-import org.jbpm.process.longrest.demoservices.HeadersListener;
+import org.jbpm.process.longrest.demoservices.CookieListener;
 import org.jbpm.process.longrest.demoservices.Service;
 import org.jbpm.process.longrest.demoservices.ServiceListener;
 import org.jbpm.process.longrest.demoservices.dto.PreBuildRequest;
@@ -50,12 +49,10 @@ import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.core.HttpHeaders;
-import java.util.ArrayList;
+import javax.ws.rs.core.Cookie;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -69,13 +66,13 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
 
     private static int PORT = 8080;
     private static String DEFAULT_HOST = "localhost";
-    private Server server;
+    private UndertowJaxrsServer server;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
     private final ActiveTasks activeProcesses = new ActiveTasks();
     private final ServiceListener serviceListener = new ServiceListener();
-    private final HeadersListener headersListener = new HeadersListener();
+    private final CookieListener cookieListener = new CookieListener();
 
     public RestServiceWorkitemIntegrationTest() {
         super(true, true);
@@ -106,21 +103,23 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
     }
 
     private void bootUpServices() throws Exception {
-        ContextHandlerCollection contexts = new ContextHandlerCollection();
+        server = new UndertowJaxrsServer();
 
-        server = new Server(PORT);
-        server.setHandler(contexts);
+        ResteasyDeployment deployment = new ResteasyDeployment();
+        deployment.setApplicationClass(JaxRsActivator.class.getName());
 
-        ServletContextHandler rest = new ServletContextHandler(contexts, "/", ServletContextHandler.SESSIONS);
-        ServletHolder servletHolder = rest.addServlet(org.glassfish.jersey.servlet.ServletContainer.class, "/*");
-        servletHolder.setInitOrder(0);
-        servletHolder.setInitParameter(ServletProperties.JAXRS_APPLICATION_CLASS, JaxRsActivator.class.getName());
-        rest.setAttribute(Service.SERVICE_LISTENER_KEY, serviceListener);
-        rest.setAttribute(Service.HEADERS_LISTENER_KEY, headersListener);
+        DeploymentInfo deploymentInfo = server.undertowDeployment(deployment, "/");
+        deploymentInfo.setClassLoader(this.getClass().getClassLoader());
+        deploymentInfo.setDeploymentName("TestServices");
+        deploymentInfo.setContextPath("/");
 
-        rest.setAttribute(WorkItems.RUNTIME_MANAGER_KEY, manager);
+        deploymentInfo.addServletContextAttribute(Service.SERVICE_LISTENER_KEY, serviceListener);
+        deploymentInfo.addServletContextAttribute(Service.COOKIE_LISTENER_KEY, cookieListener);
+        deploymentInfo.addServletContextAttribute(WorkItems.RUNTIME_MANAGER_KEY, manager);
 
-        server.start();
+        server.deploy(deploymentInfo);
+        Undertow.Builder builder = Undertow.builder().addHttpListener(PORT, "localhost");
+        server.start(builder);
     }
 
     @Test (timeout=15000)
@@ -156,7 +155,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         manager.disposeRuntimeEngine(runtimeEngine);
 
         //then
-        //skip variable initialization
+        //ignore variable initialization
         variableChangedQueue.take(); //preBuildResult
         variableChangedQueue.take(); //buildResult
 
@@ -209,7 +208,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         manager.disposeRuntimeEngine(runtimeEngine);
 
         //then
-        //skip variable initialization
+        //ignore variable initialization
         variableChangedQueue.take(); //preBuildResult
 
         Map<String, Object> preBuildCallbackResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
@@ -245,7 +244,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         manager.disposeRuntimeEngine(runtimeEngine);
 
         //then
-        //skip variable initialization
+        //ignore variable initialization
         variableChangedQueue.take(); //preBuildResult
         variableChangedQueue.take(); //retryAttempt
         variableChangedQueue.take(); //retryAttempt
@@ -273,7 +272,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
     /**
      * Invoke cancel while first service is running. Cancel completes successfully.
      */
-    @Test
+    @Test (timeout=15000)
     public void testTimeoutServiceDoesNotRespondCancelSuccess() throws InterruptedException {
         BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
         ProcessEventListener processEventListener = getProcessEventListener(variableChangedQueue, "restResponse", "preBuildResult");
@@ -297,7 +296,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
                 Collections.singletonMap("input", getProcessParameters(10, 30, 1, 30, Collections.emptyMap())));
         manager.disposeRuntimeEngine(runtimeEngine);
 
-        //skip variable initialization
+        //ignore variable initialization
         variableChangedQueue.take(); //preBuildResult
 
         //then wait for first service to start
@@ -321,7 +320,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         logger.info("Callback completed.");
 
         //make sure buildResult is not set (build service did not run)
-        Assert.assertTrue(buildRequested.get() == 0);
+        Assert.assertEquals(0, buildRequested.get());
 
         customProcessListeners.remove(processEventListener);
         serviceListener.unsubscribe(subscription);
@@ -347,15 +346,15 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
                 EventType.CALLBACK_COMPLETED,
                 (v) -> callbackCompleted.release());
 
-        List<HttpHeaders> headers = new ArrayList<>();
-        headersListener.addConsumer(h -> headers.add(h));
+        Map<String, Cookie> cookies = new HashMap<>();
+        cookieListener.addConsumer(h -> cookies.putAll(h));
 
         //when
         ProcessInstance processInstance = kieSession.startProcess(
                 "testProcess",
                 Collections.singletonMap("input", getProcessParameters(10, 2, 1, 30, Collections.emptyMap())));
         manager.disposeRuntimeEngine(runtimeEngine);
-        //skip variable initialization
+        //ignore variable initialization
         variableChangedQueue.take(); //preBuildResult
 
         //then wait for first service to start
@@ -377,8 +376,8 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         callbackCompleted.acquire();
 
         //make sure cookie header has been used in the cancel request
-        Assert.assertTrue(!headers.isEmpty());
-        Assert.assertEquals(Service.PRE_BUILD_COOKIE_VALUE, headers.get(0).getCookies().get(Service.PRE_BUILD_COOKIE_NAME).getValue());
+        Assert.assertFalse(cookies.isEmpty());
+        Assert.assertEquals(Service.PRE_BUILD_COOKIE_VALUE, cookies.get(Service.PRE_BUILD_COOKIE_NAME).getValue());
 
         customProcessListeners.remove(processEventListener);
         serviceListener.unsubscribe(subscription);
@@ -406,7 +405,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
                 "testProcess",
                 Collections.singletonMap("input", getProcessParameters(10, 2, 10, 2, Collections.emptyMap())));
         manager.disposeRuntimeEngine(runtimeEngine);
-        //skip variable initialization
+        //ignore variable initialization
         variableChangedQueue.take();
 
         //then wait for first service to start
@@ -496,7 +495,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
                     "testProcess",
                     Collections.singletonMap("input", getProcessParameters(10, 10, 10, 2, 2, 4, Collections.emptyMap())));
             manager.disposeRuntimeEngine(runtimeEngine);
-            //skip variable initialization
+            //ignore variable initialization
             variableChangedQueue.take();
 
              Map<String, Object> preBuildResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
@@ -512,7 +511,6 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         } finally {
             TestFunctions.addHeartBeatToRequest = false;
         }
-
     }
 
     private Map<String, Object> getExecuteRestParameters() {

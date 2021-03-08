@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ import static org.mvel2.templates.TemplateCompiler.compileTemplate;
 @Wid(widfile="LongRunningRestService.wid",
         name="LongRunningRestService",
         displayName="LongRunningRestService",
-        defaultHandler="mvel: new org.jbpm.contrib.longrest.LongRunningRestServiceWorkItemHandler(runtimeManager)",
+        defaultHandler="mvel: new org.jbpm.process.longrest.LongRunningRestServiceWorkItemHandler(runtimeManager)",
         category="long-running-rest-workitem",
         documentation = "",
         parameters={
@@ -80,7 +80,10 @@ import static org.mvel2.templates.TemplateCompiler.compileTemplate;
                 @WidParameter(name="headers", required = false),
                 @WidParameter(name="template", required = false),
                 @WidParameter(name="cancelUrlJsonPointer", required = false),
-                @WidParameter(name="cancelUrlTemplate", required = false)
+                @WidParameter(name="cancelUrlTemplate", required = false),
+                @WidParameter(name="socketTimeout", required = false),
+                @WidParameter(name="connectTimeout", required = false),
+                @WidParameter(name="connectionRequestTimeout", required = false)
         },
         results={
                 @WidResult(name="responseCode"),
@@ -139,8 +142,7 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
             RequiredParameterValidator.validate(this.getClass(), workItem);
 
             long processInstanceId = workItem.getProcessInstanceId();
-            WorkflowProcessInstance processInstance = ProcessUtils.getProcessInstance(runtimeManager,
-                    processInstanceId);
+            WorkflowProcessInstance processInstance = ProcessUtils.getProcessInstance(runtimeManager, processInstanceId);
 
             String cancelUrlJsonPointer = ProcessUtils.getStringParameter(workItem, Constant.CANCEL_URL_JSON_POINTER_VARIABLE);
             String cancelUrlTemplate = ProcessUtils.getStringParameter(workItem, Constant.CANCEL_URL_TEMPLATE_VARIABLE);
@@ -148,6 +150,9 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
             String requestMethod = ProcessUtils.getStringParameter(workItem,"method");
             String requestTemplate = ProcessUtils.getStringParameter(workItem,"template");
             String requestHeaders = ProcessUtils.getStringParameter(workItem,"headers");
+            int socketTimeout = ProcessUtils.getIntParameter(workItem,"socketTimeout", 5000);
+            int connectTimeout = ProcessUtils.getIntParameter(workItem,"connectTimeout", 5000);
+            int connectionRequestTimeout = ProcessUtils.getIntParameter(workItem,"connectionRequestTimeout", 5000);
 
             KieSession kieSession = ProcessUtils.getKsession(runtimeManager, processInstanceId);
             String containerId = (String)kieSession.getEnvironment().get("deploymentId");
@@ -166,7 +171,10 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
                         containerId,
                         cancelUrlJsonPointer,
                         cancelUrlTemplate,
-                        requestHeaders);
+                        requestHeaders,
+                        socketTimeout,
+                        connectTimeout,
+                        connectionRequestTimeout);
             } catch (RemoteInvocationException e) {
                 String message = MessageFormat.format("Failed to invoke remote service. ProcessInstanceId {0}.", processInstanceId);
                 logger.warn(message, e);
@@ -182,27 +190,6 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
         }
     }
 
-    /**
-     * Get process variable, if it is not find on the given process instance, parent process instances are searched recursively.
-     */
-    private Object getProcessVariable(
-            String variableName, WorkflowProcessInstance processInstance) {
-        logger.info("Looking for process variable " + variableName + " in process instance " + processInstance.getProcessId());
-        Object processVariable = processInstance.getVariable(variableName);
-        if (processVariable == null) {
-            long parentProcessInstanceId = processInstance.getParentProcessInstanceId();
-            if (parentProcessInstanceId > 0) {
-                WorkflowProcessInstance parentProcessInstance = ProcessUtils.getProcessInstance(
-                        runtimeManager, parentProcessInstanceId);
-                return getProcessVariable(variableName, parentProcessInstance);
-            } else {
-                return null;
-            }
-        } else {
-            return processVariable;
-        }
-    }
-
     private void invokeRemoteService(
             WorkflowProcessInstance processInstance,
             WorkItemManager manager,
@@ -213,9 +200,12 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
             String containerId,
             String cancelUrlJsonPointer,
             String cancelUrlTemplate,
-            String requestHeaders) throws RemoteInvocationException, ResponseProcessingException {
+            String requestHeaders,
+            int socketTimeout,
+            int connectTimeout,
+            int connectionRequestTimeout) throws RemoteInvocationException, ResponseProcessingException {
 
-        logger.info("requestTemplate: {}", requestTemplate);
+        logger.debug("requestTemplate: {}", requestTemplate);
 
         VariableResolverFactory variableResolverFactory = getVariableResolverFactory(processInstance, containerId);
 
@@ -242,9 +232,9 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
                 requestBodyEvaluated,
                 httpMethod,
                 requestHeadersMap,
-                5000, //TODO configurable
-                5000,
-                5000);
+                socketTimeout,
+                connectTimeout,
+                connectionRequestTimeout);
 
         int statusCode = httpResponse.getStatusLine().getStatusCode();
         logger.info("Remote endpoint returned status: {}.", statusCode);
@@ -310,8 +300,7 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
         }
     }
 
-    private void storeCookies(
-            HttpResponse response, WorkflowProcessInstance processInstance) {
+    private void storeCookies(HttpResponse response, WorkflowProcessInstance processInstance) {
         Map<String, String> cookies = new HashMap<>();
         Header[] cookieHeaders = response.getHeaders("Set-Cookie");
         for (Header cookieHeader : cookieHeaders) {
@@ -323,8 +312,7 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
         processInstance.setVariable(COOKIES_KEY, cookies);
     }
 
-    private VariableResolverFactory getVariableResolverFactory(
-            WorkflowProcessInstance processInstance, String containerId) {
+    private VariableResolverFactory getVariableResolverFactory(WorkflowProcessInstance processInstance, String containerId) {
         Map<String, Object> systemVariables = new HashMap<>();
         String baseUrl = getKieHost() + "/services/rest/server/containers/" + containerId + "/processes/instances/";
         systemVariables.put(
@@ -337,14 +325,6 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
         return getVariableResolverFactoryChain(
                 systemVariables,
                 processInstance);
-    }
-
-    public Object quote(Object o) {
-        if (o instanceof String) {
-            return "\"" + o + "\"";
-        } else {
-            return o;
-        }
     }
 
     private VariableResolverFactory getVariableResolverFactoryChain(
@@ -385,13 +365,13 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
             String jsonContent,
             String httpMethod,
             Map<String,String> requestHeaders,
-            int readTimeout,
+            int socketTimeout,
             int connectTimeout,
-            int requestTimeout) throws RemoteInvocationException {
+            int connectionRequestTimeout) throws RemoteInvocationException {
         RequestConfig config = RequestConfig.custom()
-                .setSocketTimeout(readTimeout)
+                .setSocketTimeout(socketTimeout)
                 .setConnectTimeout(connectTimeout)
-                .setConnectionRequestTimeout(requestTimeout)
+                .setConnectionRequestTimeout(connectionRequestTimeout)
                 .build();
 
         HttpClientBuilder clientBuilder = HttpClientBuilder.create()
@@ -501,7 +481,6 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
         logger.info("Rest service workitem completion result {}.", results);
         manager.completeWorkItem(workItemId, results);
     }
-
 
     @Override
     public void abortWorkItem(WorkItem workItem, WorkItemManager manager) {
