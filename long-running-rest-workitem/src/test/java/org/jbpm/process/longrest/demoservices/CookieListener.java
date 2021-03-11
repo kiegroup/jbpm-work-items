@@ -15,11 +15,12 @@
  */
 package org.jbpm.process.longrest.demoservices;
 
-import javax.ws.rs.core.Cookie;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+
+import javax.ws.rs.core.Cookie;
 
 public class CookieListener {
 

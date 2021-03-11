@@ -25,7 +25,7 @@ import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 public class ProcessUtils {
 
     public static WorkflowProcessInstance getProcessInstance(RuntimeManager runtimeManager, long processInstanceId) {
-        return (WorkflowProcessInstance)getKsession(runtimeManager, processInstanceId).getProcessInstance(processInstanceId);
+        return (WorkflowProcessInstance) getKsession(runtimeManager, processInstanceId).getProcessInstance(processInstanceId);
     }
 
     public static KieSession getKsession(RuntimeManager runtimeManager, Long processInstanceId) {

@@ -15,6 +15,18 @@
  */
 package org.jbpm.process.longrest;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.ws.rs.core.Cookie;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.undertow.Undertow;
@@ -22,8 +34,8 @@ import io.undertow.servlet.api.DeploymentInfo;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jbpm.process.longrest.bpm.TestFunctions;
-import org.jbpm.process.longrest.demoservices.EventType;
 import org.jbpm.process.longrest.demoservices.CookieListener;
+import org.jbpm.process.longrest.demoservices.EventType;
 import org.jbpm.process.longrest.demoservices.Service;
 import org.jbpm.process.longrest.demoservices.ServiceListener;
 import org.jbpm.process.longrest.demoservices.dto.PreBuildRequest;
@@ -48,17 +60,6 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.core.Cookie;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
 
@@ -122,7 +123,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         server.start(builder);
     }
 
-    @Test (timeout=15000)
+    @Test(timeout = 15000)
     public void shouldInvokeRemoteServiceAndReceiveCallback() throws Exception {
         BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
 
@@ -143,7 +144,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
                 (v) -> callbackCompleted.release());
 
         //when
-        Map<String,Object> labels = new HashMap<>();
+        Map<String, Object> labels = new HashMap<>();
         labels.put("A", 1);
         labels.put("lines", "two\nlines");
         labels.put("quote", "String \"literal\".");
@@ -159,19 +160,19 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         variableChangedQueue.take(); //preBuildResult
         variableChangedQueue.take(); //buildResult
 
-        Map<String, Object> preBuildCallbackResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
+        Map<String, Object> preBuildCallbackResult = (Map<String, Object>) variableChangedQueue.take().getNewValue();
         logger.info("preBuildCallbackResult: " + preBuildCallbackResult);
         Map<String, Object> preBuildResponse = Maps.getStringObjectMap(preBuildCallbackResult, "response");
         Assert.assertEquals("new-scm-tag", Maps.getStringObjectMap(preBuildResponse, "scm").get("revision"));
         Map<String, Object> initialResponse = Maps.getStringObjectMap(preBuildCallbackResult, "initialResponse");
         Assert.assertTrue(initialResponse.get("cancelUrl").toString().startsWith("http://localhost:8080/demo-service/cancel/"));
 
-        Map<String, Object> buildCallbackResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
+        Map<String, Object> buildCallbackResult = (Map<String, Object>) variableChangedQueue.take().getNewValue();
         logger.info("buildCallbackResult: " + buildCallbackResult);
         Map<String, Object> buildResponse = Maps.getStringObjectMap(preBuildCallbackResult, "response");
         Assert.assertEquals("SUCCESS", buildResponse.get("status"));
 
-        Map<String, Object> completionResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
+        Map<String, Object> completionResult = (Map<String, Object>) variableChangedQueue.take().getNewValue();
         logger.info("completionResult: " + completionResult);
         Assert.assertEquals("SUCCESS", completionResult.get("status"));
         Map<String, Object> responseLabels = (Map<String, Object>) ((Map<String, Object>) completionResult.get("response")).get("labels");
@@ -186,7 +187,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         serviceListener.unsubscribe(subscription);
     }
 
-    @Test (timeout=20000)
+    @Test(timeout = 20000)
     public void shouldCatchException() throws Exception {
         BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
 
@@ -211,7 +212,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         //ignore variable initialization
         variableChangedQueue.take(); //preBuildResult
 
-        Map<String, Object> preBuildCallbackResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
+        Map<String, Object> preBuildCallbackResult = (Map<String, Object>) variableChangedQueue.take().getNewValue();
         logger.info("preBuildCallbackResult: " + preBuildCallbackResult);
         RemoteInvocationException exception = (RemoteInvocationException) preBuildCallbackResult.get("error");
         logger.info("Expected exception: {}.", exception.getMessage());
@@ -220,7 +221,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         customProcessListeners.remove(processEventListener);
     }
 
-    @Test (timeout=20000)
+    @Test(timeout = 20000)
     public void shouldRetryFailedRequest() throws Exception {
         BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
 
@@ -253,7 +254,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         Integer retryAttempt = (Integer) variableChangedQueue.take().getNewValue();//retryAttempt
         Assert.assertEquals("3", retryAttempt.toString());
 
-        Map<String, Object> preBuildCallbackResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
+        Map<String, Object> preBuildCallbackResult = (Map<String, Object>) variableChangedQueue.take().getNewValue();
         logger.info("preBuildCallbackResult: " + preBuildCallbackResult);
         RemoteInvocationException exception = (RemoteInvocationException) preBuildCallbackResult.get("error");
         logger.info("Expected exception: {}.", exception.getMessage());
@@ -272,7 +273,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
     /**
      * Invoke cancel while first service is running. Cancel completes successfully.
      */
-    @Test (timeout=15000)
+    @Test(timeout = 15000)
     public void testTimeoutServiceDoesNotRespondCancelSuccess() throws InterruptedException {
         BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
         ProcessEventListener processEventListener = getProcessEventListener(variableChangedQueue, "restResponse", "preBuildResult");
@@ -306,7 +307,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         runtimeEngineCancel.getKieSession().signalEvent(Constant.CANCEL_SIGNAL_TYPE, null);
         manager.disposeRuntimeEngine(runtimeEngineCancel);
 
-        Map<String, Object> preBuildCallbackResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
+        Map<String, Object> preBuildCallbackResult = (Map<String, Object>) variableChangedQueue.take().getNewValue();
         logger.info("preBuildCallbackResult: " + preBuildCallbackResult);
         Map<String, Object> preBuildResponse = Maps.getStringObjectMap(preBuildCallbackResult, "response");
         Assert.assertEquals("true", preBuildResponse.get("cancelled"));
@@ -330,12 +331,12 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
      * The test will execute a process with just one task that is set with 2s timeout while the REST service invoked in it is set with 10sec callback time.
      * After 2 seconds the timeout process will kick in by finishing the REST workitem and setting the information that it has failed.
      */
-    @Test(timeout=15000)
+    @Test(timeout = 15000)
     public void serviceTimesOutInternalCancelSucceeds() throws InterruptedException {
         BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
         ProcessEventListener processEventListener = getProcessEventListener(variableChangedQueue,
-                "preBuildResult",
-                "completionResult");
+                                                                            "preBuildResult",
+                                                                            "completionResult");
         customProcessListeners.add(processEventListener);
 
         RuntimeEngine runtimeEngine = getRuntimeEngine();
@@ -360,7 +361,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         //then wait for first service to start
         variableChangedQueue.take().getNewValue();
 
-        Map<String, Object> preBuildResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
+        Map<String, Object> preBuildResult = (Map<String, Object>) variableChangedQueue.take().getNewValue();
         logger.info("preBuildResult: " + preBuildResult);
         Map<String, Object> preBuildResponse = Maps.getStringObjectMap(preBuildResult, "response");
         Assert.assertEquals("true", preBuildResponse.get("cancelled"));
@@ -386,7 +387,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
     /**
      * Exceptions are expected in the log as callback is executed after the cancel completed.
      */
-    @Test(timeout=15000)
+    @Test(timeout = 15000)
     public void serviceTimesOutInternalCancelTimesOut() throws InterruptedException {
         BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
         ProcessEventListener processEventListener = getProcessEventListener(variableChangedQueue, "preBuildResult");
@@ -411,7 +412,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         //then wait for first service to start
         variableChangedQueue.take().getNewValue(); //preBuildResult
 
-        Map<String, Object> preBuildResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
+        Map<String, Object> preBuildResult = (Map<String, Object>) variableChangedQueue.take().getNewValue();
         logger.info("preBuildResult: " + preBuildResult);
         Map<String, Object> preBuildResponse = Maps.getStringObjectMap(preBuildResult, "response");
         Assert.assertEquals("TIMED_OUT", preBuildResult.get("status"));
@@ -423,7 +424,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         serviceListener.unsubscribe(subscription);
     }
 
-    @Test(timeout=15000)
+    @Test(timeout = 15000)
     public void shouldStartAndCompleteExecuteRestProcess() throws InterruptedException {
         // Semaphore for process completed event
         final Semaphore processFinished = new Semaphore(0);
@@ -443,9 +444,9 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
             public void afterVariableChanged(ProcessVariableChangedEvent event) {
                 String variableId = event.getVariableId();
                 logger.info("Process: {}, variable: {}, changed to: {}.",
-                        event.getProcessInstance().getProcessName(),
-                        variableId,
-                        event.getNewValue());
+                            event.getProcessInstance().getProcessName(),
+                            variableId,
+                            event.getNewValue());
 
                 String[] enqueueEvents = new String[]{
                         "result"
@@ -467,14 +468,14 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
             Assert.fail("Failed to complete the process.");
         }
 
-        Map<String, Object> result  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
+        Map<String, Object> result = (Map<String, Object>) variableChangedQueue.take().getNewValue();
         logger.info("result: " + result);
         Assert.assertEquals("new-scm-tag", Maps.getStringObjectMap(Maps.getStringObjectMap(result, "response"), "scm").get("revision"));
 
         customProcessListeners.remove(processEventListener);
     }
 
-    @Test(timeout=15000)
+    @Test(timeout = 15000)
     public void shouldFailWhenThereIsNoHeartBeat() throws InterruptedException {
         BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
         ProcessEventListener processEventListener = getProcessEventListener(variableChangedQueue, "preBuildResult");
@@ -498,7 +499,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
             //ignore variable initialization
             variableChangedQueue.take();
 
-             Map<String, Object> preBuildResult  = (Map<String, Object>) variableChangedQueue.take().getNewValue();
+            Map<String, Object> preBuildResult = (Map<String, Object>) variableChangedQueue.take().getNewValue();
             logger.info("preBuildResult: " + preBuildResult);
             Map<String, Object> preBuildResponse = Maps.getStringObjectMap(preBuildResult, "response");
             Assert.assertEquals("DIED", preBuildResult.get("status"));
@@ -528,7 +529,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         parameters.put("cancelMethod", null);
         parameters.put("cancelHeaders", null);
         parameters.put("successEvalTemplate", null);
-        
+
         return parameters;
     }
 
@@ -603,9 +604,9 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
             public void afterVariableChanged(ProcessVariableChangedEvent event) {
                 String variableId = event.getVariableId();
                 logger.info("Process: {}, variable: {}, changed to: {}.",
-                        event.getProcessInstance().getProcessName(),
-                        variableId,
-                        event.getNewValue());
+                            event.getProcessInstance().getProcessName(),
+                            variableId,
+                            event.getNewValue());
                 if (Arrays.asList(enqueueEvents).contains(variableId)) {
                     variableChangedQueue.add(event);
                 }

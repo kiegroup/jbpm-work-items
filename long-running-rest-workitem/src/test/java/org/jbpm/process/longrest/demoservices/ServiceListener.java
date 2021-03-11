@@ -40,6 +40,7 @@ public class ServiceListener {
     }
 
     public class Subscription {
+
         private EventType eventType;
         private Consumer<Object> consumer;
 

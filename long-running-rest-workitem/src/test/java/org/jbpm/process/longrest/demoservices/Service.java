@@ -15,6 +15,35 @@
  */
 package org.jbpm.process.longrest.demoservices;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.servlet.ServletContext;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
@@ -40,34 +69,6 @@ import org.jbpm.process.longrest.demoservices.dto.Scm;
 import org.jbpm.process.longrest.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.servlet.ServletContext;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Path("/demo-service")
 @Produces(MediaType.APPLICATION_JSON)
@@ -127,7 +128,7 @@ public class Service {
 
         Map<String, Object> response = new HashMap<>();
         if (callback != null && !Strings.isEmpty(callback.getUrl())) {
-            int jobId = scheduleCallback(callback.getUrl(), callback.getMethod(),null, callbackDelay, result);
+            int jobId = scheduleCallback(callback.getUrl(), callback.getMethod(), null, callbackDelay, result);
             String cancelUrl = "http://localhost:8080/demo-service/cancel/" + jobId;
             cancelUrl += "?delay=" + cancelDelay;
             response.put("cancelUrl", cancelUrl);
@@ -151,7 +152,7 @@ public class Service {
         Map<String, Object> result = new HashMap<>();
         result.put("status", "SUCCESS");
 
-        int jobId = scheduleCallback(callback.getUrl(), callback.getMethod(),null, callbackDelay, result);
+        int jobId = scheduleCallback(callback.getUrl(), callback.getMethod(), null, callbackDelay, result);
 
         String cancelUrl = "http://localhost:8080/demo-service/cancel/" + jobId;
         Map<String, Object> response = new HashMap<>();
@@ -186,7 +187,7 @@ public class Service {
         Map<String, Object> result = new HashMap<>();
         result.put("cancelled", "true");
 
-        scheduleCallback(runningJob.callbackUrl,"POST",null, delay, result);
+        scheduleCallback(runningJob.callbackUrl, "POST", null, delay, result);
 
         Map<String, Object> response = new HashMap<>();
         return Response.status(200).entity(response).build();
@@ -203,11 +204,12 @@ public class Service {
     private ScheduledFuture<?> startHeartBeat(String url) {
         ServiceListener serviceListener = serviceListener();
         ScheduledFuture<?> future = executorService.scheduleAtFixedRate(()
-                -> executeRequest(url, "POST", Collections.emptyList(), null, serviceListener), 300L,300L, TimeUnit.MILLISECONDS);
+                                                                                -> executeRequest(url, "POST", Collections.emptyList(), null, serviceListener), 300L, 300L, TimeUnit.MILLISECONDS);
         return future;
     }
 
     private class RunningJob {
+
         ScheduledFuture future;
         String callbackUrl;
 
@@ -217,7 +219,7 @@ public class Service {
         }
     }
 
-    private void executeRequest(String url,String method, List<NameValuePair> parameters, Object result, ServiceListener serviceListener) {
+    private void executeRequest(String url, String method, List<NameValuePair> parameters, Object result, ServiceListener serviceListener) {
         RequestConfig config = RequestConfig.custom()
                 .setSocketTimeout(5000)
                 .setConnectTimeout(5000)
@@ -230,9 +232,9 @@ public class Service {
 
             CredentialsProvider credsProvider = new BasicCredentialsProvider();
             credsProvider.setCredentials(new AuthScope(requestUri.getHost(),
-                            requestUri.getPort(),
-                            AuthScope.ANY_REALM),
-                    new UsernamePasswordCredentials("admin", "admin")
+                                                       requestUri.getPort(),
+                                                       AuthScope.ANY_REALM),
+                                         new UsernamePasswordCredentials("admin", "admin")
             );
 
             HttpClientBuilder clientBuilder = HttpClientBuilder.create()
@@ -241,15 +243,15 @@ public class Service {
 
             HttpClient httpClient = clientBuilder.build();
             HttpEntityEnclosingRequestBase request = null;
-            if(method==null || method.contentEquals(HttpPut.METHOD_NAME)) {
+            if (method == null || method.contentEquals(HttpPut.METHOD_NAME)) {
                 request = new HttpPut(requestUri);
-            } else if(method.contentEquals(HttpPost.METHOD_NAME)) {
+            } else if (method.contentEquals(HttpPost.METHOD_NAME)) {
                 request = new HttpPost(requestUri);
             } else {
                 throw new NotYetImplementedException("This HTTP method is not implemented yet in this dummy service handler: " + method);
             }
 
-            request.setHeader("Content-Type","application/json");
+            request.setHeader("Content-Type", "application/json");
 
             logger.info("> Invoking to: " + requestUri);
 
@@ -278,11 +280,10 @@ public class Service {
 
     private CookieListener cookieListener() {
         try {
-            return ((CookieListener)servletContext.getAttribute(COOKIE_LISTENER_KEY));
+            return ((CookieListener) servletContext.getAttribute(COOKIE_LISTENER_KEY));
         } catch (Throwable t) {
             logger.error("> Cannot get cookie listener.", t);
             return null;
         }
     }
-
 }
