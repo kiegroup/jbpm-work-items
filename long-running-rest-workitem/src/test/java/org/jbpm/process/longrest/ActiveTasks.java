@@ -15,10 +15,10 @@
  */
 package org.jbpm.process.longrest;
 
+import java.util.concurrent.Semaphore;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.Semaphore;
 
 public class ActiveTasks {
 

@@ -15,22 +15,23 @@
  */
 package org.jbpm.process.longrest.util;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 public class Json {
+
     public static <T> T escape(T o) {
         if (o == null) {
             return null;
         } else if (o instanceof String) {
             return (T) StringEscapeUtils.escapeJson((String) o);
         } else if (o instanceof Map) {
-            Map<?, ?> m = (Map)o;
+            Map<?, ?> m = (Map) o;
             Map result = new HashMap();
             for (Map.Entry e : m.entrySet()) {
                 result.put(escape(e.getKey()), escape(e.getValue()));
@@ -55,7 +56,7 @@ public class Json {
         } else if (o instanceof String) {
             return (T) StringEscapeUtils.unescapeJson((String) o);
         } else if (o instanceof Map) {
-            Map<?, ?> m = (Map)o;
+            Map<?, ?> m = (Map) o;
             Map result = new HashMap();
             for (Map.Entry e : m.entrySet()) {
                 result.put(unescape(e.getKey()), unescape(e.getValue()));

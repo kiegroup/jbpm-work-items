@@ -15,13 +15,14 @@
  */
 package org.jbpm.process.longrest;
 
-import org.jbpm.process.longrest.demoservices.Service;
-import org.jbpm.process.longrest.mockserver.WorkItems;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
-import java.util.HashSet;
-import java.util.Set;
+
+import org.jbpm.process.longrest.demoservices.Service;
+import org.jbpm.process.longrest.mockserver.WorkItems;
 
 @ApplicationPath("/")
 public class JaxRsActivator extends Application {

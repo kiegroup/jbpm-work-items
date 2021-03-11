@@ -16,7 +16,7 @@
 package org.jbpm.process.longrest.demoservices.dto;
 
 public class PreBuildRequest {
-    
+
     private Scm scm;
 
     private Request callback;

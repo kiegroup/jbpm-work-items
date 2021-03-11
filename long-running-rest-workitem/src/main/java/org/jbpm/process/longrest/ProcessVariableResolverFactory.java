@@ -95,5 +95,4 @@ public class ProcessVariableResolverFactory extends BaseVariableResolverFactory 
         }
         throw new UnresolveablePropertyException("Unable to resolve variable '" + name + "'");
     }
-
 }

@@ -15,12 +15,7 @@
  */
 package org.jbpm.process.longrest.mockserver;
 
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.manager.RuntimeEngine;
-import org.kie.api.runtime.manager.RuntimeManager;
-import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
@@ -31,7 +26,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Map;
+
+import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.manager.RuntimeEngine;
+import org.kie.api.runtime.manager.RuntimeManager;
+import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("/services/rest/server/containers/default-per-pinstance/processes/instances/")
 @Produces(MediaType.APPLICATION_JSON)
@@ -75,5 +76,4 @@ public class WorkItems {
     private RuntimeManager getRuntimeManager() {
         return (RuntimeManager) servletContext.getAttribute(RUNTIME_MANAGER_KEY);
     }
-
 }
