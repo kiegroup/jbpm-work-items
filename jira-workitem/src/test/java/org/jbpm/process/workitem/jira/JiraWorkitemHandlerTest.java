@@ -43,13 +43,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class JiraWorkitemHandlerTest {
 
     @Mock
@@ -138,8 +138,8 @@ public class JiraWorkitemHandlerTest {
                                     null,
                                     null,
                                     null);
-            when(issueRestClient.getIssue(anyString(),
-                                          any(ProgressMonitor.class))).thenReturn(issue);
+            when(issueRestClient.getIssue(any(),
+                                          any())).thenReturn(issue);
             doNothing().when(issueRestClient).addComment(any(ProgressMonitor.class),
                                                          any(URI.class),
                                                          any(Comment.class));
@@ -149,7 +149,7 @@ public class JiraWorkitemHandlerTest {
                                                        null);
             List<Transition> testAllTransitions = new ArrayList<>();
             testAllTransitions.add(testTransition);
-            when(issueRestClient.getTransitions(any(URI.class),
+            when(issueRestClient.getTransitions((URI) any(),
                                                 any(ProgressMonitor.class))).thenReturn(testAllTransitions);
             doNothing().when(issueRestClient).transition(any(URI.class),
                                                          any(TransitionInput.class),

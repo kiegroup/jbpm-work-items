@@ -39,7 +39,7 @@ public class RepoServiceIntegrationTest {
     private static int TOTAL_MODULES = Integer.parseInt(System.getProperty("total.mod.count", "40"));
 
     // update this when new workitem handlers are added
-    private static int TOTAL_SERVICES = Integer.parseInt(System.getProperty("total.wi.count", "93"));
+    private static int TOTAL_SERVICES = Integer.parseInt(System.getProperty("total.wi.count", "94"));
 
     @BeforeClass
     public static void init() throws Exception {
@@ -134,7 +134,7 @@ public class RepoServiceIntegrationTest {
 
     @Test
     public void testAddServiceTask(){
-        RepoData addService = initRepoData(VIMEO_NEW, "7.44.0-SNAPSHOT");
+        RepoData addService = initRepoData(VIMEO_NEW, "7.52.0-SNAPSHOT");
         HashMap<String, List<String>> resultMap = new HashMap<>();
         repoService.addService(addService, resultMap);
         addService.setId(UUID.randomUUID().toString());
@@ -142,7 +142,7 @@ public class RepoServiceIntegrationTest {
         assertEquals(VIMEO_NEW, resultMap.get(RepoService.CREATED).get(0));
 
 
-        RepoData updateService = initRepoData(VIMEO_NEW, "7.44.0-SNAPSHOT");
+        RepoData updateService = initRepoData(VIMEO_NEW, "7.52.0-SNAPSHOT");
         resultMap.clear();
         updateService.setId(UUID.randomUUID().toString());
         repoService.addService(updateService, resultMap);

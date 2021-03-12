@@ -18,11 +18,15 @@ package org.jbpm.process.workitem.kafka;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.drools.core.process.instance.impl.WorkItemImpl;
+import org.jbpm.executor.impl.wih.AsyncWorkItemHandlerCmdCallback;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
 import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
@@ -32,8 +36,13 @@ import org.jbpm.process.workitem.core.util.WidResult;
 import org.jbpm.process.workitem.core.util.service.WidAction;
 import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
+import org.kie.api.executor.Command;
+import org.kie.api.executor.CommandContext;
+import org.kie.api.executor.ExecutionResults;
+import org.kie.api.executor.ExecutorService;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
+import org.kie.internal.runtime.manager.InternalRuntimeManager;
 import org.kie.internal.runtime.Cacheable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,36 +73,97 @@ import org.slf4j.LoggerFactory;
         ))
 
 public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler implements Cacheable {
+    private static String PROPERTY_PREFIX = "org.jbpm.process.workitem.kafka.";
+    private static String GLOBAL_RECONNECT_BACKOFF_MAX_MS = PROPERTY_PREFIX + CommonClientConfigs.RECONNECT_BACKOFF_MAX_MS_CONFIG; //reconnect.backoff.max.ms
+    private static String GLOBAL_RECONNECT_BACKOFF_MS = PROPERTY_PREFIX + CommonClientConfigs.RECONNECT_BACKOFF_MS_CONFIG; //reconnect.backoff.ms
+    private static String GLOBAL_REQUEST_TIMEOUT_MS = PROPERTY_PREFIX + CommonClientConfigs.REQUEST_TIMEOUT_MS_CONFIG; // request.timeout.ms 
+    private static String GLOBAL_RETRIES = PROPERTY_PREFIX + CommonClientConfigs.RETRIES_CONFIG; // retries
+    private static String GLOBAL_RETRY_BACKOFF_MS = PROPERTY_PREFIX + CommonClientConfigs.RETRY_BACKOFF_MS_CONFIG; // retry.backoff.ms
+    private static String GLOBAL_ENABLE_IDEMPOTENCE = PROPERTY_PREFIX + ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG; // enable.idempotence
+
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaWorkItemHandler.class);
+    private static Map<Properties, Producer> producers = new ConcurrentHashMap<Properties, Producer>();
 
-    private Producer<String, String> producer;
+    private ExecutorService executorService;
+    private Properties properties;
+
     private static final String RESULTS_VALUE = "Result";
+
     
-    public KafkaWorkItemHandler(Producer producer) {
-        this.producer = producer;
+    public KafkaWorkItemHandler(Properties properties, Producer producer) {
+        this.properties = properties;
+        producers.put(properties, producer);
     }
 
     public KafkaWorkItemHandler(String bootstrapServers,
                                 String clientId,
                                 String keySerializerClass,
                                 String valueSerializerClass) {
-        Properties config = new Properties();
-        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
-                   bootstrapServers);
-        config.put(ProducerConfig.CLIENT_ID_CONFIG,
-                   clientId);
-        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
-                   keySerializerClass);
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-                   valueSerializerClass);
+
+        this(bootstrapServers, clientId, keySerializerClass, valueSerializerClass, KafkaProducer.class.getClassLoader());
+    }
+
+    public KafkaWorkItemHandler(String bootstrapServers,
+                                String clientId,
+                                String keySerializerClass,
+                                String valueSerializerClass,
+                                ClassLoader classLoader) {
+        this(bootstrapServers, clientId, keySerializerClass, valueSerializerClass, classLoader, null);
+    }
+    public KafkaWorkItemHandler(String bootstrapServers,
+                                String clientId,
+                                String keySerializerClass,
+                                String valueSerializerClass,
+                                ClassLoader classLoader,
+                                InternalRuntimeManager runtimeManager) {
+
+
+        this.properties = new Properties();
+        this.properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        this.properties.put(ProducerConfig.CLIENT_ID_CONFIG, clientId);
+        this.properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializerClass);
+        this.properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,  valueSerializerClass);
+
+        // global variables
+        this.properties.put(CommonClientConfigs.RECONNECT_BACKOFF_MAX_MS_CONFIG, System.getProperty(GLOBAL_RECONNECT_BACKOFF_MAX_MS));
+        this.properties.put(CommonClientConfigs.RECONNECT_BACKOFF_MS_CONFIG, System.getProperty(GLOBAL_RECONNECT_BACKOFF_MS));
+        this.properties.put(CommonClientConfigs.REQUEST_TIMEOUT_MS_CONFIG, System.getProperty(GLOBAL_REQUEST_TIMEOUT_MS));
+        this.properties.put(CommonClientConfigs.RETRIES_CONFIG, System.getProperty(GLOBAL_RETRIES));
+        this.properties.put(CommonClientConfigs.RETRY_BACKOFF_MS_CONFIG, System.getProperty(GLOBAL_RETRY_BACKOFF_MS));
+        this.properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, System.getProperty(GLOBAL_ENABLE_IDEMPOTENCE));
+
+        if(runtimeManager != null) {
+            this.executorService = (ExecutorService) runtimeManager.getEnvironment().getEnvironment().get("ExecutorService");
+            LOG.info("Kafka WorkItem Handler Producer created with async {}", properties);
+        } else {
+            LOG.info("Kafka WorkItem Handler Producer created with sync for {}", properties);
+        }
+
         // it is needed to change the classloader to KIEURLClassLoader for dependencies to be resolved and then, set it back
+
         ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
         try {
-          Thread.currentThread().setContextClassLoader(KafkaProducer.class.getClassLoader());
-          producer = new KafkaProducer<String, String>(config);
+          Thread.currentThread().setContextClassLoader(classLoader);
+          producers.computeIfAbsent(properties, (config) -> new KafkaProducer(config));
         } finally {
           Thread.currentThread().setContextClassLoader(oldClassLoader);
+        }
+    }
+
+    public static class KafkaWorkItemHandlerProducerCommand implements Command {
+        @Override
+        public ExecutionResults execute(CommandContext ctx) throws Exception {
+            String topic = (String) ctx.getData().get("topic");
+            Object key = ctx.getData().get("key");
+            Object value = ctx.getData().get("value");
+            Properties properties = (Properties) ctx.getData().get("producerProperties");
+            LOG.debug("Kafka WorkItem Handler {} about to send to topic {} key {} and value {}", properties, topic, key, value);
+            producers.get(properties).send(new ProducerRecord(topic, key, value)).get();
+            LOG.debug("Kafka WorkItem Handler {} sent to topic {} key {} and value {}", properties, topic, key, value);
+            ExecutionResults results = new ExecutionResults();
+            results.setData(RESULTS_VALUE, "success");
+            return results;
         }
     }
 
@@ -104,21 +174,37 @@ public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler impl
             RequiredParameterValidator.validate(this.getClass(),
                                                 workItem);
 
-            Map<String, Object> results = new HashMap<String, Object>();
             String topic = (String) workItem.getParameter("Topic");
             Object key = workItem.getParameter("Key");
             Object value = workItem.getParameter("Value");
 
-            producer.send(new ProducerRecord(topic, 
-                                             key, 
-                                             value))
-                    .get();
+            // check whether is async or not
+            if(this.executorService == null || !this.executorService.isActive()) {
+                producers.get(this.properties).send(new ProducerRecord(topic, 
+                                                 key, 
+                                                 value))
+                        .get();
+                Map<String, Object> results = new HashMap<String, Object>();
+                results.put(RESULTS_VALUE, "success");
+                manager.completeWorkItem(workItem.getId(), results);
+            } else {
+                CommandContext ctxCMD = new CommandContext();
+                ctxCMD.setData("workItem", workItem);
+                ctxCMD.setData("processInstanceId", getProcessInstanceId(workItem));
+                ctxCMD.setData("deploymentId", ((WorkItemImpl)workItem).getDeploymentId());
+                ctxCMD.setData("callbacks", AsyncWorkItemHandlerCmdCallback.class.getName());
+                ctxCMD.setData("topic", topic);
+                ctxCMD.setData("key", key);
+                ctxCMD.setData("value", value);
+                ctxCMD.setData("producerProperties", this.properties);
 
-            results.put(RESULTS_VALUE, "success");
-            manager.completeWorkItem(workItem.getId(), results);
+                Long requestId = executorService.scheduleRequest(KafkaWorkItemHandlerProducerCommand.class.getName(), ctxCMD);
+                LOG.debug("Request Kafka producer successfully with id {}", requestId);
+
+            }
+
         } catch (Exception exp) {
-            LOG.error("Handler error",
-                      exp);
+            LOG.error("Handler error", exp);
             handleException(exp);
         }
     }
@@ -130,9 +216,14 @@ public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler impl
 
     @Override
     public void close() {
-        if (producer != null) {
+        if (producers != null && producers.containsKey(this.properties)) {
+            Producer producer = producers.remove(this.properties);
             producer.flush();
             producer.close();
         }
+    }
+
+    protected long getProcessInstanceId(WorkItem workItem) {
+        return ((WorkItemImpl) workItem).getProcessInstanceId();
     }
 }

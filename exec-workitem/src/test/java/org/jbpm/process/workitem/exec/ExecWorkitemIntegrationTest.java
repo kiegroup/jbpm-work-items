@@ -27,7 +27,7 @@ public class ExecWorkitemIntegrationTest {
 
     @Test
     public void testWorkitemValidity() {
-        String repoPath = "file://" + System.getProperty("builddir") +
+        String repoPath = "file:" + System.getProperty("builddir") +
                 "/" + System.getProperty("artifactId") + "-" +
                 System.getProperty("version") + "/";
 
@@ -35,7 +35,7 @@ public class ExecWorkitemIntegrationTest {
                                                                                                   null,
                                                                                                   System.getProperty("artifactId"));
         assertNotNull(repoResults);
-        assertEquals(1,
+        assertEquals(2,
                      repoResults.size());
 
         assertTrue(repoResults.containsKey("Exec"));

@@ -27,7 +27,7 @@ public class ExecuteSqlWorkItemIntegrationTest {
 
     @Test
     public void testWorkitemValidity() {
-        String repoPath = "file://" + System.getProperty("builddir") +
+        String repoPath = "file:" + System.getProperty("builddir") +
                 "/" + System.getProperty("artifactId") + "-" +
                 System.getProperty("version") + "/";
 
