@@ -69,10 +69,14 @@ import org.slf4j.LoggerFactory;
                 action = @WidAction(title = "Publish message to a kafka topic"),
                 authinfo = @WidAuth(required = true, params = {"bootstrapServers", "clientId", "keySerializerClass", "valueSerializerClass"},
                 paramsdescription = {"Bootstrap Servers", "Client ID", "Key Serializer class", "Value Serializer class"},
-                referencesite = "https://kafka.apache.org/10/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html")
+                referencesite = "https://red.ht/kafka-wih-params")
         ))
 
 public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler implements Cacheable {
+    private static String DEFAULT_HOST = "localhost:9092";
+    private static String DEFAULT_KAFKA_CLIENT_ID = "jBPM-Kafka-PublishMessage";
+    private static String DEFAULT_SERIALIZER = "org.apache.kafka.common.serialization.StringSerializer";
+
     private static String PROPERTY_PREFIX = "org.jbpm.process.workitem.kafka.";
     private static String GLOBAL_RECONNECT_BACKOFF_MAX_MS = PROPERTY_PREFIX + CommonClientConfigs.RECONNECT_BACKOFF_MAX_MS_CONFIG; //reconnect.backoff.max.ms
     private static String GLOBAL_RECONNECT_BACKOFF_MS = PROPERTY_PREFIX + CommonClientConfigs.RECONNECT_BACKOFF_MS_CONFIG; //reconnect.backoff.ms
@@ -94,6 +98,30 @@ public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler impl
     public KafkaWorkItemHandler(Properties properties, Producer producer) {
         this.properties = properties;
         producers.put(properties, producer);
+    }
+
+    public KafkaWorkItemHandler( ) {
+        this(DEFAULT_HOST, 
+             DEFAULT_KAFKA_CLIENT_ID, 
+             DEFAULT_SERIALIZER, 
+             DEFAULT_SERIALIZER);
+    }
+
+    public KafkaWorkItemHandler(ClassLoader classLoader) {
+        this(DEFAULT_HOST, 
+             DEFAULT_KAFKA_CLIENT_ID, 
+             DEFAULT_SERIALIZER, 
+             DEFAULT_SERIALIZER,
+             classLoader);
+    }
+
+    public KafkaWorkItemHandler(ClassLoader classLoader, InternalRuntimeManager runtimeManager) {
+        this(DEFAULT_HOST, 
+             DEFAULT_KAFKA_CLIENT_ID, 
+             DEFAULT_SERIALIZER, 
+             DEFAULT_SERIALIZER,
+             classLoader,
+             runtimeManager);
     }
 
     public KafkaWorkItemHandler(String bootstrapServers,
@@ -120,18 +148,36 @@ public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler impl
 
 
         this.properties = new Properties();
-        this.properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        this.properties.put(ProducerConfig.CLIENT_ID_CONFIG, clientId);
-        this.properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializerClass);
-        this.properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,  valueSerializerClass);
+        this.properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, !isEmpty(bootstrapServers) ? bootstrapServers : DEFAULT_HOST);
+        this.properties.put(ProducerConfig.CLIENT_ID_CONFIG, !isEmpty(clientId) ? clientId : DEFAULT_KAFKA_CLIENT_ID);
+        this.properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, !isEmpty(keySerializerClass) ? keySerializerClass : DEFAULT_SERIALIZER);
+        this.properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,  !isEmpty(valueSerializerClass) ? valueSerializerClass : DEFAULT_SERIALIZER);
 
         // global variables
-        this.properties.put(CommonClientConfigs.RECONNECT_BACKOFF_MAX_MS_CONFIG, System.getProperty(GLOBAL_RECONNECT_BACKOFF_MAX_MS));
-        this.properties.put(CommonClientConfigs.RECONNECT_BACKOFF_MS_CONFIG, System.getProperty(GLOBAL_RECONNECT_BACKOFF_MS));
-        this.properties.put(CommonClientConfigs.REQUEST_TIMEOUT_MS_CONFIG, System.getProperty(GLOBAL_REQUEST_TIMEOUT_MS));
-        this.properties.put(CommonClientConfigs.RETRIES_CONFIG, System.getProperty(GLOBAL_RETRIES));
-        this.properties.put(CommonClientConfigs.RETRY_BACKOFF_MS_CONFIG, System.getProperty(GLOBAL_RETRY_BACKOFF_MS));
-        this.properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, System.getProperty(GLOBAL_ENABLE_IDEMPOTENCE));
+        String reconnectBackoffMaxMs = System.getProperty(GLOBAL_RECONNECT_BACKOFF_MAX_MS);
+        if(reconnectBackoffMaxMs != null) {
+            this.properties.put(CommonClientConfigs.RECONNECT_BACKOFF_MAX_MS_CONFIG, reconnectBackoffMaxMs);
+        }
+        String reconectBackOffMs = System.getProperty(GLOBAL_RECONNECT_BACKOFF_MS);
+        if(reconectBackOffMs != null) {
+            this.properties.put(CommonClientConfigs.RECONNECT_BACKOFF_MS_CONFIG, reconectBackOffMs);
+        }
+        String requestTimeoutMs = System.getProperty(GLOBAL_REQUEST_TIMEOUT_MS);
+        if(requestTimeoutMs != null) {
+            this.properties.put(CommonClientConfigs.REQUEST_TIMEOUT_MS_CONFIG, requestTimeoutMs);
+        }
+        String retries = System.getProperty(GLOBAL_RETRIES);
+        if(retries != null) {
+            this.properties.put(CommonClientConfigs.RETRIES_CONFIG, retries);
+        }
+        String retryBackOffMs = System.getProperty(GLOBAL_RETRY_BACKOFF_MS);
+        if(retryBackOffMs != null) {
+            this.properties.put(CommonClientConfigs.RETRY_BACKOFF_MS_CONFIG, retryBackOffMs);
+        }
+        String enableIdempotence = System.getProperty(GLOBAL_ENABLE_IDEMPOTENCE);
+        if(enableIdempotence != null) {
+            this.properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, enableIdempotence);
+        }
 
         if(runtimeManager != null) {
             this.executorService = (ExecutorService) runtimeManager.getEnvironment().getEnvironment().get("ExecutorService");
@@ -149,6 +195,10 @@ public class KafkaWorkItemHandler extends AbstractLogOrThrowWorkItemHandler impl
         } finally {
           Thread.currentThread().setContextClassLoader(oldClassLoader);
         }
+    }
+
+    public boolean isEmpty(String val) {
+        return val == null || val.isEmpty();
     }
 
     public static class KafkaWorkItemHandlerProducerCommand implements Command {

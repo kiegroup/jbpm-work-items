@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.jbpm.contrib</groupId>
     <artifactId>workitems</artifactId>
-    <version>7.52.0-SNAPSHOT</version>
+    <version>7.53.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>repository</artifactId>
@@ -581,6 +581,12 @@
         <dependency>
           <groupId>org.jbpm.contrib</groupId>
           <artifactId>docker-workitem</artifactId>
+          <type>zip</type>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.jbpm.contrib</groupId>
+          <artifactId>long-running-rest-workitem</artifactId>
           <type>zip</type>
           <scope>provided</scope>
         </dependency>

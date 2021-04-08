@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/archive-workitem/archive-workitem.iml" filepath="$PROJECT_DIR$/archive-workitem/archive-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/camel-workitem/camel-workitem.iml" filepath="$PROJECT_DIR$/camel-workitem/camel-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/docker-workitem/docker-workitem.iml" filepath="$PROJECT_DIR$/docker-workitem/docker-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dropbox-workitem/dropbox-workitem.iml" filepath="$PROJECT_DIR$/dropbox-workitem/dropbox-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ethereum-workitem/ethereum-workitem.iml" filepath="$PROJECT_DIR$/ethereum-workitem/ethereum-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/exec-workitem/exec-workitem.iml" filepath="$PROJECT_DIR$/exec-workitem/exec-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/execute-sql-workitem/execute-sql-workitem.iml" filepath="$PROJECT_DIR$/execute-sql-workitem/execute-sql-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ftp-workitem/ftp-workitem.iml" filepath="$PROJECT_DIR$/ftp-workitem/ftp-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/github-workitem/github-workitem.iml" filepath="$PROJECT_DIR$/github-workitem/github-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/google-calendar-workitem/google-calendar-workitem.iml" filepath="$PROJECT_DIR$/google-calendar-workitem/google-calendar-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/google-drive-workitem/google-drive-workitem.iml" filepath="$PROJECT_DIR$/google-drive-workitem/google-drive-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/google-mail-workitem/google-mail-workitem.iml" filepath="$PROJECT_DIR$/google-mail-workitem/google-mail-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/google-maps-workitem/google-maps-workitem.iml" filepath="$PROJECT_DIR$/google-maps-workitem/google-maps-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/google-sheets-workitem/google-sheets-workitem.iml" filepath="$PROJECT_DIR$/google-sheets-workitem/google-sheets-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/google-tasks-workitem/google-tasks-workitem.iml" filepath="$PROJECT_DIR$/google-tasks-workitem/google-tasks-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/google-translate-workitem/google-translate-workitem.iml" filepath="$PROJECT_DIR$/google-translate-workitem/google-translate-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ibm-watson-workitem/ibm-watson-workitem.iml" filepath="$PROJECT_DIR$/ibm-watson-workitem/ibm-watson-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ifttt-workitem/ifttt-workitem.iml" filepath="$PROJECT_DIR$/ifttt-workitem/ifttt-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jabber-workitem/jabber-workitem.iml" filepath="$PROJECT_DIR$/jabber-workitem/jabber-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/java-workitem/java-workitem.iml" filepath="$PROJECT_DIR$/java-workitem/java-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/jbpm-work-items.iml" filepath="$PROJECT_DIR$/.idea/jbpm-work-items.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jbpm-workitem-itests/jbpm-workitem-itests.iml" filepath="$PROJECT_DIR$/jbpm-workitem-itests/jbpm-workitem-itests.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jira-workitem/jira-workitem.iml" filepath="$PROJECT_DIR$/jira-workitem/jira-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jpa-workitem/jpa-workitem.iml" filepath="$PROJECT_DIR$/jpa-workitem/jpa-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/kafka-workitem/kafka-workitem.iml" filepath="$PROJECT_DIR$/kafka-workitem/kafka-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/karaf-itests/karaf-itests.iml" filepath="$PROJECT_DIR$/karaf-itests/karaf-itests.iml" />
+      <module fileurl="file://$PROJECT_DIR$/long-running-rest-workitem/long-running-rest-workitem.iml" filepath="$PROJECT_DIR$/long-running-rest-workitem/long-running-rest-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mavenembedder-workitem/mavenembedder-workitem.iml" filepath="$PROJECT_DIR$/mavenembedder-workitem/mavenembedder-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/okta-workitem/okta-workitem.iml" filepath="$PROJECT_DIR$/okta-workitem/okta-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/openweathermap-workitem/openweathermap-workitem.iml" filepath="$PROJECT_DIR$/openweathermap-workitem/openweathermap-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/parser-workitem/parser-workitem.iml" filepath="$PROJECT_DIR$/parser-workitem/parser-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pastebin-workitem/pastebin-workitem.iml" filepath="$PROJECT_DIR$/pastebin-workitem/pastebin-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pdf-workitem/pdf-workitem.iml" filepath="$PROJECT_DIR$/pdf-workitem/pdf-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/repository/repository.iml" filepath="$PROJECT_DIR$/repository/repository.iml" />
+      <module fileurl="file://$PROJECT_DIR$/repository-springboot/repository-springboot.iml" filepath="$PROJECT_DIR$/repository-springboot/repository-springboot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/repository-wildfly/repository-wildfly.iml" filepath="$PROJECT_DIR$/repository-wildfly/repository-wildfly.iml" />
+      <module fileurl="file://$PROJECT_DIR$/riot-workitem/riot-workitem.iml" filepath="$PROJECT_DIR$/riot-workitem/riot-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/rss-workitem/rss-workitem.iml" filepath="$PROJECT_DIR$/rss-workitem/rss-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/slack-workitem/slack-workitem.iml" filepath="$PROJECT_DIR$/slack-workitem/slack-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/template-resources/template-resources.iml" filepath="$PROJECT_DIR$/template-resources/template-resources.iml" />
+      <module fileurl="file://$PROJECT_DIR$/transform-workitem/transform-workitem.iml" filepath="$PROJECT_DIR$/transform-workitem/transform-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/twitter-workitem/twitter-workitem.iml" filepath="$PROJECT_DIR$/twitter-workitem/twitter-workitem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/vimeo-workitem/vimeo-workitem.iml" filepath="$PROJECT_DIR$/vimeo-workitem/vimeo-workitem.iml" />
+    </modules>
+  </component>
+</project>

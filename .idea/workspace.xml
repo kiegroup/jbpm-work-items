@@ -31,6 +31,7 @@
       <change beforePath="$PROJECT_DIR$/jpa-workitem/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/jpa-workitem/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/kafka-workitem/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/kafka-workitem/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/karaf-itests/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/karaf-itests/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/long-running-rest-workitem/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/long-running-rest-workitem/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mavenembedder-workitem/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mavenembedder-workitem/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/okta-workitem/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/okta-workitem/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/openweathermap-workitem/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/openweathermap-workitem/pom.xml" afterDir="false" />
