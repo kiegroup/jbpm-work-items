@@ -85,6 +85,19 @@
       -Xmx1024m
     </failsafe.arg.line>
     <it.test/>
+
+    <maven.hibernate.dialect>org.hibernate.dialect.H2Dialect</maven.hibernate.dialect>
+    <maven.datasource.classname>org.h2.jdbcx.JdbcDataSource</maven.datasource.classname>
+    <maven.jdbc.driver.class>org.h2.Driver</maven.jdbc.driver.class>
+    <maven.jdbc.db.name/>
+    <maven.jdbc.db.port/>
+    <maven.jdbc.db.server/>
+    <maven.jdbc.driver.jar/>
+    <maven.jdbc.username>sa</maven.jdbc.username>
+    <maven.jdbc.password>sasa</maven.jdbc.password>
+    <maven.jdbc.url>jdbc:h2:tcp://localhost/${project.basedir}/target/jbpm-test;MVCC=TRUE</maven.jdbc.url>
+    <maven.jdbc.schema>public</maven.jdbc.schema>
+
   </properties>
 
   <dependencyManagement>
