@@ -43,7 +43,7 @@
     <version.google.sheets>v4-rev488-1.23.0</version.google.sheets>
     <version.google.tasks>v1-rev48-1.23.0</version.google.tasks>
     <version.google.drive>v2-rev285-1.23.0</version.google.drive>
-    <version.google.translate>1.30.0</version.google.translate>
+    <version.google.translate>1.94.7</version.google.translate>
     <version.ibm.developer.cloud>4.0.0</version.ibm.developer.cloud>
     <version.dropbox.core>3.0.5</version.dropbox.core>
     <version.jetty>8.1.17.v20150415</version.jetty>
