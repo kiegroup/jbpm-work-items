@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.optaplanner:optaplanner-persistence-xstream:7.55.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/optaplanner/optaplanner-persistence-xstream/7.55.0-SNAPSHOT/optaplanner-persistence-xstream-7.55.0-20210509.174914-1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/optaplanner/optaplanner-persistence-xstream/7.55.0-SNAPSHOT/optaplanner-persistence-xstream-7.55.0-20210509.174914-1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/optaplanner/optaplanner-persistence-xstream/7.55.0-SNAPSHOT/optaplanner-persistence-xstream-7.55.0-20210509.174914-1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

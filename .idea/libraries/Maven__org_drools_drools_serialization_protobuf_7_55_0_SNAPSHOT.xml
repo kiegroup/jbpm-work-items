@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.drools:drools-serialization-protobuf:7.55.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/drools/drools-serialization-protobuf/7.55.0-SNAPSHOT/drools-serialization-protobuf-7.55.0-20210509.172535-1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/drools/drools-serialization-protobuf/7.55.0-SNAPSHOT/drools-serialization-protobuf-7.55.0-20210509.172535-1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/drools/drools-serialization-protobuf/7.55.0-SNAPSHOT/drools-serialization-protobuf-7.55.0-20210509.172535-1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

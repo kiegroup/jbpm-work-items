@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.drools.testcoverage:drools-test-suite:test-jar:tests:7.55.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/drools/testcoverage/drools-test-suite/7.55.0-SNAPSHOT/drools-test-suite-7.55.0-20210509.174419-1-tests.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/drools/testcoverage/drools-test-suite/7.55.0-SNAPSHOT/drools-test-suite-7.55.0-20210509.174419-1-test-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/drools/testcoverage/drools-test-suite/7.55.0-SNAPSHOT/drools-test-suite-7.55.0-20210509.174419-1-test-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

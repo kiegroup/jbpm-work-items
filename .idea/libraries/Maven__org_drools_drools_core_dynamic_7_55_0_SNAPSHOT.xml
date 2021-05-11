@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.drools:drools-core-dynamic:7.55.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/drools/drools-core-dynamic/7.55.0-SNAPSHOT/drools-core-dynamic-7.55.0-20210509.172223-1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/drools/drools-core-dynamic/7.55.0-SNAPSHOT/drools-core-dynamic-7.55.0-20210509.172223-1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/drools/drools-core-dynamic/7.55.0-SNAPSHOT/drools-core-dynamic-7.55.0-20210509.172223-1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -24,7 +24,7 @@ Running the application
 Use following command to execute the project:
 
 ```
-java -jar target/jbpm-workitem-itests-7.54.0-SNAPSHOT.jar evaluation:evaluation:1.0.0-SNAPSHOT
+java -jar target/jbpm-workitem-itests-7.54.0.Final.jar evaluation:evaluation:1.0.0-SNAPSHOT
 ```
 
 last part is the kjar that you would like to deploy in GAV format: **groupId:artifactId:version**

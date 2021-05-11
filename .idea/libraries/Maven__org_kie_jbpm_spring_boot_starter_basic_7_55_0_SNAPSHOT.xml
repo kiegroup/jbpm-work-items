@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.kie:jbpm-spring-boot-starter-basic:7.55.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/kie/jbpm-spring-boot-starter-basic/7.55.0-SNAPSHOT/jbpm-spring-boot-starter-basic-7.55.0-20210509.191613-1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/kie/jbpm-spring-boot-starter-basic/7.55.0-SNAPSHOT/jbpm-spring-boot-starter-basic-7.55.0-20210509.191613-1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/kie/jbpm-spring-boot-starter-basic/7.55.0-SNAPSHOT/jbpm-spring-boot-starter-basic-7.55.0-20210509.191613-1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

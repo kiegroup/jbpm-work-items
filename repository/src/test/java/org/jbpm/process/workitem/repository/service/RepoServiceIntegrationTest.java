@@ -134,7 +134,7 @@ public class RepoServiceIntegrationTest {
 
     @Test
     public void testAddServiceTask(){
-        RepoData addService = initRepoData(VIMEO_NEW, "7.54.0-SNAPSHOT");
+        RepoData addService = initRepoData(VIMEO_NEW, "7.54.0.Final");
         HashMap<String, List<String>> resultMap = new HashMap<>();
         repoService.addService(addService, resultMap);
         addService.setId(UUID.randomUUID().toString());
@@ -142,7 +142,7 @@ public class RepoServiceIntegrationTest {
         assertEquals(VIMEO_NEW, resultMap.get(RepoService.CREATED).get(0));
 
 
-        RepoData updateService = initRepoData(VIMEO_NEW, "7.54.0-SNAPSHOT");
+        RepoData updateService = initRepoData(VIMEO_NEW, "7.54.0.Final");
         resultMap.clear();
         updateService.setId(UUID.randomUUID().toString());
         repoService.addService(updateService, resultMap);

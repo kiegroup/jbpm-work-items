@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/archive-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/camel-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/docker-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dropbox-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ethereum-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/exec-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/execute-sql-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ftp-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/github-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/google-calendar-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/google-drive-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/google-mail-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/google-maps-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/google-sheets-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/google-tasks-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/google-translate-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ibm-watson-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ifttt-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jabber-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/java-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jbpm-workitem-itests/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jbpm-workitem-itests/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jira-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jpa-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/kafka-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/long-running-rest-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mavenembedder-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/okta-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/openweathermap-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/parser-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pastebin-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pdf-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/repository-springboot/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/repository-springboot/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/repository-wildfly/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/repository/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/riot-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/rss-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/slack-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/template-resources/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/transform-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/twitter-workitem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/vimeo-workitem/src/main/resources" charset="UTF-8" />
+  </component>
+</project>

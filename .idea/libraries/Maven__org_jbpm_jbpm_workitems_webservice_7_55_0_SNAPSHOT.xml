@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.jbpm:jbpm-workitems-webservice:7.55.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jbpm/jbpm-workitems-webservice/7.55.0-SNAPSHOT/jbpm-workitems-webservice-7.55.0-20210509.183915-1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jbpm/jbpm-workitems-webservice/7.55.0-SNAPSHOT/jbpm-workitems-webservice-7.55.0-20210509.183915-1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jbpm/jbpm-workitems-webservice/7.55.0-SNAPSHOT/jbpm-workitems-webservice-7.55.0-20210509.183915-1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

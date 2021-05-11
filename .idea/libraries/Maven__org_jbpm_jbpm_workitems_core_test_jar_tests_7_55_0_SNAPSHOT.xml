@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.jbpm:jbpm-workitems-core:test-jar:tests:7.55.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jbpm/jbpm-workitems-core/7.55.0-SNAPSHOT/jbpm-workitems-core-7.55.0-20210509.183903-1-tests.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jbpm/jbpm-workitems-core/7.55.0-SNAPSHOT/jbpm-workitems-core-7.55.0-20210509.183903-1-test-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jbpm/jbpm-workitems-core/7.55.0-SNAPSHOT/jbpm-workitems-core-7.55.0-20210509.183903-1-test-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

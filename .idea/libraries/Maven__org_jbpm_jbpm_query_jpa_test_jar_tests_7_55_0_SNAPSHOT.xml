@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.jbpm:jbpm-query-jpa:test-jar:tests:7.55.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jbpm/jbpm-query-jpa/7.55.0-SNAPSHOT/jbpm-query-jpa-7.55.0-20210509.183446-1-tests.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jbpm/jbpm-query-jpa/7.55.0-SNAPSHOT/jbpm-query-jpa-7.55.0-20210509.183446-1-test-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jbpm/jbpm-query-jpa/7.55.0-SNAPSHOT/jbpm-query-jpa-7.55.0-20210509.183446-1-test-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

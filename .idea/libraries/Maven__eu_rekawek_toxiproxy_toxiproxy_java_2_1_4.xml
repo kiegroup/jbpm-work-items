@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: eu.rekawek.toxiproxy:toxiproxy-java:2.1.4">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/eu/rekawek/toxiproxy/toxiproxy-java/2.1.4/toxiproxy-java-2.1.4.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/eu/rekawek/toxiproxy/toxiproxy-java/2.1.4/toxiproxy-java-2.1.4-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/eu/rekawek/toxiproxy/toxiproxy-java/2.1.4/toxiproxy-java-2.1.4-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
