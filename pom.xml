@@ -50,7 +50,7 @@
     <version.twitter4j>4.0.6</version.twitter4j>
     <version.egit.github>2.1.5</version.egit.github>
     <version.atlassian.jira>1.0</version.atlassian.jira>
-    <version.web3j>3.3.1</version.web3j>
+    <version.web3j>3.3.1-android</version.web3j>
     <version.github.jnr>0.15</version.github.jnr>
     <version.squareup.okhttp3>3.8.1</version.squareup.okhttp3>
     <version.rxjava>1.2.4</version.rxjava>
