@@ -19,7 +19,6 @@ package org.jbpm.workitem.springboot.samples;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.jbpm.services.api.DeploymentService;
 import org.jbpm.services.api.ProcessService;
-import org.jbpm.workitem.springboot.samples.JBPMApplication;
 import org.jbpm.workitem.springboot.samples.events.listeners.CountDownLatchEventListener;
 import org.junit.After;
 import org.junit.Before;
@@ -35,7 +34,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
-import org.testcontainers.containers.KafkaContainer;
+import io.strimzi.StrimziKafkaContainer;
 
 import static org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.clients.producer.ProducerConfig.CLIENT_ID_CONFIG;
@@ -43,6 +42,8 @@ import static org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CL
 import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG;
 import static org.jbpm.workitem.springboot.samples.KafkaFixture.KAFKA_PROCESS_ID;
 import static org.jbpm.workitem.springboot.samples.KafkaFixture.KAFKA_RESULT;
+import static org.jbpm.workitem.springboot.samples.KafkaFixture.KEY;
+import static org.jbpm.workitem.springboot.samples.KafkaFixture.VALUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -70,7 +71,7 @@ public class KafkaSampleTest extends KafkaBaseTest {
     CountDownLatchEventListener countDownLatchEventListener;
     
     @Rule
-    public KafkaContainer kafka = new KafkaContainer();
+    public StrimziKafkaContainer kafka = new StrimziKafkaContainer();
     
     protected static KafkaFixture kafkaFixture = new KafkaFixture();
     
@@ -109,7 +110,7 @@ public class KafkaSampleTest extends KafkaBaseTest {
 
         assertTrue(processInstanceId > 0);
         
-        kafkaFixture.assertConsumerMessages(kafka.getBootstrapServers());
+        kafkaFixture.assertConsumerMessages(kafka.getBootstrapServers(), KEY, VALUE);
         
         //Countdown decrements the count of the latch before process ends
         countDownLatchEventListener.getCountDown().await();

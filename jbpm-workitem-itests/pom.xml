@@ -147,15 +147,14 @@
       <artifactId>spring-test</artifactId>
       <scope>test</scope>
     </dependency>
-    
-    <dependency>
-      <groupId>org.testcontainers</groupId>
-      <artifactId>kafka</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>toxiproxy</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.strimzi</groupId>
+      <artifactId>strimzi-test-container</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -212,7 +211,9 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
             <systemPropertyVariables>
+              <toxiproxy.image>shopify/toxiproxy:2.1.4</toxiproxy.image>
               <toxiproxy.port>9093</toxiproxy.port>
+              <org.kie.executor.jms>false</org.kie.executor.jms>
             </systemPropertyVariables>
           </configuration>
         </plugin>

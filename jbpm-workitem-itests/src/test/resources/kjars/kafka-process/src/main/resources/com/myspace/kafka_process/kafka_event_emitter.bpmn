@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- origin at X=0.0 Y=0.0 -->
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmn20="http://www.omg.org/bpmn20" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns="http://www.jboss.org/drools" xmlns:ns="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd" id="_TfPEIEqxEeur9qjcqCYQpQ" exporter="org.eclipse.bpmn2.modeler.core" exporterVersion="1.5.2.SNAPSHOT-v20200602-1600-B1" targetNamespace="http://www.omg.org/bpmn20">
+  <bpmn2:itemDefinition id="_msgItem" isCollection="false" structureRef="String"/>
+  <bpmn2:itemDefinition id="_pidItem" isCollection="false" structureRef="Integer"/>
+  <bpmn2:itemDefinition id="_resultItem" isCollection="false" structureRef="String"/>
+  <bpmn2:itemDefinition id="__64A08A8B-1A90-49EB-AB44-60574A58536C_KeyInputXItem" isCollection="false" structureRef="String"/>
+  <bpmn2:itemDefinition id="__64A08A8B-1A90-49EB-AB44-60574A58536C_TopicInputXItem" isCollection="false" structureRef="String"/>
+  <bpmn2:itemDefinition id="__64A08A8B-1A90-49EB-AB44-60574A58536C_ValueInputXItem" isCollection="false" structureRef="String"/>
+  <bpmn2:itemDefinition id="__64A08A8B-1A90-49EB-AB44-60574A58536C_ResultOutputXItem" isCollection="false" structureRef="String"/>
+  <bpmn2:process id="kafka-event-emitter.KafkaEventEmitter" drools:packageName="com.tests" drools:version="1.0" drools:adHoc="false" name="KafkaEventEmitter" isExecutable="true" processType="Public">
+    <bpmn2:property id="msg" itemSubjectRef="_msgItem" name="msg"/>
+    <bpmn2:property id="pid" itemSubjectRef="_pidItem" name="pid"/>
+    <bpmn2:property id="result" itemSubjectRef="_resultItem" name="result"/>
+    <bpmn2:sequenceFlow id="_B5915734-2322-4959-A390-94E357343876" sourceRef="_64A08A8B-1A90-49EB-AB44-60574A58536C" targetRef="_AD8DF769-B960-41AC-8235-0F43B7B08B24">
+      <bpmn2:extensionElements>
+        <drools:metaData name="isAutoConnection.source">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        </drools:metaData>
+        <drools:metaData name="isAutoConnection.target">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="_9B50B46E-136A-4EE6-AB68-0C0286E44231" sourceRef="_3CD70C5F-755C-408E-A901-BE81F892631B" targetRef="_64A08A8B-1A90-49EB-AB44-60574A58536C">
+      <bpmn2:extensionElements>
+        <drools:metaData name="isAutoConnection.target">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:sequenceFlow>
+    <bpmn2:task id="_64A08A8B-1A90-49EB-AB44-60574A58536C" drools:taskName="KafkaPublishMessages" name="KafkaPublishMessages">
+      <bpmn2:documentation id="_TfPEIUqxEeur9qjcqCYQpQ"><![CDATA[kafka-workitem/index.html]]></bpmn2:documentation>
+      <bpmn2:extensionElements>
+        <drools:metaData name="elementname">
+          <drools:metaValue><![CDATA[KafkaPublishMessages]]></drools:metaValue>
+        </drools:metaData>
+        <drools:onEntry-script scriptFormat="http://www.java.com/java">
+          <drools:script>System.out.println(&quot;\n\nAbout to send a msg to Kafka...&quot;);
+kcontext.setVariable(&quot;pid&quot;, kcontext.getProcessInstance().getId());
+System.out.println(&quot;Msg: &quot; + kcontext.getVariable(&quot;msg&quot;));
+System.out.println(&quot;Pid: &quot; + kcontext.getVariable(&quot;pid&quot;));
+System.out.println(&quot;\n\n&quot;);</drools:script>
+        </drools:onEntry-script>
+        <drools:onExit-script scriptFormat="http://www.java.com/java">
+          <drools:script>System.out.println(&quot;\n msg sent!&quot;);
+System.out.println(&quot;\t result: &quot; + kcontext.getVariable(&quot;result&quot;));
+System.out.println(&quot;\n\n&quot;);</drools:script>
+        </drools:onExit-script>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>_9B50B46E-136A-4EE6-AB68-0C0286E44231</bpmn2:incoming>
+      <bpmn2:outgoing>_B5915734-2322-4959-A390-94E357343876</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="_TfPEIkqxEeur9qjcqCYQpQ">
+        <bpmn2:dataInput id="_64A08A8B-1A90-49EB-AB44-60574A58536C_KeyInputX" drools:dtype="String" itemSubjectRef="__64A08A8B-1A90-49EB-AB44-60574A58536C_KeyInputXItem" name="Key"/>
+        <bpmn2:dataInput id="_64A08A8B-1A90-49EB-AB44-60574A58536C_TopicInputX" drools:dtype="String" itemSubjectRef="__64A08A8B-1A90-49EB-AB44-60574A58536C_TopicInputXItem" name="Topic"/>
+        <bpmn2:dataInput id="_64A08A8B-1A90-49EB-AB44-60574A58536C_ValueInputX" drools:dtype="String" itemSubjectRef="__64A08A8B-1A90-49EB-AB44-60574A58536C_ValueInputXItem" name="Value"/>
+        <bpmn2:dataInput id="_64A08A8B-1A90-49EB-AB44-60574A58536C_TaskNameInputX" drools:dtype="Object" name="TaskName"/>
+        <bpmn2:dataOutput id="_64A08A8B-1A90-49EB-AB44-60574A58536C_ResultOutputX" drools:dtype="String" itemSubjectRef="__64A08A8B-1A90-49EB-AB44-60574A58536C_ResultOutputXItem" name="Result"/>
+        <bpmn2:inputSet id="_TfPEI0qxEeur9qjcqCYQpQ">
+          <bpmn2:dataInputRefs>_64A08A8B-1A90-49EB-AB44-60574A58536C_KeyInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_64A08A8B-1A90-49EB-AB44-60574A58536C_TopicInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_64A08A8B-1A90-49EB-AB44-60574A58536C_ValueInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_64A08A8B-1A90-49EB-AB44-60574A58536C_TaskNameInputX</bpmn2:dataInputRefs>
+        </bpmn2:inputSet>
+        <bpmn2:outputSet id="_TfPEJEqxEeur9qjcqCYQpQ">
+          <bpmn2:dataOutputRefs>_64A08A8B-1A90-49EB-AB44-60574A58536C_ResultOutputX</bpmn2:dataOutputRefs>
+        </bpmn2:outputSet>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataInputAssociation id="_TfPEJUqxEeur9qjcqCYQpQ">
+        <bpmn2:targetRef>_64A08A8B-1A90-49EB-AB44-60574A58536C_KeyInputX</bpmn2:targetRef>
+        <bpmn2:assignment id="_TfPEJkqxEeur9qjcqCYQpQ">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_TfPEJ0qxEeur9qjcqCYQpQ"><![CDATA[PAM_Producer]]></bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_TfPEKEqxEeur9qjcqCYQpQ">_64A08A8B-1A90-49EB-AB44-60574A58536C_KeyInputX</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation id="_TfPEKUqxEeur9qjcqCYQpQ">
+        <bpmn2:targetRef>_64A08A8B-1A90-49EB-AB44-60574A58536C_TopicInputX</bpmn2:targetRef>
+        <bpmn2:assignment id="_TfPEKkqxEeur9qjcqCYQpQ">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_TfPEK0qxEeur9qjcqCYQpQ"><![CDATA[PAM_Events]]></bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_TfPrMEqxEeur9qjcqCYQpQ">_64A08A8B-1A90-49EB-AB44-60574A58536C_TopicInputX</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation id="_TfPrMUqxEeur9qjcqCYQpQ">
+        <bpmn2:targetRef>_64A08A8B-1A90-49EB-AB44-60574A58536C_ValueInputX</bpmn2:targetRef>
+        <bpmn2:assignment id="_TfPrMkqxEeur9qjcqCYQpQ">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_TfPrM0qxEeur9qjcqCYQpQ">&quot;#{msg}&quot;</bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_TfPrNEqxEeur9qjcqCYQpQ">_64A08A8B-1A90-49EB-AB44-60574A58536C_ValueInputX</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation id="_TfPrNUqxEeur9qjcqCYQpQ">
+        <bpmn2:targetRef>_64A08A8B-1A90-49EB-AB44-60574A58536C_TaskNameInputX</bpmn2:targetRef>
+        <bpmn2:assignment id="_TfPrNkqxEeur9qjcqCYQpQ">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_TfPrN0qxEeur9qjcqCYQpQ"><![CDATA[KafkaPublishMessages]]></bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_TfPrOEqxEeur9qjcqCYQpQ">_64A08A8B-1A90-49EB-AB44-60574A58536C_TaskNameInputX</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataOutputAssociation id="_TfPrOUqxEeur9qjcqCYQpQ">
+        <bpmn2:sourceRef>_64A08A8B-1A90-49EB-AB44-60574A58536C_ResultOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>result</bpmn2:targetRef>
+      </bpmn2:dataOutputAssociation>
+    </bpmn2:task>
+    <bpmn2:endEvent id="_AD8DF769-B960-41AC-8235-0F43B7B08B24" name="End">
+      <bpmn2:extensionElements>
+        <drools:metaData name="elementname">
+          <drools:metaValue><![CDATA[End]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>_B5915734-2322-4959-A390-94E357343876</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:startEvent id="_3CD70C5F-755C-408E-A901-BE81F892631B">
+      <bpmn2:extensionElements>
+        <drools:metaData name="elementname">
+          <drools:metaValue><![CDATA[]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+      <bpmn2:outgoing>_9B50B46E-136A-4EE6-AB68-0C0286E44231</bpmn2:outgoing>
+    </bpmn2:startEvent>
+  </bpmn2:process>
+  <bpmndi:BPMNDiagram id="_TfPrOkqxEeur9qjcqCYQpQ">
+    <bpmndi:BPMNPlane id="_TfPrO0qxEeur9qjcqCYQpQ" bpmnElement="kafka-event-emitter.KafkaEventEmitter">
+      <bpmndi:BPMNShape id="shape__3CD70C5F-755C-408E-A901-BE81F892631B" bpmnElement="_3CD70C5F-755C-408E-A901-BE81F892631B">
+        <dc:Bounds height="56.0" width="56.0" x="181.0" y="158.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_1"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape__AD8DF769-B960-41AC-8235-0F43B7B08B24" bpmnElement="_AD8DF769-B960-41AC-8235-0F43B7B08B24">
+        <dc:Bounds height="56.0" width="56.0" x="591.0" y="158.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_2">
+          <dc:Bounds height="18.0" width="26.0" x="606.0" y="214.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape__64A08A8B-1A90-49EB-AB44-60574A58536C" bpmnElement="_64A08A8B-1A90-49EB-AB44-60574A58536C">
+        <dc:Bounds height="102.0" width="154.0" x="332.0" y="135.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_3">
+          <dc:Bounds height="18.0" width="154.0" x="332.0" y="177.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_shape__3CD70C5F-755C-408E-A901-BE81F892631B_to_shape__64A08A8B-1A90-49EB-AB44-60574A58536C" bpmnElement="_9B50B46E-136A-4EE6-AB68-0C0286E44231" sourceElement="shape__3CD70C5F-755C-408E-A901-BE81F892631B" targetElement="shape__64A08A8B-1A90-49EB-AB44-60574A58536C">
+        <di:waypoint xsi:type="dc:Point" x="209.0" y="186.0"/>
+        <di:waypoint xsi:type="dc:Point" x="332.0" y="186.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_4"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_shape__64A08A8B-1A90-49EB-AB44-60574A58536C_to_shape__AD8DF769-B960-41AC-8235-0F43B7B08B24" bpmnElement="_B5915734-2322-4959-A390-94E357343876" sourceElement="shape__64A08A8B-1A90-49EB-AB44-60574A58536C" targetElement="shape__AD8DF769-B960-41AC-8235-0F43B7B08B24">
+        <di:waypoint xsi:type="dc:Point" x="486.0" y="186.0"/>
+        <di:waypoint xsi:type="dc:Point" x="591.0" y="186.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_5"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>

@@ -16,41 +16,16 @@
 
 package org.jbpm.workitem.springboot.samples;
 
-import java.io.IOException;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.kafka.common.serialization.StringSerializer;
-import org.jbpm.services.api.DeploymentService;
-import org.jbpm.services.api.ProcessService;
-import org.jbpm.workitem.springboot.samples.JBPMApplication;
-import org.jbpm.workitem.springboot.samples.events.listeners.CountDownLatchEventListener;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.rules.SpringClassRule;
-import org.springframework.test.context.junit4.rules.SpringMethodRule;
-import org.testcontainers.containers.KafkaContainer;
-import org.testcontainers.containers.Network;
-import org.testcontainers.containers.ToxiproxyContainer;
 
-import static org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG;
-import static org.apache.kafka.clients.producer.ProducerConfig.CLIENT_ID_CONFIG;
-import static org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG;
-import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG;
 import static org.jbpm.workitem.springboot.samples.KafkaFixture.KAFKA_PROCESS_ID;
-import static org.jbpm.workitem.springboot.samples.KafkaFixture.KAFKA_RESULT;
+import static org.jbpm.workitem.springboot.samples.KafkaFixture.KEY;
+import static org.jbpm.workitem.springboot.samples.KafkaFixture.VALUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -58,75 +33,7 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest(classes = {JBPMApplication.class, TestAutoConfiguration.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(locations="classpath:application-test.properties")
 @DirtiesContext(classMode= DirtiesContext.ClassMode.AFTER_CLASS)
-public class KafkaProxySampleTest extends KafkaBaseTest {
-
-    private static final Logger logger = LoggerFactory.getLogger(KafkaProxySampleTest.class);
-    
-    private static final int TOXY_PROXY_PORT = Integer.parseInt(System.getProperty("toxiproxy.port"));
-    
-    @ClassRule
-    public static final SpringClassRule scr = new SpringClassRule();
- 
-    @Rule
-    public final SpringMethodRule smr = new SpringMethodRule();
-
-    @Rule
-    public Network network = Network.newNetwork();
-
-    @Rule
-    public KafkaContainer kafka = new KafkaContainer()
-                                        .withExposedPorts(TOXY_PROXY_PORT)
-                                        .withNetwork(network);
-
-    @Rule
-    public ToxiproxyContainer toxiproxy  = new ToxiproxyContainer().withNetwork(network);
-
-    @Autowired
-    private DeploymentService deploymentService;
-    
-    @Autowired
-    private ProcessService processService;
-    
-    @Autowired
-    CountDownLatchEventListener countDownLatchEventListener;
-    
-    protected static KafkaFixture kafkaFixture = new KafkaFixture();
-    
-    protected String deploymentId;
-    
-    protected String proxyBootstrap;
-
-    protected ToxiproxyContainer.ContainerProxy kafkaProxy;
-    
-    @BeforeClass
-    public static void generalSetup() {
-        kafkaFixture.generalSetup();
-    }
-
-    @Before
-    public void setup() throws IOException, InterruptedException {
-        toxiproxy.start();
-        kafkaProxy = toxiproxy.getProxy(kafka, TOXY_PROXY_PORT);
-        kafka.start();
-        kafkaFixture.createTopic(kafka);
-        proxyBootstrap = kafkaProxy.getContainerIpAddress()+":"+kafkaProxy.getProxyPort();
-        
-        System.setProperty(BOOTSTRAP_SERVERS_CONFIG, proxyBootstrap);
-        System.setProperty(CLIENT_ID_CONFIG, "test_jbpm");
-        System.setProperty(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        System.setProperty(VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        
-        deploymentId = kafkaFixture.setup(deploymentService, strategy);
-        
-        countDownLatchEventListener.setVariable(KAFKA_RESULT);
-    }
-
-    @After
-    public void cleanup() {
-        kafka.stop();
-        toxiproxy.stop();
-        kafkaFixture.cleanup(deploymentService);
-    }
+public class KafkaProxySampleTest extends KafkaProxyBase {
 
     @Test(timeout = 240000)
     public void testKafkaWIHNoConnection() throws Exception {
@@ -149,7 +56,6 @@ public class KafkaProxySampleTest extends KafkaBaseTest {
 
         assertEquals("failure", (String)countDownLatchEventListener.getResult());
     }
-
     
     @Test(timeout = 60000)
     public void testKafkaWIHReconnect() throws Exception {
@@ -166,7 +72,7 @@ public class KafkaProxySampleTest extends KafkaBaseTest {
 
         assertTrue(processInstanceId > 0);
 
-        kafkaFixture.assertConsumerMessages(proxyBootstrap);
+        kafkaFixture.assertConsumerMessages(proxyBootstrap, KEY, VALUE);
 
         //Countdown decrements the count of the latch before process ends
         countDownLatchEventListener.getCountDown().await();
@@ -174,15 +80,4 @@ public class KafkaProxySampleTest extends KafkaBaseTest {
         assertEquals("success", countDownLatchEventListener.getResult());
     }
 
-    private void reconnectProxyLater(int reconnectTime) {
-        new Thread(() -> {
-            CountDownLatch lock = new CountDownLatch(1);
-            try {
-                lock.await(reconnectTime, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                logger.error(e.getMessage(), e);
-            }
-            kafkaProxy.setConnectionCut(false);
-        }).start();
-    }
 }

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- origin at X=0.0 Y=0.0 -->
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmn20="http://www.omg.org/bpmn20" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns="http://www.jboss.org/drools" xmlns:ns="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd" id="_07-LkEqvEeur9qjcqCYQpQ" exporter="org.eclipse.bpmn2.modeler.core" exporterVersion="1.5.2.SNAPSHOT-v20200602-1600-B1" targetNamespace="http://www.omg.org/bpmn20">
+  <bpmn2:itemDefinition id="ItemDefinition_2" isCollection="false" structureRef="java.lang.String"/>
+  <bpmn2:process id="kafka-event-emitter.HelloWorld" drools:packageName="com.tests" drools:version="1.0" drools:adHoc="false" name="HelloWorld" isExecutable="true" processType="Public">
+    <bpmn2:extensionElements>
+      <drools:import name="java.lang.String"/>
+    </bpmn2:extensionElements>
+    <bpmn2:property id="outcome" itemSubjectRef="ItemDefinition_2" name="outcome"/>
+    <bpmn2:sequenceFlow id="_12B3B98E-008A-4A4A-9C9D-23215BEEEEF8" sourceRef="_F569EA08-D02E-4D04-B71F-59A489DBF252" targetRef="_F4E6E3FC-0999-4A5C-A36B-F5A88C1FEE5A">
+      <bpmn2:extensionElements>
+        <drools:metaData name="isAutoConnection.source">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        </drools:metaData>
+        <drools:metaData name="isAutoConnection.target">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="_7CC9DD72-C490-42B0-82AB-15DC319A8E15" sourceRef="_3BB85517-4A7B-4714-BC2B-F305C4803CEE" targetRef="_F569EA08-D02E-4D04-B71F-59A489DBF252">
+      <bpmn2:extensionElements>
+        <drools:metaData name="isAutoConnection.source">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        </drools:metaData>
+        <drools:metaData name="isAutoConnection.target">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:sequenceFlow>
+    <bpmn2:endEvent id="_F4E6E3FC-0999-4A5C-A36B-F5A88C1FEE5A">
+      <bpmn2:extensionElements>
+        <drools:metaData name="elementname">
+          <drools:metaValue><![CDATA[]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>_12B3B98E-008A-4A4A-9C9D-23215BEEEEF8</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:startEvent id="_3BB85517-4A7B-4714-BC2B-F305C4803CEE">
+      <bpmn2:extensionElements>
+        <drools:metaData name="elementname">
+          <drools:metaValue><![CDATA[]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+      <bpmn2:outgoing>_7CC9DD72-C490-42B0-82AB-15DC319A8E15</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:scriptTask id="_F569EA08-D02E-4D04-B71F-59A489DBF252" name="Hello Task" scriptFormat="http://www.java.com/java">
+      <bpmn2:extensionElements>
+        <drools:metaData name="elementname">
+          <drools:metaValue><![CDATA[Hello Task]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>_7CC9DD72-C490-42B0-82AB-15DC319A8E15</bpmn2:incoming>
+      <bpmn2:outgoing>_12B3B98E-008A-4A4A-9C9D-23215BEEEEF8</bpmn2:outgoing>
+      <bpmn2:script>System.out.println(&quot;Hello from process id [&quot; + kcontext.getProcessInstance().getId() + &quot;]&quot;);
+kcontext.setVariable(&quot;outcome&quot;, &quot;Hello &quot;+kcontext.getVariable(&quot;name&quot;));</bpmn2:script>
+    </bpmn2:scriptTask>
+  </bpmn2:process>
+  <bpmndi:BPMNDiagram id="_07-LkUqvEeur9qjcqCYQpQ">
+    <bpmndi:BPMNPlane id="_07-LkkqvEeur9qjcqCYQpQ" bpmnElement="kafka-event-emitter.HelloWorld">
+      <bpmndi:BPMNShape id="shape__F569EA08-D02E-4D04-B71F-59A489DBF252" bpmnElement="_F569EA08-D02E-4D04-B71F-59A489DBF252">
+        <dc:Bounds height="102.0" width="154.0" x="316.0" y="117.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_1">
+          <dc:Bounds height="18.0" width="68.0" x="359.0" y="159.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape__3BB85517-4A7B-4714-BC2B-F305C4803CEE" bpmnElement="_3BB85517-4A7B-4714-BC2B-F305C4803CEE">
+        <dc:Bounds height="56.0" width="56.0" x="180.0" y="140.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_2"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape__F4E6E3FC-0999-4A5C-A36B-F5A88C1FEE5A" bpmnElement="_F4E6E3FC-0999-4A5C-A36B-F5A88C1FEE5A">
+        <dc:Bounds height="56.0" width="56.0" x="550.0" y="140.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_3"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_shape__3BB85517-4A7B-4714-BC2B-F305C4803CEE_to_shape__F569EA08-D02E-4D04-B71F-59A489DBF252" bpmnElement="_7CC9DD72-C490-42B0-82AB-15DC319A8E15" sourceElement="shape__3BB85517-4A7B-4714-BC2B-F305C4803CEE" targetElement="shape__F569EA08-D02E-4D04-B71F-59A489DBF252">
+        <di:waypoint xsi:type="dc:Point" x="236.0" y="168.0"/>
+        <di:waypoint xsi:type="dc:Point" x="316.0" y="168.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_4"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_shape__F569EA08-D02E-4D04-B71F-59A489DBF252_to_shape__F4E6E3FC-0999-4A5C-A36B-F5A88C1FEE5A" bpmnElement="_12B3B98E-008A-4A4A-9C9D-23215BEEEEF8" sourceElement="shape__F569EA08-D02E-4D04-B71F-59A489DBF252" targetElement="shape__F4E6E3FC-0999-4A5C-A36B-F5A88C1FEE5A">
+        <di:waypoint xsi:type="dc:Point" x="470.0" y="168.0"/>
+        <di:waypoint xsi:type="dc:Point" x="550.0" y="168.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_5"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>
