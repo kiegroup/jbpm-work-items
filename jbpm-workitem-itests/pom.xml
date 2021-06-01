@@ -96,8 +96,8 @@
           <artifactId>tomcat-annotations-api</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>jakarta.validation</groupId>
-          <artifactId>jakarta.validation-api</artifactId>
+          <groupId>org.glassfish</groupId>
+          <artifactId>jakarta.el</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
