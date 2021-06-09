@@ -15,27 +15,26 @@
  */
 package org.jbpm.process.longrest.util;
 
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.manager.RuntimeEngine;
-import org.kie.api.runtime.manager.RuntimeManager;
+import java.util.Optional;
+
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
-import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 
 public class ProcessUtils {
 
-    public static WorkflowProcessInstance getProcessInstance(RuntimeManager runtimeManager, long processInstanceId) {
-        return (WorkflowProcessInstance) getKsession(runtimeManager, processInstanceId).getProcessInstance(processInstanceId);
-    }
-
-    public static KieSession getKsession(RuntimeManager runtimeManager, Long processInstanceId) {
-        if (runtimeManager != null) {
-            RuntimeEngine engine = runtimeManager.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId));
-            return engine.getKieSession();
+    public static <T> T getParameter(WorkItem workItem, String parameterName, T defaultValue) {
+        Object parameter = workItem.getParameter(parameterName);
+        if (parameter != null) {
+            return (T) parameter;
+        } else {
+            return defaultValue;
         }
-        return null;
     }
 
+    /**
+     * @deprecated see {@link ProcessUtils#getParameter(WorkItem, String, Object)}
+     */
+    @Deprecated
     public static String getStringParameter(WorkItem workItem, String parameterName) {
         Object parameter = workItem.getParameter(parameterName);
         if (parameter != null) {
@@ -45,12 +44,25 @@ public class ProcessUtils {
         }
     }
 
+    /**
+     * @deprecated see {@link ProcessUtils#getParameter(WorkItem, String, Object)}
+     */
+    @Deprecated
     public static int getIntParameter(WorkItem workItem, String parameterName, int defaultValue) {
         Object parameter = workItem.getParameter(parameterName);
         if (parameter != null) {
             return (Integer) parameter;
         } else {
             return defaultValue;
+        }
+    }
+
+    public static <T> T getProcessInstanceVariable(WorkflowProcessInstance processInstance, String name, T defaultValue) {
+        Object value = processInstance.getVariable(name);
+        if (value == null) {
+            return defaultValue;
+        } else {
+            return (T) value;
         }
     }
 }

@@ -25,6 +25,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.core.Cookie;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -33,6 +34,13 @@ import io.undertow.Undertow;
 import io.undertow.servlet.api.DeploymentInfo;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jbpm.executor.ExecutorServiceFactory;
+import org.jbpm.kie.services.impl.DeployedUnitImpl;
+import org.jbpm.kie.services.impl.KModuleDeploymentService;
+import org.jbpm.kie.services.impl.ProcessServiceImpl;
+import org.jbpm.kie.services.impl.RuntimeDataServiceImpl;
+import org.jbpm.kie.services.impl.bpmn2.BPMN2DataServiceImpl;
+import org.jbpm.kie.services.impl.query.QueryServiceImpl;
 import org.jbpm.process.longrest.bpm.TestFunctions;
 import org.jbpm.process.longrest.demoservices.CookieListener;
 import org.jbpm.process.longrest.demoservices.EventType;
@@ -43,6 +51,16 @@ import org.jbpm.process.longrest.demoservices.dto.Request;
 import org.jbpm.process.longrest.demoservices.dto.Scm;
 import org.jbpm.process.longrest.mockserver.WorkItems;
 import org.jbpm.process.longrest.util.Maps;
+import org.jbpm.runtime.manager.impl.RuntimeManagerFactoryImpl;
+import org.jbpm.services.api.DefinitionService;
+import org.jbpm.services.api.DeploymentService;
+import org.jbpm.services.api.ProcessService;
+import org.jbpm.services.api.RuntimeDataService;
+import org.jbpm.services.api.query.QueryService;
+import org.jbpm.services.api.service.ServiceRegistry;
+import org.jbpm.services.task.HumanTaskServiceFactory;
+import org.jbpm.services.task.audit.TaskAuditServiceFactory;
+import org.jbpm.shared.services.impl.TransactionalCommandService;
 import org.jbpm.test.JbpmJUnitBaseTestCase;
 import org.junit.After;
 import org.junit.Assert;
@@ -53,10 +71,13 @@ import org.kie.api.event.process.ProcessCompletedEvent;
 import org.kie.api.event.process.ProcessEventListener;
 import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.api.event.process.ProcessVariableChangedEvent;
+import org.kie.api.executor.CommandContext;
+import org.kie.api.executor.ExecutorService;
 import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.manager.RuntimeEngine;
 import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.api.task.TaskService;
 import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +87,6 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
     private final Logger logger = LoggerFactory.getLogger(RestServiceWorkitemIntegrationTest.class);
 
     private static int PORT = 8080;
-    private static String DEFAULT_HOST = "localhost";
     private UndertowJaxrsServer server;
 
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -74,6 +94,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
     private final ActiveTasks activeProcesses = new ActiveTasks();
     private final ServiceListener serviceListener = new ServiceListener();
     private final CookieListener cookieListener = new CookieListener();
+    private Long heartbeatMonitorTaskId;
 
     public RestServiceWorkitemIntegrationTest() {
         super(true, true);
@@ -94,11 +115,22 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         customProcessListeners.add(new RestServiceProcessEventListener(activeProcesses));
         customHandlers.put("LongRunningRestService", new LongRunningRestServiceWorkItemHandler(manager));
 
+        EntityManagerFactory emf = getEmf();
+        buildJbpmServices(emf);
+
+        ExecutorService executorService = (ExecutorService) ServiceRegistry.get().service(ServiceRegistry.EXECUTOR_SERVICE);
+        CommandContext commandContext = new CommandContext();
+        commandContext.setData(Constant.HEARTBEAT_VALIDATION_VARIABLE, "PT1S");
+        heartbeatMonitorTaskId = executorService.scheduleRequest(HeartbeatMonitorCommand.class.getName(), commandContext);
+
         bootUpServices();
     }
 
     @After
     public void postTestTeardown() throws Exception {
+        ExecutorService executorService = (ExecutorService) ServiceRegistry.get().service(ServiceRegistry.EXECUTOR_SERVICE);
+        executorService.cancelRequest(heartbeatMonitorTaskId);
+        executorService.destroy();
         logger.info("Stopping http server ...");
         server.stop();
     }
@@ -476,7 +508,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
     }
 
     @Test(timeout = 15000)
-    public void shouldFailWhenThereIsNoHeartBeat() throws InterruptedException {
+    public void shouldFailWhenThereIsNoHeartBeat() {
         BlockingQueue<ProcessVariableChangedEvent> variableChangedQueue = new ArrayBlockingQueue(1000);
         ProcessEventListener processEventListener = getProcessEventListener(variableChangedQueue, "preBuildResult");
         customProcessListeners.add(processEventListener);
@@ -494,14 +526,13 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
             //when
             ProcessInstance processInstance = kieSession.startProcess(
                     "testProcess",
-                    Collections.singletonMap("input", getProcessParameters(10, 10, 10, 2, 2, 4, Collections.emptyMap())));
+                    Collections.singletonMap("input", getProcessParameters(10, 10, 10, 2, 2, "PT2S", Collections.emptyMap())));
             manager.disposeRuntimeEngine(runtimeEngine);
             //ignore variable initialization
             variableChangedQueue.take();
 
             Map<String, Object> preBuildResult = (Map<String, Object>) variableChangedQueue.take().getNewValue();
             logger.info("preBuildResult: " + preBuildResult);
-            Map<String, Object> preBuildResponse = Maps.getStringObjectMap(preBuildResult, "response");
             Assert.assertEquals("DIED", preBuildResult.get("status"));
 
             activeProcesses.waitAllCompleted();
@@ -509,6 +540,8 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
 
             customProcessListeners.remove(processEventListener);
             serviceListener.unsubscribe(subscription);
+        } catch (Throwable throwable){
+            Assert.fail(throwable.getMessage());
         } finally {
             TestFunctions.addHeartBeatToRequest = false;
         }
@@ -556,7 +589,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
             int cancelDelay,
             int preBuildCancelTimeout,
             Map<String, Object> labels) {
-        return getProcessParameters(preBuildCallbackDelay, preBuildTimeout, cancelDelay, preBuildCancelTimeout, 10, 0, labels);
+        return getProcessParameters(preBuildCallbackDelay, preBuildTimeout, cancelDelay, preBuildCancelTimeout, 10, "", labels);
     }
 
     private Map<String, Object> getProcessParameters(
@@ -565,7 +598,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
             int cancelDelay,
             int preBuildCancelTimeout,
             int cancelHeartBeatAfter,
-            int heartbeatTimeout,
+            String heartbeatTimeout,
             Map<String, Object> labels) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("serviceBaseUrl", "http://localhost:8080/demo-service");
@@ -629,4 +662,59 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
             }
         }
     }
+
+    /**
+     * see https://github.com/kiegroup/jbpm/blob/master/jbpm-services/jbpm-kie-services/src/main/java/org/jbpm/kie/services/impl/utils/DefaultKieServiceConfigurator.java
+     */
+    private void buildJbpmServices(EntityManagerFactory emf) {
+        TaskService taskService = HumanTaskServiceFactory.newTaskServiceConfigurator().entityManagerFactory(emf).getTaskService();
+
+        // build definition service
+        DefinitionService bpmn2Service = new BPMN2DataServiceImpl();
+
+        System.setProperty("org.kie.executor.jms", "false");
+        ExecutorService executorService = ExecutorServiceFactory.newExecutorService(emf);
+        executorService.setInterval(1);
+        executorService.init();
+        ServiceRegistry.get().register(ServiceRegistry.EXECUTOR_SERVICE, executorService);
+
+        QueryService queryService = new QueryServiceImpl();
+//        ((QueryServiceImpl) queryService).setIdentityProvider(identityProvider);
+        ((QueryServiceImpl) queryService).setUserGroupCallback(userGroupCallback);
+        ((QueryServiceImpl) queryService).setCommandService(new TransactionalCommandService(emf));
+        ((QueryServiceImpl) queryService).init();
+
+        DeploymentService deploymentService = new KModuleDeploymentService();
+        ((KModuleDeploymentService) deploymentService).setBpmn2Service(bpmn2Service);
+        ((KModuleDeploymentService) deploymentService).setEmf(emf);
+//        ((KModuleDeploymentService) deploymentService).setIdentityProvider(identityProvider);
+        ((KModuleDeploymentService) deploymentService).setManagerFactory(new RuntimeManagerFactoryImpl());
+
+        DeployedUnitImpl deployedUnit = new DeployedUnitImpl(null);
+        deployedUnit.setRuntimeManager(manager);
+
+        ((KModuleDeploymentService) deploymentService).getDeploymentsMap().put("default-per-pinstance", deployedUnit);
+//        ((KModuleDeploymentService) deploymentService).setFormManagerService(formManagerService);
+
+        // build runtime data service
+        RuntimeDataService runtimeDataService = new RuntimeDataServiceImpl();
+        ((RuntimeDataServiceImpl) runtimeDataService).setCommandService(new TransactionalCommandService(emf));
+//        ((RuntimeDataServiceImpl) runtimeDataService).setIdentityProvider(identityProvider);
+        ((RuntimeDataServiceImpl) runtimeDataService).setTaskService(taskService);
+        ((RuntimeDataServiceImpl) runtimeDataService).setTaskAuditService(TaskAuditServiceFactory.newTaskAuditServiceConfigurator().setTaskService(taskService).getTaskAuditService());
+        ((KModuleDeploymentService) deploymentService).setRuntimeDataService(runtimeDataService);
+        ServiceRegistry.get().register(ServiceRegistry.RUNTIME_DATA_SERVICE, runtimeDataService);
+
+        // set runtime data service as listener on deployment service
+        ((KModuleDeploymentService) deploymentService).addListener(((RuntimeDataServiceImpl) runtimeDataService));
+        ((KModuleDeploymentService) deploymentService).addListener(((BPMN2DataServiceImpl) bpmn2Service));
+        ((KModuleDeploymentService) deploymentService).addListener(((QueryServiceImpl) queryService));
+
+        // build process service
+        ProcessService processService = new ProcessServiceImpl();
+        ((ProcessServiceImpl) processService).setDataService(runtimeDataService);
+        ServiceRegistry.get().register(ServiceRegistry.PROCESS_SERVICE, processService);
+        ((ProcessServiceImpl) processService).setDeploymentService(deploymentService);
+    }
+
 }

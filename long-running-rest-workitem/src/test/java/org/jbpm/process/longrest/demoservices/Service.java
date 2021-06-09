@@ -203,8 +203,8 @@ public class Service {
 
     private ScheduledFuture<?> startHeartBeat(String url) {
         ServiceListener serviceListener = serviceListener();
-        ScheduledFuture<?> future = executorService.scheduleAtFixedRate(()
-                                                                                -> executeRequest(url, "POST", Collections.emptyList(), null, serviceListener), 300L, 300L, TimeUnit.MILLISECONDS);
+        Runnable sendBeat = () -> executeRequest(url, "POST", Collections.emptyList(), null, serviceListener);
+        ScheduledFuture<?> future = executorService.scheduleAtFixedRate(sendBeat, 300L, 300L, TimeUnit.MILLISECONDS);
         return future;
     }
 

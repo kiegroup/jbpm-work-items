@@ -30,6 +30,7 @@ import javax.ws.rs.core.Response;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.manager.RuntimeEngine;
 import org.kie.api.runtime.manager.RuntimeManager;
+import org.kie.internal.runtime.manager.SessionNotFoundException;
 import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,8 +58,15 @@ public class WorkItems {
             Map<String, Object> result) {
         logger.info("Mock server received signal {} and sending it to process id: {}, result: {}.", signalName, instanceId, result);
         RuntimeEngine runtimeEngine = getRuntimeEngine(instanceId);
-        KieSession kieSession = runtimeEngine.getKieSession();
-        kieSession.signalEvent(signalName, result);
+        try {
+            logger.debug("Mock server getting kiesession for process id: {}.", instanceId);
+            KieSession kieSession = runtimeEngine.getKieSession();
+            logger.debug("Mock server signalling for process id: {}.", instanceId);
+            kieSession.signalEvent(signalName, result);
+            logger.debug("Mock server signaled {} to process id: {}.", signalName, instanceId);
+        } catch (SessionNotFoundException e) {
+            logger.warn("Session not found.", e);
+        }
         disposeRuntimeEngine(runtimeEngine);
 
         return Response.status(200).entity(result).build();

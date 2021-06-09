@@ -154,6 +154,10 @@ Setting up
 ==========
 Upload this work item handler to your JBPM server and import the `execute-rest.bpmn` (src/main/resources/execute-rest.bpmn) process as an asset to your project.
 
+Heartbeat monitor requires a global reoccurring command HeartbeatMonitorCommand. Upload the `long-running-rest-workitem-VER-heartbeat-command.jar` to kie server `$eap-home/standalone/deployments/ROOT.war/WEB-INF/lib`
+and start the job `org.jbpm.process.longrest.HeartbeatMonitorCommand` using web console (manage / jobs) or REST endpoint.
+By default, the validation runs every 5 seconds it can be changed by setting the job parameter `heartbeatValidation` (java duration format, default: 'PT5S').
+
 To design your task invocation process use the execute-rest as a sub-process.
 
 See a usage example in `src/test/resources/test-process.bpmn` and `org.jbpm.contrib.longrest.bpm.TestFunctions`.

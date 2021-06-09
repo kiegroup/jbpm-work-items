@@ -52,10 +52,12 @@ import org.jbpm.process.workitem.core.util.service.WidAction;
 import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.manager.RuntimeEngine;
 import org.kie.api.runtime.manager.RuntimeManager;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
+import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 import org.mvel2.MVEL;
 import org.mvel2.ParserContext;
 import org.mvel2.integration.VariableResolverFactory;
@@ -141,20 +143,23 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
             RequiredParameterValidator.validate(this.getClass(), workItem);
 
             long processInstanceId = workItem.getProcessInstanceId();
-            WorkflowProcessInstance processInstance = ProcessUtils.getProcessInstance(runtimeManager, processInstanceId);
 
-            String cancelUrlJsonPointer = ProcessUtils.getStringParameter(workItem, Constant.CANCEL_URL_JSON_POINTER_VARIABLE);
-            String cancelUrlTemplate = ProcessUtils.getStringParameter(workItem, Constant.CANCEL_URL_TEMPLATE_VARIABLE);
-            String requestUrl = ProcessUtils.getStringParameter(workItem, "url");
-            String requestMethod = ProcessUtils.getStringParameter(workItem, "method");
-            String requestTemplate = ProcessUtils.getStringParameter(workItem, "template");
-            String requestHeaders = ProcessUtils.getStringParameter(workItem, "headers");
-            int socketTimeout = ProcessUtils.getIntParameter(workItem, "socketTimeout", 5000);
-            int connectTimeout = ProcessUtils.getIntParameter(workItem, "connectTimeout", 5000);
-            int connectionRequestTimeout = ProcessUtils.getIntParameter(workItem, "connectionRequestTimeout", 5000);
-
-            KieSession kieSession = ProcessUtils.getKsession(runtimeManager, processInstanceId);
+            RuntimeEngine runtimeEngine = runtimeManager.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId));
+            KieSession kieSession = runtimeEngine.getKieSession();
+            WorkflowProcessInstance processInstance = (WorkflowProcessInstance) kieSession.getProcessInstance(processInstanceId);
             String containerId = (String) kieSession.getEnvironment().get("deploymentId");
+            runtimeManager.disposeRuntimeEngine(runtimeEngine);
+
+            String cancelUrlJsonPointer = ProcessUtils.getParameter(workItem, Constant.CANCEL_URL_JSON_POINTER_VARIABLE, "");
+            String cancelUrlTemplate = ProcessUtils.getParameter(workItem, Constant.CANCEL_URL_TEMPLATE_VARIABLE, "");
+            String requestUrl = ProcessUtils.getParameter(workItem, "url", "");
+            String requestMethod = ProcessUtils.getParameter(workItem, "method", "");
+            String requestTemplate = ProcessUtils.getParameter(workItem, "template", "");
+            String requestHeaders = ProcessUtils.getParameter(workItem, "headers", "");
+            int socketTimeout = ProcessUtils.getParameter(workItem, "socketTimeout", 5000);
+            int connectTimeout = ProcessUtils.getParameter(workItem, "connectTimeout", 5000);
+            int connectionRequestTimeout = ProcessUtils.getParameter(workItem, "connectionRequestTimeout", 5000);
+
 
             //should this service run
             logger.debug("Should run ProcessInstance.id: {}.", processInstance.getId());
@@ -349,8 +354,10 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
             }
             long parentProcessInstanceId = currentInstance.getParentProcessInstanceId();
             if (parentProcessInstanceId > 0) {
-                WorkflowProcessInstance parentProcessInstance = ProcessUtils.getProcessInstance(
-                        runtimeManager, parentProcessInstanceId);
+                RuntimeEngine runtimeEngine = runtimeManager.getRuntimeEngine(ProcessInstanceIdContext.get(parentProcessInstanceId));
+                KieSession kieSession = runtimeEngine.getKieSession();
+                WorkflowProcessInstance parentProcessInstance = (WorkflowProcessInstance) kieSession.getProcessInstance(parentProcessInstanceId);
+                runtimeManager.disposeRuntimeEngine(runtimeEngine);
                 resolver.setNextFactory(new ProcessVariableResolverFactory(parentProcessInstance));
                 currentInstance = parentProcessInstance;
             } else {

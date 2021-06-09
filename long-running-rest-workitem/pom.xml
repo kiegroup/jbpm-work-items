@@ -14,6 +14,26 @@
   <name>Long Running REST</name>
   <description>Workitem for invoking long-running REST tasks with callback</description>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>javax.jms</groupId>
+        <artifactId>jms-api</artifactId>
+        <version>1.1-rev-1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-services-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-kie-services</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>org.kie</groupId>
@@ -29,6 +49,21 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-document</artifactId>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-services-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-kie-services</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-executor</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
@@ -49,6 +84,16 @@
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-test-util</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.jms</groupId>
+      <artifactId>jms-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-persistence-jpa</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -147,6 +192,47 @@
       </plugins>
     </pluginManagement>
     <plugins>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>heartbeat</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <includes>
+                <include>org/jbpm/process/longrest/HeartbeatMonitorCommand.*</include>
+                <include>org/jbpm/process/longrest/Constant.*</include>
+                <include>org/jbpm/process/longrest/util/ProcessUtils.*</include>
+              </includes>
+              <classifier>heartbeat-command</classifier>
+            </configuration>
+          </execution>
+          <execution>
+            <id>default-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <excludes>
+                <exclude>org/jbpm/process/longrest/HeartbeatMonitorCommand.*</exclude>
+              </excludes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <additionalClasspathElements>
+            <additionalClasspathElement>${project.basedir}/target/${project.artifactId}-${project.version}-heartbeat-command.jar</additionalClasspathElement>
+          </additionalClasspathElements>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>templating-maven-plugin</artifactId>

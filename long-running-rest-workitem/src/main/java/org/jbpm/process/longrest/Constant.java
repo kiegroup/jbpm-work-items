@@ -26,4 +26,11 @@ public class Constant {
     public static final String CANCEL_URL_JSON_POINTER_VARIABLE = "cancelUrlJsonPointer";
 
     public static final String CANCEL_URL_TEMPLATE_VARIABLE = "cancelUrlTemplate";
+
+    public static final String HEARTBEAT_TIMEOUT_VARIABLE = "heartbeatTimeout";
+
+    public static final String LAST_HEARTBEAT_VARIABLE = "lastHeartbeat";
+
+    public static final String HEARTBEAT_VALIDATION_VARIABLE = "heartbeatValidation";
+
 }
