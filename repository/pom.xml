@@ -396,6 +396,10 @@
 	          <groupId>com.google.oauth-client</groupId>
 	          <artifactId>google-oauth-client-jetty</artifactId>
 	        </exclusion>
+          <exclusion>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+        </exclusion>
 	      </exclusions>
 	    </dependency>
 	    <dependency>
@@ -463,6 +467,13 @@
 	      <artifactId>parser-workitem</artifactId>
 	      <type>zip</type>
 	      <scope>provided</scope>
+        <!-- conflicts with com.sun.activation:jakarta.activation:jar:1.2.1 in Enforcer banDuplicatedClasses rule-->
+        <exclusions>
+          <exclusion>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+          </exclusion>
+        </exclusions>
 	    </dependency>
 	    <dependency>
 	      <groupId>org.jbpm.contrib</groupId>
@@ -602,6 +613,13 @@
           <artifactId>jbpm-workitems-email</artifactId>
           <type>zip</type>
           <scope>provided</scope>
+          <!-- conflicts with com.sun.activation:jakarta.activation:jar:1.2.1 in Enforcer banDuplicatedClasses rule-->
+          <exclusions>
+            <exclusion>
+              <groupId>javax.activation</groupId>
+              <artifactId>activation</artifactId>
+            </exclusion>
+          </exclusions>
         </dependency>
         <dependency>
           <groupId>org.jbpm</groupId>
