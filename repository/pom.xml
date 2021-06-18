@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.jbpm.contrib</groupId>
     <artifactId>workitems</artifactId>
-    <version>7.53.0-SNAPSHOT</version>
+    <version>7.56.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>repository</artifactId>
@@ -175,7 +175,7 @@
               <encoding>UTF-8</encoding>
               <resources>
                 <resource>
-                  <directory>target/${artifactId}-${version}/kafka-workitem</directory>
+                  <directory>target/${project.artifactId}-${project.version}/kafka-workitem</directory>
                   <includes>
                     <include>*.wid</include>
                     <include>*.bpmn2</include>

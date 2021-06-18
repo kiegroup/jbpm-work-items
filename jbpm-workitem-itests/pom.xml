@@ -15,7 +15,7 @@
   <parent>
     <groupId>org.jbpm.contrib</groupId>
     <artifactId>workitems</artifactId>
-    <version>7.53.0-SNAPSHOT</version>
+    <version>7.56.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>jbpm-workitem-itests</artifactId>
@@ -66,10 +66,6 @@
         <exclusion>
           <groupId>org.glassfish.jaxb</groupId>
           <artifactId>jaxb-runtime</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.activation</groupId>
-          <artifactId>javax.activation-api</artifactId>
         </exclusion>
         <exclusion>
             <groupId>org.jboss.spec.javax.el</groupId>
@@ -136,6 +132,14 @@
           <groupId>org.springframework</groupId>
           <artifactId>spring-jcl</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.junit.jupiter</groupId>
+          <artifactId>junit-jupiter</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.junit.vintage</groupId>
+          <artifactId>junit-vintage-engine</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -143,15 +147,14 @@
       <artifactId>spring-test</artifactId>
       <scope>test</scope>
     </dependency>
-    
-    <dependency>
-      <groupId>org.testcontainers</groupId>
-      <artifactId>kafka</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>toxiproxy</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.strimzi</groupId>
+      <artifactId>strimzi-test-container</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -208,7 +211,9 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
             <systemPropertyVariables>
+              <toxiproxy.image>shopify/toxiproxy:2.1.4</toxiproxy.image>
               <toxiproxy.port>9093</toxiproxy.port>
+              <org.kie.executor.jms>false</org.kie.executor.jms>
             </systemPropertyVariables>
           </configuration>
         </plugin>

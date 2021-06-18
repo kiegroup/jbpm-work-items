@@ -12,12 +12,14 @@
     <dependency>
       <groupId>org.apache.kafka</groupId>
       <artifactId>kafka-clients</artifactId>
-      <version>2.3.1</version>
+      <version>${version.org.apache.kafka}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.11.0</version>
+      <version>${version.com.fasterxml.jackson.databind}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>

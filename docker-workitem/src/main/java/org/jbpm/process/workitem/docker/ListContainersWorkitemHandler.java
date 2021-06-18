@@ -35,6 +35,8 @@ import org.kie.api.runtime.process.WorkItemManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.Collections.singletonList;
+
 @Wid(widfile = "DockerListContainersDefinitions.wid", name = "DockerListContainers",
         displayName = "DockerListContainers",
         defaultHandler = "mvel: new org.jbpm.process.workitem.docker.ListContainersWorkitemHandler()",
@@ -82,7 +84,7 @@ public class ListContainersWorkitemHandler extends AbstractLogOrThrowWorkItemHan
                     .withShowAll(true).withShowSize(true);
 
             if (statusFilter != null && statusFilter.trim().length() > 0) {
-                listContainersCmd = listContainersCmd.withStatusFilter(statusFilter);
+                listContainersCmd = listContainersCmd.withStatusFilter(singletonList(statusFilter));
             }
 
             List<Container> containers = listContainersCmd.exec();

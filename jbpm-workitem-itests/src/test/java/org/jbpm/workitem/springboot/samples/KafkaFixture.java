@@ -36,7 +36,10 @@ import org.jbpm.workitem.springboot.samples.serialization.BoxDeserializer;
 import org.jbpm.workitem.springboot.samples.utils.KieJarBuildHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.DockerClientFactory;
+import org.testcontainers.containers.GenericContainer;
+
+import io.strimzi.StrimziKafkaContainer;
 
 import static java.util.Collections.singletonList;
 
@@ -57,6 +60,8 @@ public class KafkaFixture {
 
     private static final Logger logger = LoggerFactory.getLogger(KafkaFixture.class);
     
+    public static final String TOXIPROXY_IMAGE = System.getProperty("toxiproxy.image");
+    
     protected static final String ARTIFACT_ID = "kafka-process";
     protected static final String GROUP_ID = "com.myspace";
     protected static final String VERSION = "1.0.0-SNAPSHOT";
@@ -70,20 +75,24 @@ public class KafkaFixture {
     protected static final String DEPLOYMENT_DESCRIPTOR_FILE = PATH+"/src/main/resources/META-INF/kie-deployment-descriptor.xml";
     protected static final String STRATEGY_TEMPLATE = "STRATEGY_TEMPLATE";
     
-    protected static final String TOPIC = "mytopic";
+    protected static final String TOPIC = "PAM_Events";
     protected static final String KEY = "mykey";
     protected static final String VALUE = "myvalue";
 
     protected KModuleDeploymentUnit unit = null;
-    
+
+    private String templateFile = TEMPLATE_FILE;
     
     public void generalSetup() {
-        // Currently testcontainers are not supported out-of-the-box on Windows and RHEL8
-        assumeTrue(!System.getProperty("os.name").toLowerCase().contains("win") 
-                && !System.getProperty("os.version").toLowerCase().contains("el8"));
+        // Currently testcontainers are not supported out-of-the-box without docker
+        assumeTrue(isDockerAvailable());
         EntityManagerFactoryManager.get().clear();
     }
 
+    public void setTemplateFile(String templateFile) {
+        this.templateFile = templateFile;
+    }
+    
     public String setup(DeploymentService ds, String strategy) {
         Map<String, String> map = new HashMap<>();
         if (SINGLETON.name().equals(strategy)) {
@@ -94,14 +103,14 @@ public class KafkaFixture {
         }
         map.put(STRATEGY_TEMPLATE, strategy);
         
-        KieJarBuildHelper.replaceInFile(TEMPLATE_FILE, DEPLOYMENT_DESCRIPTOR_FILE, map);
+        KieJarBuildHelper.replaceInFile(templateFile, DEPLOYMENT_DESCRIPTOR_FILE, map);
         KieJarBuildHelper.createKieJar(PATH);
         unit = new KModuleDeploymentUnit(GROUP_ID, ARTIFACT_ID, VERSION);
         ds.deploy(unit);
         return unit.getIdentifier();
     }
 
-    public void createTopic(KafkaContainer kafka) throws IOException, InterruptedException {
+    public void createTopic(GenericContainer<StrimziKafkaContainer> kafka) throws IOException, InterruptedException {
         //create the topic in the broker, though TestContainers have autocreation feature enabled
         kafka.execInContainer("/bin/sh", "-c", "/usr/bin/kafka-topics --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic "+TOPIC);
     }
@@ -132,11 +141,11 @@ public class KafkaFixture {
         return map;
     }
 
-    protected void assertConsumerMessages(String bootstrapServers) {
+    protected void assertConsumerMessages(String bootstrapServers, String expectedKey, String expectedValue) {
         ConsumerRecords<String, String>  records = consumeMessages(bootstrapServers, StringDeserializer.class.getName());
         assertEquals(1, records.count());
-        assertEquals(KEY, records.iterator().next().key());
-        assertEquals(VALUE, records.iterator().next().value());
+        assertEquals(expectedKey, records.iterator().next().key());
+        assertEquals(expectedValue, records.iterator().next().value());
     }
     
     protected void assertConsumerMessagesBox(String bootstrapServers) {
@@ -179,4 +188,12 @@ public class KafkaFixture {
         return props;
     }
     
+    protected static boolean isDockerAvailable() {
+        try {
+            DockerClientFactory.instance().client();
+            return true;
+        } catch (Throwable ex) {
+            return false;
+        }
+    }
 }
