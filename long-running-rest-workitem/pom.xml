@@ -77,6 +77,12 @@
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-undertow</artifactId>
       <scope>test</scope>
+      <exclusions>
+          <exclusion>
+              <groupId>javax.activation</groupId>
+              <artifactId>activation</artifactId>
+          </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
