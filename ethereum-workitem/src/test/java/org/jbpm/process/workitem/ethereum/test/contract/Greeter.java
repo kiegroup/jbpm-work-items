@@ -36,7 +36,7 @@ import org.web3j.tx.TransactionManager;
  * <p><strong>Do not modify!</strong>
  * <p>Please use the <a href="https://docs.web3j.io/command_line.html">web3j command line tools</a>,
  * or the org.web3j.codegen.SolidityFunctionWrapperGenerator in the
- * <a href="https://github.com/web3j/web3j/tree/master/codegen">codegen module</a> to update.
+ * <a href="https://github.com/web3j/web3j">codegen module</a> to update.
  * <p>
  * <p>Generated with web3j version 3.0.2.
  */
