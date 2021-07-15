@@ -41,6 +41,12 @@
     <class>org.jbpm.process.audit.ProcessInstanceLog</class>
     <class>org.jbpm.process.audit.NodeInstanceLog</class>
     <class>org.jbpm.process.audit.VariableInstanceLog</class>
+    
+    
+    <class>org.jbpm.services.task.audit.impl.model.TaskEventImpl</class>
+    <class>org.jbpm.services.task.audit.impl.model.AuditTaskImpl</class>
+    <class>org.jbpm.services.task.audit.impl.model.BAMTaskSummaryImpl</class>
+    
     <properties>
       <property name="hibernate.max_fetch_depth" value="3"/>
       <property name="hibernate.hbm2ddl.auto" value="update"/>
