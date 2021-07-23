@@ -473,6 +473,10 @@
             <groupId>javax.activation</groupId>
             <artifactId>activation</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+          </exclusion>
         </exclusions>
         </dependency>
         <dependency>
@@ -504,6 +508,12 @@
           <artifactId>jira-workitem</artifactId>
           <type>zip</type>
           <scope>provided</scope>
+          <exclusions>
+            <exclusion>
+              <groupId>org.jvnet</groupId>
+              <artifactId>mimepull</artifactId>
+            </exclusion>
+          </exclusions>
         </dependency>
         <dependency>
           <groupId>org.jbpm.contrib</groupId>
@@ -607,6 +617,20 @@
           <artifactId>jbpm-workitems-bpmn2</artifactId>
           <type>zip</type>
           <scope>provided</scope>
+          <exclusions>
+            <exclusion>
+              <groupId>com.sun.activation</groupId>
+              <artifactId>javax.activation</artifactId>
+            </exclusion>
+            <exclusion>
+              <groupId>javax.activation</groupId>
+              <artifactId>activation</artifactId>
+            </exclusion>
+            <exclusion>
+              <groupId>org.glassfish.jaxb</groupId>
+              <artifactId>jaxb-runtime</artifactId>
+            </exclusion>
+          </exclusions>
         </dependency>
         <dependency>
           <groupId>org.jbpm</groupId>
@@ -663,6 +687,20 @@
           <artifactId>jbpm-workitems-bpmn2</artifactId>
           <type>zip</type>
           <scope>provided</scope>
+          <exclusions>
+            <exclusion>
+              <groupId>com.sun.activation</groupId>
+              <artifactId>javax.activation</artifactId>
+            </exclusion>
+            <exclusion>
+              <groupId>javax.activation</groupId>
+              <artifactId>activation</artifactId>
+            </exclusion>
+            <exclusion>
+              <groupId>org.glassfish.jaxb</groupId>
+              <artifactId>jaxb-runtime</artifactId>
+            </exclusion>
+          </exclusions>
         </dependency>
         <dependency>
           <groupId>org.jbpm</groupId>
