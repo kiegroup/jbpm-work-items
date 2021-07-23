@@ -18,14 +18,20 @@
 
   <dependencies>
     <dependency>
-      <groupId>javax.persistence</groupId>
-      <artifactId>javax.persistence-api</artifactId>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.persistence</groupId>
+          <artifactId>javax.persistence-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -61,8 +67,8 @@
       <scope>test</scope>
       <exclusions>
         <exclusion>
-          <groupId>javax.activation</groupId>
-          <artifactId>activation</artifactId>
+          <groupId>jakarta.activation</groupId>
+          <artifactId>jakarta.activation-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

@@ -72,13 +72,22 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.persistence</groupId>
+          <artifactId>javax.persistence-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
       <scope>test</scope>
-       <!-- collides with com.sun.xml.bind:jaxb-impl:jar:2.3.0 and com.sun.xml.bind:jaxb-impl:jar:2.3.0 -->
       <exclusions>
+        <exclusion>
+          <groupId>javax.persistence</groupId>
+          <artifactId>javax.persistence-api</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>org.glassfish.jaxb</groupId>
           <artifactId>jaxb-runtime</artifactId>
@@ -94,6 +103,12 @@
       <groupId>org.jboss.narayana.jta</groupId>
       <artifactId>narayana-jta</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.spec.javax.resource</groupId>
+          <artifactId>jboss-connector-api_1.7_spec</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>commons-net</groupId>
@@ -127,6 +142,14 @@
       <artifactId>jbpm-test</artifactId>
       <scope>test</scope>
       <exclusions>
+        <exclusion>
+          <groupId>javax.persistence</groupId>
+          <artifactId>javax.persistence-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss.spec.javax.resource</groupId>
+          <artifactId>jboss-connector-api_1.7_spec</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>javax.activation</groupId>
           <artifactId>activation</artifactId>

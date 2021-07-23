@@ -22,6 +22,10 @@
       <artifactId>docker-java</artifactId>
       <exclusions>
         <exclusion>
+          <groupId>com.sun.activation</groupId>
+          <artifactId>jakarta.activation</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>log4j</groupId>
           <artifactId>log4j</artifactId>
         </exclusion>
@@ -75,12 +79,15 @@
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-test</artifactId>
-      <scope>test</scope>  
-      <!-- conflicts with com.sun.activation:jakarta.activation:jar:1.2.1 in Enforcer banDuplicatedClasses rule-->
+      <scope>test</scope>
       <exclusions>
         <exclusion>
-          <groupId>javax.activation</groupId>
-          <artifactId>activation</artifactId>
+          <groupId>javax.persistence</groupId>
+          <artifactId>javax.persistence-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss.spec.javax.resource</groupId>
+          <artifactId>jboss-connector-api_1.7_spec</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

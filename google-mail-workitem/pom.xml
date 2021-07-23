@@ -82,12 +82,12 @@
     <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
-        <exclusions>
-	  <exclusion>
-            <groupId>javax.activation</groupId>
-	    <artifactId>activation</artifactId>
-	  </exclusion>
-	</exclusions>
+      <exclusions>
+	      <exclusion>
+          <groupId>javax.activation</groupId>
+	        <artifactId>activation</artifactId>
+	      </exclusion>
+	    </exclusions>
     </dependency>
 
     <dependency>
@@ -130,6 +130,16 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-test</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.persistence</groupId>
+          <artifactId>javax.persistence-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss.spec.javax.resource</groupId>
+          <artifactId>jboss-connector-api_1.7_spec</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
@@ -267,8 +277,8 @@
       <dependencies>
         <!-- Needed for JDK 11 -->
         <dependency>
-          <groupId>javax.activation</groupId>
-          <artifactId>activation</artifactId>
+          <groupId>jakarta.activation</groupId>
+          <artifactId>jakarta.activation-api</artifactId>
         </dependency>
       </dependencies>
     </profile>
