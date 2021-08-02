@@ -9,6 +9,7 @@ on:
       - '*.md'
       - '*.txt'
       - '.idea/**'
+      - 'docsimg/**'
 
 jobs:
   build-chain:
