@@ -83,6 +83,11 @@
       <groupId>jakarta.mail</groupId>
       <artifactId>jakarta.mail-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>jakarta.mail</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.kie</groupId>
@@ -124,16 +129,6 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-test</artifactId>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.persistence</groupId>
-          <artifactId>javax.persistence-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.jboss.spec.javax.resource</groupId>
-          <artifactId>jboss-connector-api_1.7_spec</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
@@ -261,21 +256,4 @@
       </plugin>
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>jdk-11-compile</id>
-      <activation>
-        <jdk>[9,)</jdk>
-      </activation>
-      <dependencies>
-        <!-- Needed for JDK 11 -->
-        <dependency>
-          <groupId>jakarta.activation</groupId>
-          <artifactId>jakarta.activation-api</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
-
 </project>
