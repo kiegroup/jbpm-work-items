@@ -25,10 +25,6 @@
           <groupId>log4j</groupId>
           <artifactId>log4j</artifactId>
         </exclusion>
-        <exclusion>
-            <groupId>jakarta.xml.bind</groupId>
-            <artifactId>jakarta.xml.bind-api</artifactId>
-        </exclusion>
       </exclusions>
     </dependency>
 
@@ -72,16 +68,6 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-test</artifactId>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.persistence</groupId>
-          <artifactId>javax.persistence-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.jboss.spec.javax.resource</groupId>
-          <artifactId>jboss-connector-api_1.7_spec</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>

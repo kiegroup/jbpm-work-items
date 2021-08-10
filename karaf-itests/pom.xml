@@ -131,12 +131,6 @@
       <groupId>org.kie.server</groupId>
       <artifactId>kie-server-client</artifactId>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-	  <groupId>jakarta.ws.rs</groupId>
-	  <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
-        </exclusion>
-      </exclusions>	
     </dependency>
     <dependency>
       <groupId>org.kie</groupId>

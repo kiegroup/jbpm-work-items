@@ -77,20 +77,6 @@
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jaxrs</artifactId>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>jakarta.activation</groupId>
-          <artifactId>jakarta.activation-api</artifactId>
-              </exclusion>
-        <exclusion>
-          <groupId>jakarta.ws.rs</groupId>
-          <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
-        </exclusion>  
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
