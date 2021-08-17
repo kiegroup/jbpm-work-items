@@ -498,12 +498,6 @@
           <artifactId>jira-workitem</artifactId>
           <type>zip</type>
           <scope>provided</scope>
-          <exclusions>
-            <exclusion>
-              <groupId>org.jvnet</groupId>
-              <artifactId>mimepull</artifactId>
-            </exclusion>
-          </exclusions>
         </dependency>
         <dependency>
           <groupId>org.jbpm.contrib</groupId>
