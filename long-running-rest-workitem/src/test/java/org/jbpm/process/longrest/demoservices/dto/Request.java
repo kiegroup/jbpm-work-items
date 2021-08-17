@@ -20,6 +20,14 @@ public class Request {
     String url;
     String method;
 
+    public Request() {
+    }
+
+    public Request(String url, String method) {
+        this.url = url;
+        this.method = method;
+    }
+
     public String getUrl() {
         return url;
     }

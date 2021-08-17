@@ -57,12 +57,4 @@ public class ProcessUtils {
         }
     }
 
-    public static <T> T getProcessInstanceVariable(WorkflowProcessInstance processInstance, String name, T defaultValue) {
-        Object value = processInstance.getVariable(name);
-        if (value == null) {
-            return defaultValue;
-        } else {
-            return (T) value;
-        }
-    }
 }

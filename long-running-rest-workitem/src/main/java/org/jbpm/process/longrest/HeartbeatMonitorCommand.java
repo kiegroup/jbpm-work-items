@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.jbpm.process.longrest.util.ProcessUtils;
 import org.jbpm.services.api.ProcessInstanceNotFoundException;
 import org.jbpm.services.api.ProcessService;
 import org.jbpm.services.api.RuntimeDataService;
@@ -32,8 +31,6 @@ import org.kie.api.executor.Command;
 import org.kie.api.executor.CommandContext;
 import org.kie.api.executor.ExecutionResults;
 import org.kie.api.executor.Reoccurring;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.api.runtime.query.QueryContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,12 +57,13 @@ public class HeartbeatMonitorCommand implements Command, Reoccurring {
         Collection<ProcessInstanceDesc> processInstances = runtime.getProcessInstancesByProcessName(activeStates, "executerest", null, queryContext);
         logger.debug("Found {} active process instances to validate heartbeat.", processInstances.size());
 
-        for (ProcessInstanceDesc processInstanceDesc : processInstances) {
+        for (ProcessInstanceDesc piDesc : processInstances) {
             try {
-                ProcessInstance processInstance = processService.getProcessInstance(processInstanceDesc.getId());
-                validateInstance((WorkflowProcessInstance) processInstance, processService);
+                validateInstance(piDesc.getDeploymentId(), piDesc.getId(), processService);
             } catch (ProcessInstanceNotFoundException e) {
-                logger.debug("Process instance {} probably completed during validation. Caught: {}", processInstanceDesc.getId(), e.getMessage());
+                logger.debug("Process instance {} probably completed during validation. Caught: {}", piDesc.getId(), e.getMessage());
+            } catch (ClassCastException e) {
+                logger.debug("Process instance {} is not a WorkflowProcessInstance. Caught: {}", piDesc.getId(), e.getMessage());
             }
         }
         logger.trace("Completed heartbeat validation.");
@@ -77,11 +75,11 @@ public class HeartbeatMonitorCommand implements Command, Reoccurring {
         return Date.from(Instant.now().plus(Duration.parse(interval)));
     }
 
-    private void validateInstance(WorkflowProcessInstance processInstance, ProcessService processService) {
-        Long lastBeatVar = ProcessUtils.getProcessInstanceVariable(processInstance, Constant.LAST_HEARTBEAT_VARIABLE, 0L);
+    private void validateInstance(String deploymentId, Long processInstanceId, ProcessService processService) {
+        Long lastBeatVar = getProcessInstanceVariable(processService, deploymentId, processInstanceId, Constant.LAST_HEARTBEAT_VARIABLE, 0L);
 
-        String heartbeatTimeoutString = ProcessUtils.getProcessInstanceVariable(processInstance, Constant.HEARTBEAT_TIMEOUT_VARIABLE, "");
-        logger.debug("Validating heartbeat for pid [{}], lastBeat: [{}], timeout set to: [{}].", processInstance.getId(), heartbeatTimeoutString);
+        String heartbeatTimeoutString = getProcessInstanceVariable(processService, deploymentId, processInstanceId, Constant.HEARTBEAT_TIMEOUT_VARIABLE, "");
+        logger.debug("Validating heartbeat for pid [{}], lastBeat: [{}], timeout set to: [{}].", processInstanceId, lastBeatVar, heartbeatTimeoutString);
 
         //presence of the lastBeat is used as active monitor flag
         if (lastBeatVar == 0L || heartbeatTimeoutString.equals("")) {
@@ -92,13 +90,21 @@ public class HeartbeatMonitorCommand implements Command, Reoccurring {
 
         Instant lastBeat = Instant.ofEpochMilli(lastBeatVar);
         Duration sinceLastBeat = Duration.between(lastBeat, Instant.now());
-        logger.debug("Heartbeat evaluation for pid: {}. LastBeat: {}, sinceLastBeat: {}.", processInstance.getId(), lastBeat, sinceLastBeat);
+        logger.debug("Heartbeat evaluation for pid: {}. LastBeat: {}, sinceLastBeat: {}.", processInstanceId, lastBeat, sinceLastBeat);
         if (sinceLastBeat.compareTo(heartbeatTimeout) > 0) {
-            logger.info("Signalling pid: {} DIED ...", processInstance.getId());
-            processService.signalProcessInstance(processInstance.getId(), "died", null);
-            logger.debug("Signalled died for pid: {}.", processInstance.getId());
+            logger.info("Signalling pid: {} DIED ...", processInstanceId);
+            processService.signalProcessInstance(processInstanceId, "died", null);
+            logger.debug("Signalled died for pid: {}.", processInstanceId);
         }
-        logger.debug("Heartbeat evaluation for pid: {} completed.", processInstance.getId());
+        logger.debug("Heartbeat evaluation for pid: {} completed.", processInstanceId);
     }
 
+    private <T> T getProcessInstanceVariable(ProcessService processService, String deploymentId, Long processInstanceId, String name, T defaultValue) {
+        Object value = processService.getProcessInstanceVariable(deploymentId, processInstanceId, name);
+        if (value == null) {
+            return defaultValue;
+        } else {
+            return (T) value;
+        }
+    }
 }

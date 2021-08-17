@@ -97,7 +97,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
     private Long heartbeatMonitorTaskId;
 
     public RestServiceWorkitemIntegrationTest() {
-        super(true, true);
+        super(true, true, "org.jbpm.process.longrest.test.persistence");
     }
 
     @Before

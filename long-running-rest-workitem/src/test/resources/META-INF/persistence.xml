@@ -5,8 +5,7 @@
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
 
 <!-- copied from https://github.com/kiegroup/jbpm/tree/master/jbpm-test-coverage/src/test/filtered-resources/META-INF/persistence.xml -->
-<!--  <persistence-unit name="org.jbpm.test.persistence" transaction-type="JTA">-->
-  <persistence-unit name="org.jbpm.persistence.jpa" transaction-type="JTA">
+  <persistence-unit name="org.jbpm.process.longrest.test.persistence" transaction-type="JTA">
 
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     <jta-data-source>jdbc/jbpm-ds</jta-data-source>

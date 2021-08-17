@@ -205,7 +205,6 @@
               <includes>
                 <include>org/jbpm/process/longrest/HeartbeatMonitorCommand.*</include>
                 <include>org/jbpm/process/longrest/Constant.*</include>
-                <include>org/jbpm/process/longrest/util/ProcessUtils.*</include>
               </includes>
               <classifier>heartbeat-command</classifier>
             </configuration>

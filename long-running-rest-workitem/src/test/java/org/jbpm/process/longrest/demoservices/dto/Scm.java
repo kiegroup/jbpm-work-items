@@ -20,6 +20,14 @@ public class Scm {
     String url;
     String revision;
 
+    public Scm() {
+    }
+
+    public Scm(String url, String revision) {
+        this.url = url;
+        this.revision = revision;
+    }
+
     public String getUrl() {
         return url;
     }
