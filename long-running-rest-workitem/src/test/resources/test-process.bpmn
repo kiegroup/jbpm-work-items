@@ -242,7 +242,7 @@
       <bpmn2:dataInputAssociation id="_B0Tv6f81Eeun2NxR-kbYiQ">
         <bpmn2:targetRef>_16696BFC-5734-41D6-A1EB-790593184022_requestTemplateInputX</bpmn2:targetRef>
         <bpmn2:assignment id="_B0Tv6v81Eeun2NxR-kbYiQ">
-          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_B0Tv6_81Eeun2NxR-kbYiQ"><![CDATA[@{functions.getBuildTemplate(input, preBuildResult, system)}]]></bpmn2:from>
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_B0Tv6_81Eeun2NxR-kbYiQ"><![CDATA[#{functions.getBuildTemplate(input, preBuildResult)}]]></bpmn2:from>
           <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_B0Tv7P81Eeun2NxR-kbYiQ">_16696BFC-5734-41D6-A1EB-790593184022_requestTemplateInputX</bpmn2:to>
         </bpmn2:assignment>
       </bpmn2:dataInputAssociation>
@@ -389,7 +389,7 @@
       <bpmn2:dataInputAssociation id="_B0TwIv81Eeun2NxR-kbYiQ">
         <bpmn2:targetRef>_49EBC507-1EA9-4652-B48C-EEEED0112241_requestTemplateInputX</bpmn2:targetRef>
         <bpmn2:assignment id="_B0TwI_81Eeun2NxR-kbYiQ">
-          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_B0TwJP81Eeun2NxR-kbYiQ"><![CDATA[@{functions.getPreBuildTemplate(input,system)}]]></bpmn2:from>
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_B0TwJP81Eeun2NxR-kbYiQ"><![CDATA[#{functions.getPreBuildTemplate(input)}]]></bpmn2:from>
           <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_B0TwJf81Eeun2NxR-kbYiQ">_49EBC507-1EA9-4652-B48C-EEEED0112241_requestTemplateInputX</bpmn2:to>
         </bpmn2:assignment>
       </bpmn2:dataInputAssociation>
@@ -467,7 +467,7 @@
       <bpmn2:dataInputAssociation id="_B0TwPv81Eeun2NxR-kbYiQ">
         <bpmn2:targetRef>_D19D239F-BE13-45E3-90F2-FEF1814939E9_requestTemplateInputX</bpmn2:targetRef>
         <bpmn2:assignment id="_B0TwP_81Eeun2NxR-kbYiQ">
-          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_B0TwQP81Eeun2NxR-kbYiQ"><![CDATA[#{functions.completionTemplate}]]></bpmn2:from>
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_B0TwQP81Eeun2NxR-kbYiQ"><![CDATA[#{functions.getCompletionTemplate(input, preBuildResult, buildResult)}]]></bpmn2:from>
           <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_B0TwQf81Eeun2NxR-kbYiQ">_D19D239F-BE13-45E3-90F2-FEF1814939E9_requestTemplateInputX</bpmn2:to>
         </bpmn2:assignment>
       </bpmn2:dataInputAssociation>

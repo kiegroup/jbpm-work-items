@@ -15,10 +15,12 @@
  */
 package org.jbpm.process.longrest.util;
 
-import java.util.Optional;
-
+import org.jbpm.process.longrest.Constant;
+import org.jbpm.process.longrest.SystemVariables;
 import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
+
+import static org.jbpm.process.longrest.Constant.CONTAINER_ID_VARIABLE;
+import static org.jbpm.process.longrest.Constant.PROCESS_INSTANCE_ID_VARIABLE;
 
 public class ProcessUtils {
 
@@ -57,4 +59,47 @@ public class ProcessUtils {
         }
     }
 
+    /**
+     * Reads hostname from the system property or environment variable.
+     * System property overrides the env variable.
+     * Https overrides the http variable.
+     *
+     * @return hostName
+     */
+    public static String getKieHost() {
+        String host = System.getProperty(Constant.HOSTNAME_HTTPS);
+        if (host != null) {
+            host = "https://" + host;
+        }
+        if (host == null) {
+            host = System.getProperty(Constant.HOSTNAME_HTTP);
+            if (host != null) {
+                host = "http://" + host;
+            }
+        }
+        if (host == null) {
+            host = System.getenv(Constant.HOSTNAME_HTTPS);
+            if (host != null) {
+                host = "https://" + host;
+            }
+        }
+        if (host == null) {
+            host = System.getenv(Constant.HOSTNAME_HTTP);
+            if (host != null) {
+                host = "http://" + host;
+            }
+        }
+        return host;
+    }
+
+    public static SystemVariables getSystemVariables() {
+        //use url friendly '$(var)' instead of commonly used '${var}' (URI.create(String) fails when '${var}' is in the path)
+        String baseUrl = getKieHost() + "/services/rest/server/containers/$(" + CONTAINER_ID_VARIABLE + ")/processes/instances/";
+        return new SystemVariables(
+                baseUrl + "$(" + PROCESS_INSTANCE_ID_VARIABLE + ")/signal/RESTResponded",
+                "POST",
+                baseUrl + "$(" + PROCESS_INSTANCE_ID_VARIABLE + ")/signal/imAlive",
+                "POST"
+        );
+    }
 }

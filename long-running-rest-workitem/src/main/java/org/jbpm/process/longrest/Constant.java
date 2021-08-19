@@ -33,4 +33,8 @@ public class Constant {
 
     public static final String HEARTBEAT_VALIDATION_VARIABLE = "heartbeatValidation";
 
+    public static final String PROCESS_INSTANCE_ID_VARIABLE = "processInstanceId";
+
+    public static final String CONTAINER_ID_VARIABLE = "containerId";
+
 }

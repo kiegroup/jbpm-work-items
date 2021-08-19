@@ -51,6 +51,7 @@ import org.jbpm.process.longrest.demoservices.dto.Request;
 import org.jbpm.process.longrest.demoservices.dto.Scm;
 import org.jbpm.process.longrest.mockserver.WorkItems;
 import org.jbpm.process.longrest.util.Maps;
+import org.jbpm.process.longrest.util.ProcessUtils;
 import org.jbpm.runtime.manager.impl.RuntimeManagerFactoryImpl;
 import org.jbpm.services.api.DefinitionService;
 import org.jbpm.services.api.DeploymentService;
@@ -567,13 +568,15 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
     }
 
     private String getPreBuildRequestBody() {
+        SystemVariables systemVariables = ProcessUtils.getSystemVariables();
+
         PreBuildRequest request = new PreBuildRequest();
         Scm scm = new Scm();
         scm.setUrl("https://github.com/kiegroup/jbpm-work-items.git");
         request.setScm(scm);
         Request callback = new Request();
-        callback.setMethod("POST");
-        callback.setUrl("@{system.callbackUrl}");
+        callback.setMethod(systemVariables.getCallbackMethod());
+        callback.setUrl(systemVariables.getCallbackUrl());
         request.setCallback(callback);
         try {
             return objectMapper.writeValueAsString(request);

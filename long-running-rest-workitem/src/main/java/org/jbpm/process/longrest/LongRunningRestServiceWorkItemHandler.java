@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import org.apache.commons.text.StringSubstitutor;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -58,16 +59,11 @@ import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
-import org.mvel2.MVEL;
-import org.mvel2.ParserContext;
-import org.mvel2.integration.VariableResolverFactory;
-import org.mvel2.integration.impl.MapVariableResolverFactory;
-import org.mvel2.templates.CompiledTemplate;
-import org.mvel2.templates.TemplateRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.mvel2.templates.TemplateCompiler.compileTemplate;
+import static org.jbpm.process.longrest.Constant.CONTAINER_ID_VARIABLE;
+import static org.jbpm.process.longrest.Constant.PROCESS_INSTANCE_ID_VARIABLE;
 
 @Wid(widfile = "LongRunningRestService.wid",
         name = "LongRunningRestService",
@@ -112,30 +108,16 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
 
     private final RuntimeManager runtimeManager;
 
-    ParserContext mvelContext = new ParserContext();
-
     public LongRunningRestServiceWorkItemHandler(RuntimeManager runtimeManager) {
         this.runtimeManager = runtimeManager;
         logger.debug("Constructing with runtimeManager ...");
-        initializeMvelContext();
         setLogThrownException(false);
     }
 
     public LongRunningRestServiceWorkItemHandler() {
         logger.debug("Constructing without runtimeManager ...");
         runtimeManager = null;
-        initializeMvelContext();
         setLogThrownException(false);
-    }
-
-    private void initializeMvelContext() {
-        mvelContext.addImport(
-                "quote",
-                MVEL.getStaticMethod(Strings.class, "quoteString", new Class[]{Object.class}));
-        mvelContext.addImport("asJson",
-                              MVEL.getStaticMethod(Mapper.class, "writeValueAsString", new Class[]{Object.class, boolean.class}));
-        mvelContext.addImport("asJson",
-                              MVEL.getStaticMethod(Mapper.class, "writeValueAsString", new Class[]{Object.class}));
     }
 
     public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
@@ -211,12 +193,14 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
 
         logger.debug("requestTemplate: {}", requestTemplate);
 
-        VariableResolverFactory variableResolverFactory = getVariableResolverFactory(processInstance, containerId);
+        Map<String, Object> variables = new HashMap<>();
+        variables.put(PROCESS_INSTANCE_ID_VARIABLE, processInstance.getId());
+        variables.put(CONTAINER_ID_VARIABLE, containerId);
+        StringSubstitutor sub = new StringSubstitutor(variables, "$(", ")");
 
         String requestBodyEvaluated;
         if (requestTemplate != null && !requestTemplate.equals("")) {
-            CompiledTemplate compiled = compileTemplate(requestTemplate, mvelContext);
-            requestBodyEvaluated = (String) TemplateRuntime.execute(compiled, mvelContext, variableResolverFactory);
+            requestBodyEvaluated = sub.replace(requestTemplate);
         } else {
             requestBodyEvaluated = "";
         }
@@ -287,9 +271,7 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
             try {
                 if (!Strings.isEmpty(cancelUrlTemplate)) {
                     logger.debug("Setting cancel url from template: {}.", cancelUrlTemplate);
-                    CompiledTemplate compiled = compileTemplate(cancelUrlTemplate);
-                    cancelUrl = (String) TemplateRuntime
-                            .execute(compiled, null, variableResolverFactory);
+                    cancelUrl = cancelUrlTemplate;
                 } else if (!Strings.isEmpty(cancelUrlJsonPointer)) {
                     logger.debug("Setting cancel url from json pointer: {}.", cancelUrlJsonPointer);
                     JsonNode cancelUrlNode = root.at(cancelUrlJsonPointer);
@@ -316,56 +298,6 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
             cookies.putAll(cookiesMap);
         }
         processInstance.setVariable(COOKIES_KEY, cookies);
-    }
-
-    private VariableResolverFactory getVariableResolverFactory(WorkflowProcessInstance processInstance, String containerId) {
-        Map<String, Object> systemVariables = new HashMap<>();
-        String baseUrl = getKieHost() + "/services/rest/server/containers/" + containerId + "/processes/instances/";
-        systemVariables.put(
-                "callbackUrl", baseUrl + processInstance.getId() + "/signal/RESTResponded");
-        systemVariables.put("callbackMethod", "POST");
-        systemVariables.put(
-                "heartBeatUrl",
-                baseUrl + processInstance.getId() + "/signal/imAlive");
-        systemVariables.put("heartBeatMethod", "POST");
-        return getVariableResolverFactoryChain(
-                systemVariables,
-                processInstance);
-    }
-
-    private VariableResolverFactory getVariableResolverFactoryChain(
-            Map<String, Object> systemVariables,
-            WorkflowProcessInstance processInstance) {
-
-        VariableResolverFactory variableResolverFactory = new MapVariableResolverFactory(
-                Collections.singletonMap("system", systemVariables));
-
-        VariableResolverFactory resolver = variableResolverFactory.setNextFactory(
-                new ProcessVariableResolverFactory(processInstance));
-
-        WorkflowProcessInstance currentInstance = processInstance;
-        //add all parent instances to resolver chain
-        int maxDepth = 100;
-        int depth = 0;
-        while (true) {
-            depth++;
-            if (depth > maxDepth) {  //circuit-breaker: allow only maxDepth nested process instances
-                throw new RuntimeException("To many nested process instances, allowed only up to " + maxDepth + ".");
-            }
-            long parentProcessInstanceId = currentInstance.getParentProcessInstanceId();
-            if (parentProcessInstanceId > 0) {
-                RuntimeEngine runtimeEngine = runtimeManager.getRuntimeEngine(ProcessInstanceIdContext.get(parentProcessInstanceId));
-                KieSession kieSession = runtimeEngine.getKieSession();
-                WorkflowProcessInstance parentProcessInstance = (WorkflowProcessInstance) kieSession.getProcessInstance(parentProcessInstanceId);
-                runtimeManager.disposeRuntimeEngine(runtimeEngine);
-                resolver.setNextFactory(new ProcessVariableResolverFactory(parentProcessInstance));
-                currentInstance = parentProcessInstance;
-            } else {
-                //top parent reached
-                break;
-            }
-        }
-        return variableResolverFactory;
     }
 
     private HttpResponse httpRequest(
@@ -408,39 +340,6 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
             throw new RemoteInvocationException("Unable to invoke remote endpoint.", e);
         }
         return httpResponse;
-    }
-
-    /**
-     * Reads hostname from the system property or environment variable.
-     * System property overrides the env variable.
-     * Https overrides the http variable.
-     *
-     * @return hostName
-     */
-    private String getKieHost() {
-        String host = System.getProperty(Constant.HOSTNAME_HTTPS);
-        if (host != null) {
-            host = "https://" + host;
-        }
-        if (host == null) {
-            host = System.getProperty(Constant.HOSTNAME_HTTP);
-            if (host != null) {
-                host = "http://" + host;
-            }
-        }
-        if (host == null) {
-            host = System.getenv(Constant.HOSTNAME_HTTPS);
-            if (host != null) {
-                host = "https://" + host;
-            }
-        }
-        if (host == null) {
-            host = System.getenv(Constant.HOSTNAME_HTTP);
-            if (host != null) {
-                host = "http://" + host;
-            }
-        }
-        return host;
     }
 
     /**

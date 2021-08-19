@@ -25,12 +25,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jbpm.process.longrest.SystemVariables;
 import org.jbpm.process.longrest.demoservices.dto.BuildRequest;
 import org.jbpm.process.longrest.demoservices.dto.CompleteRequest;
 import org.jbpm.process.longrest.demoservices.dto.PreBuildRequest;
 import org.jbpm.process.longrest.demoservices.dto.Request;
 import org.jbpm.process.longrest.demoservices.dto.Scm;
 import org.jbpm.process.longrest.util.Json;
+import org.jbpm.process.longrest.util.ProcessUtils;
 import org.kie.api.runtime.process.ProcessContext;
 
 /**
@@ -47,9 +49,9 @@ public class TestFunctions implements java.io.Serializable {
 
     private static ObjectMapper mapper = new ObjectMapper();
 
-    public static String getPreBuildTemplate(Map<String, Object> input, Map<String, Object> system) {
+    public static String getPreBuildTemplate(Map<String, Object> input) {
         JsonNode rootInput = mapper.valueToTree(input);
-        JsonNode rootSystem = mapper.valueToTree(system);
+        SystemVariables systemVariables = ProcessUtils.getSystemVariables();
 
         PreBuildRequest preBuildRequest = new PreBuildRequest();
         preBuildRequest.setScm(new Scm(
@@ -58,13 +60,13 @@ public class TestFunctions implements java.io.Serializable {
         ));
         preBuildRequest.setSyncEnabled(getBoolean(rootInput, "/buildConfiguration/preBuildSyncEnabled").orElse(false));
         preBuildRequest.setCallback(new Request(
-                getString(rootSystem, "/callbackUrl").get(),
-                getString(rootSystem, "/callbackMethod").get()
+                systemVariables.getCallbackUrl(),
+                systemVariables.getCallbackMethod()
         ));
         if (addHeartBeatToRequest) {
             preBuildRequest.setHeartBeat(new Request(
-                    getString(rootSystem, "/heartBeatUrl").get(),
-                    getString(rootSystem, "/heartBeatMethod").get()
+                    systemVariables.getHeartBeatUrl(),
+                    systemVariables.getHeartBeatMethod()
             ));
         }
         try {
@@ -74,10 +76,10 @@ public class TestFunctions implements java.io.Serializable {
         }
     }
 
-    public String getBuildTemplate(Map<String, Object> input, Map<String, Object> preBuildResult, Map<String, Object> system) {
+    public String getBuildTemplate(Map<String, Object> input, Map<String, Object> preBuildResult) {
         JsonNode rootInput = mapper.valueToTree(input);
         JsonNode rootPreBuildResult = mapper.valueToTree(preBuildResult);
-        JsonNode rootSystem = mapper.valueToTree(system);
+        SystemVariables systemVariables = ProcessUtils.getSystemVariables();
 
         BuildRequest buildRequest = new BuildRequest();
         buildRequest.setBuildScript(getString(rootInput, "/buildConfiguration/buildScript").get());
@@ -86,8 +88,8 @@ public class TestFunctions implements java.io.Serializable {
                 getString(rootPreBuildResult, "/response/scm/url").get()
         ));
         buildRequest.setCallback(new Request(
-                getString(rootSystem, "/callbackUrl").get(),
-                getString(rootSystem, "/callbackMethod").get()
+                systemVariables.getCallbackUrl(),
+                systemVariables.getCallbackMethod()
         ));
 
         try {
@@ -120,13 +122,13 @@ public class TestFunctions implements java.io.Serializable {
 
     public String getCompletionTemplate() {
         return ("{ "
-                + "   'buildConfigurationId': @{quote(input.buildConfiguration.id)}, "
+                + "   'buildConfigurationId': @{quote(#{input.buildConfiguration.id})}, "
                 + "   'scm': { "
-                + "      'url': @{quote(preBuildResult.?response.?scm.url)}, "
-                + "      'revision': @{quote(preBuildResult.?response.?scm.revision)} "
+                + "      'url': @{quote(#{preBuildResult.?response.?scm.url})}, "
+                + "      'revision': @{quote(#{preBuildResult.?response.?scm.revision})} "
                 + "   }, "
-                + "   'completionStatus': '@{functions.getCompletionStatus(preBuildResult.?status, ?buildResult.?status)}', "
-                + "   'labels': @{asJson(input.buildConfiguration.labels, true)} "
+                + "   'completionStatus': '#{functions.getCompletionStatus(#{preBuildResult.?status}, #{?buildResult.?status})}', "
+                + "   'labels': @{asJson(#{input.buildConfiguration.labels}, true)} "
                 + "}").replace("'", "\"");
     }
 

@@ -46,14 +46,14 @@ Sub-process input parameters, to configure the remote service invocation. (* = m
 Request template
 ================
 Is a message body sent when invoking remote task.
-In the template you can use process input parameters, values from other task results and predefined _system_ properties.
+In the template you can use process input parameters, values from other task results and predefined _system_ variables, eg. `org.jbpm.process.longrest.util.ProcessUtils.getSystemVariables().getCallbackUrl()`
 For an example see `org.jbpm.contrib.longrest.bpm.TestFunctions.getPreBuildTemplate()`.
 
-**System properties**
-- system.callbackUrl
-- system.callbackMethod
-- system.heartBeatUrl
-- system.heartBeatMethod
+**System variables**
+- callbackUrl
+- callbackMethod
+- heartBeatUrl
+- heartBeatMethod
 
 **Including whole object map**
 Note that all values are stored as nested maps, 
