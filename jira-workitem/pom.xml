@@ -85,7 +85,6 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-test</artifactId>
       <scope>test</scope>
-      <!-- collides with com.sun.xml.bind:jaxb-impl:jar:2.3.0 and com.sun.xml.bind:jaxb-impl:jar:2.3.0 -->
       <exclusions>
         <exclusion>
           <groupId>org.glassfish.jaxb</groupId>

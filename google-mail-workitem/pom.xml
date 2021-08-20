@@ -80,14 +80,13 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
-        <exclusions>
-	  <exclusion>
-            <groupId>javax.activation</groupId>
-	    <artifactId>activation</artifactId>
-	  </exclusion>
-	</exclusions>
+      <groupId>jakarta.mail</groupId>
+      <artifactId>jakarta.mail-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>jakarta.mail</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -257,21 +256,4 @@
       </plugin>
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>jdk-11-compile</id>
-      <activation>
-        <jdk>[9,)</jdk>
-      </activation>
-      <dependencies>
-        <!-- Needed for JDK 11 -->
-        <dependency>
-          <groupId>javax.activation</groupId>
-          <artifactId>activation</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
-
 </project>

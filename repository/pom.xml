@@ -304,6 +304,11 @@
       <artifactId>maven-model</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -396,10 +401,6 @@
               <groupId>com.google.oauth-client</groupId>
               <artifactId>google-oauth-client-jetty</artifactId>
             </exclusion>
-          <exclusion>
-            <groupId>javax.activation</groupId>
-            <artifactId>activation</artifactId>
-        </exclusion>
           </exclusions>
         </dependency>
         <dependency>
@@ -467,13 +468,6 @@
           <artifactId>parser-workitem</artifactId>
           <type>zip</type>
           <scope>provided</scope>
-        <!-- conflicts with com.sun.activation:jakarta.activation:jar:1.2.1 in Enforcer banDuplicatedClasses rule-->
-        <exclusions>
-          <exclusion>
-            <groupId>javax.activation</groupId>
-            <artifactId>activation</artifactId>
-          </exclusion>
-        </exclusions>
         </dependency>
         <dependency>
           <groupId>org.jbpm.contrib</groupId>
@@ -504,6 +498,12 @@
           <artifactId>jira-workitem</artifactId>
           <type>zip</type>
           <scope>provided</scope>
+          <exclusions>
+            <exclusion>
+              <groupId>org.jvnet</groupId>
+              <artifactId>mimepull</artifactId>
+            </exclusion>
+          </exclusions>
         </dependency>
         <dependency>
           <groupId>org.jbpm.contrib</groupId>
@@ -607,19 +607,27 @@
           <artifactId>jbpm-workitems-bpmn2</artifactId>
           <type>zip</type>
           <scope>provided</scope>
+          <exclusions>
+            <exclusion>
+              <groupId>com.sun.activation</groupId>
+              <artifactId>javax.activation</artifactId>
+            </exclusion>
+            <exclusion>
+              <groupId>javax.activation</groupId>
+              <artifactId>activation</artifactId>
+            </exclusion>
+            <exclusion>
+              <groupId>org.glassfish.jaxb</groupId>
+              <artifactId>jaxb-runtime</artifactId>
+            </exclusion>
+          </exclusions>
         </dependency>
         <dependency>
           <groupId>org.jbpm</groupId>
           <artifactId>jbpm-workitems-email</artifactId>
           <type>zip</type>
           <scope>provided</scope>
-          <!-- conflicts with com.sun.activation:jakarta.activation:jar:1.2.1 in Enforcer banDuplicatedClasses rule-->
-          <exclusions>
-            <exclusion>
-              <groupId>javax.activation</groupId>
-              <artifactId>activation</artifactId>
-            </exclusion>
-          </exclusions>
+
         </dependency>
         <dependency>
           <groupId>org.jbpm</groupId>
@@ -663,6 +671,20 @@
           <artifactId>jbpm-workitems-bpmn2</artifactId>
           <type>zip</type>
           <scope>provided</scope>
+          <exclusions>
+            <exclusion>
+              <groupId>com.sun.activation</groupId>
+              <artifactId>javax.activation</artifactId>
+            </exclusion>
+            <exclusion>
+              <groupId>javax.activation</groupId>
+              <artifactId>activation</artifactId>
+            </exclusion>
+            <exclusion>
+              <groupId>org.glassfish.jaxb</groupId>
+              <artifactId>jaxb-runtime</artifactId>
+            </exclusion>
+          </exclusions>
         </dependency>
         <dependency>
           <groupId>org.jbpm</groupId>
