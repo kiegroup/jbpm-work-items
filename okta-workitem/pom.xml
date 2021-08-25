@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.jbpm.contrib</groupId>
     <artifactId>workitems</artifactId>
-    <version>7.59.0.Final</version>
+    <version>7.59.1-SNAPSHOT</version>
   </parent>
   <artifactId>okta-workitem</artifactId>
   <name>Okta</name>
