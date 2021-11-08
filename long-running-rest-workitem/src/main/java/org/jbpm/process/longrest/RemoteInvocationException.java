@@ -15,13 +15,12 @@
  */
 package org.jbpm.process.longrest;
 
-public class RemoteInvocationException extends Exception {
+import java.util.Optional;
 
-    public RemoteInvocationException(String message) {
-        super(message);
-    }
+public class RemoteInvocationException extends Exception {
 
     public RemoteInvocationException(String message, Exception e) {
         super(message, e);
     }
+
 }

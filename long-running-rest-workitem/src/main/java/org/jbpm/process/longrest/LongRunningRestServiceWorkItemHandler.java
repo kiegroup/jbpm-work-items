@@ -169,6 +169,10 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
                 String message = MessageFormat.format("Failed to process response. ProcessInstanceId {0}.", processInstanceId);
                 logger.warn(message, e);
                 completeWorkItem(manager, workItem.getId(), e);
+            } catch (FailedResponseException e) {
+                String message = MessageFormat.format("Response failed with status {1}. ProcessInstanceId {0}.", processInstanceId, e.getStatusCode());
+                logger.warn(message, e);
+                completeWorkItem(manager, workItem.getId(), e);
             }
         } catch (Throwable cause) {
             logger.error("Failed to execute workitem handler due to the following error.", cause);
@@ -189,7 +193,7 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
             String requestHeaders,
             int socketTimeout,
             int connectTimeout,
-            int connectionRequestTimeout) throws RemoteInvocationException, ResponseProcessingException {
+            int connectionRequestTimeout) throws RemoteInvocationException, ResponseProcessingException, FailedResponseException {
 
         logger.debug("requestTemplate: {}", requestTemplate);
 
@@ -229,7 +233,7 @@ public class LongRunningRestServiceWorkItemHandler extends AbstractLogOrThrowWor
 
         if (statusCode < 200 || statusCode >= 300) {
             String message = MessageFormat.format("Remote service responded with error status code {0} and reason: {1}. ProcessInstanceId {2}.", statusCode, httpResponse.getStatusLine().getReasonPhrase(), processInstance.getId());
-            throw new RemoteInvocationException(message);
+            throw new FailedResponseException(message, statusCode);
         }
 
         storeCookies(httpResponse, processInstance);
