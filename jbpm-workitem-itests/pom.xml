@@ -198,6 +198,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
+            <reuseForks>false</reuseForks>
             <systemPropertyVariables>
               <toxiproxy.image>shopify/toxiproxy:2.1.4</toxiproxy.image>
               <toxiproxy.port>9093</toxiproxy.port>
