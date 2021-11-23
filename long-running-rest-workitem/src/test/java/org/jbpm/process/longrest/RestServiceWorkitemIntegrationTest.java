@@ -27,10 +27,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.ws.rs.core.Cookie;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.undertow.Undertow;
-import io.undertow.servlet.api.DeploymentInfo;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jbpm.process.longrest.bpm.TestFunctions;
@@ -60,6 +56,12 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.undertow.Undertow;
+import io.undertow.servlet.api.DeploymentInfo;
 
 public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
 
@@ -581,7 +583,7 @@ public class RestServiceWorkitemIntegrationTest extends JbpmJUnitBaseTestCase {
         Map<String, Object> buildConfiguration = new HashMap<>();
         buildConfiguration.put("id", "1");
         buildConfiguration.put("scmRepoURL", "https://github.com/kiegroup/jbpm-work-items.git");
-        buildConfiguration.put("scmRevision", "master");
+        buildConfiguration.put("scmRevision", "main");
         buildConfiguration.put("preBuildSyncEnabled", "true");
         buildConfiguration.put("buildScript", "true");
         buildConfiguration.put("labels", labels);
