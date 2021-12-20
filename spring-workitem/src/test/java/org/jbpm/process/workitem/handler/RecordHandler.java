@@ -18,11 +18,26 @@ package org.jbpm.process.workitem.handler;
 
 import java.util.Map;
 
+import org.jbpm.process.workitem.config.CustomConfig;
 import org.kie.api.runtime.process.ProcessContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
+@EnableConfigurationProperties(CustomConfig.class)
 public class RecordHandler implements JavaHandler {
 
+    @Autowired
+    CustomConfig customConfig;
+
     public Map<String, Object> execute(ProcessContext kcontext) {
+        // some custom config from the spring context is used in the java process
+        // will throw a NPE as Spring Autowiring will not work with construction by reflection
+        // https://github.com/kiegroup/jbpm-work-items/blob/main/java-workitem/src/main/java/org/jbpm/process/workitem/handler/JavaHandlerWorkItemHandler.java#L79
+        // It should be possible to make a SpringHandlerWorkItemHandler that does a bean lookup instead of creating a new instance
+        customConfig.getName();
+
         String employeeId = (String) kcontext.getVariable("employeeId");
         // look up employee in for example db
         // we will just create one here for demo purposes
