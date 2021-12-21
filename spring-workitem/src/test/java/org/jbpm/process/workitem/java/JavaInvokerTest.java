@@ -16,6 +16,10 @@
 
 package org.jbpm.process.workitem.java;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,8 +32,12 @@ import org.drools.core.impl.KnowledgeBaseFactory;
 import org.drools.core.runtime.process.ProcessRuntimeFactory;
 import org.jbpm.process.builder.ProcessBuilderFactoryServiceImpl;
 import org.jbpm.process.instance.ProcessRuntimeFactoryServiceImpl;
+import org.jbpm.process.workitem.config.CustomConfig;
+import org.jbpm.process.workitem.java.JavaInvokerTest.TestApplicationConfiguration;
 import org.jbpm.test.AbstractBaseTest;
+import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.kie.api.KieBase;
 import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieSession;
@@ -37,8 +45,30 @@ import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.io.ResourceFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.test.context.junit4.SpringRunner;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = {TestApplicationConfiguration.class})
+@Configuration
 public class JavaInvokerTest extends AbstractBaseTest {
+
+    @Autowired
+    ApplicationContext applicationContext;
+
+    @Test
+    public void contextLoadsCorrectly() {
+        assertThat(applicationContext, is(notNullValue()));
+        CustomConfig bean = applicationContext.getBean(CustomConfig.class);
+        assertThat(bean.getName(), is("John Doe"));
+    }
 
     @Test
     public void testStaticMethod1() throws Exception {
@@ -179,6 +209,30 @@ public class JavaInvokerTest extends AbstractBaseTest {
                               params);
     }
 
+    @Test(expected = WorkflowRuntimeException.class)
+    public void testMyThirdMethodThatUsesConfig() throws Exception {
+        KieBase kbase = readKnowledgeBase();
+        KieSession ksession = createSession(kbase);
+        ksession.getWorkItemManager().registerWorkItemHandler("Java",
+                new JavaInvocationWorkItemHandler());
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("Class",
+                "org.jbpm.process.workitem.java.MyJavaClass");
+        params.put("Method",
+                "myThirdMethodThatUsesConfig");
+        params.put("Object",
+                new MyJavaClass());
+        List<Object> parameters = new ArrayList<Object>();
+        parameters.add("krisv");
+        List<String> children = new ArrayList<String>();
+        children.add("Arne");
+        parameters.add(children);
+        params.put("Parameters",
+                parameters);
+        ksession.startProcess("com.sample.bpmn.java.list",
+                params);
+    }
+
     @Test
     public void failingtestHello() throws Exception {
         KieBase kbase = readKnowledgeBase();
@@ -218,5 +272,11 @@ public class JavaInvokerTest extends AbstractBaseTest {
         KieSessionConfiguration config = KnowledgeBaseFactory.newKnowledgeSessionConfiguration(properties);
         return kbase.newKieSession(config,
                                    EnvironmentFactory.newEnvironment());
+    }
+
+    @Configuration
+    @ComponentScan(excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = CommandLineRunner.class))
+    @EnableAutoConfiguration
+    public class TestApplicationConfiguration {
     }
 }

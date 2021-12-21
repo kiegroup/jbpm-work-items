@@ -19,10 +19,19 @@ package org.jbpm.process.workitem.java;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jbpm.process.workitem.config.CustomConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
+@EnableConfigurationProperties(CustomConfig.class)
 public class MyJavaClass {
+
+    @Autowired
+    CustomConfig customConfig;
 
     private static final Logger logger = LoggerFactory.getLogger(MyJavaClass.class);
 
@@ -60,6 +69,16 @@ public class MyJavaClass {
             result.add("Hello " + child);
         }
         return result;
+    }
+
+    // some custom config from the spring context is used in the java process
+    // will throw a NPE as Spring Autowiring will not work with construction by reflection
+    // https://github.com/kiegroup/jbpm-work-items/blob/main/java-workitem/src/main/java/org/jbpm/process/workitem/handler/JavaHandlerWorkItemHandler.java#L79
+    // It should be possible to make a SpringHandlerWorkItemHandler that does a bean lookup instead of creating a new instance
+    public String myThirdMethodThatUsesConfig(String name,
+            Integer age) {
+        String name1 = customConfig.getName();
+        return "Hello " + name + ", age " + age;
     }
 
     public void writeHello(String name) {
