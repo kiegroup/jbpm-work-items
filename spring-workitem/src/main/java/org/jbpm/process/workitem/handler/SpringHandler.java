@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.kie.api.runtime.process.ProcessContext;
 
-public interface JavaHandler {
+public interface SpringHandler {
 
     Map<String, Object> execute(ProcessContext kcontext);
 }

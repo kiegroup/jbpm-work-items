@@ -29,9 +29,9 @@ import org.drools.core.runtime.process.ProcessRuntimeFactory;
 import org.jbpm.process.builder.ProcessBuilderFactoryServiceImpl;
 import org.jbpm.process.instance.ProcessRuntimeFactoryServiceImpl;
 import org.jbpm.process.workitem.config.CustomConfig;
+import org.jbpm.process.workitem.context.ApplicationContextProvider;
 import org.jbpm.process.workitem.handler.JavaHandlerWorkitemHandlerTest.TestApplicationConfiguration;
 import org.jbpm.test.AbstractBaseTest;
-import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.api.KieBase;
@@ -50,11 +50,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {TestApplicationConfiguration.class})
 @Configuration
+@ContextConfiguration(classes={RecordHandler.class, ApplicationContextProvider.class})
 public class JavaHandlerWorkitemHandlerTest extends AbstractBaseTest {
 
     @Autowired
@@ -67,12 +69,13 @@ public class JavaHandlerWorkitemHandlerTest extends AbstractBaseTest {
         assertThat(bean.getName(), is("John Doe"));
     }
 
-    @Test(expected = WorkflowRuntimeException.class)
+    //@Test(expected = WorkflowRuntimeException.class)
+    @Test
     public void testHandler() throws Exception {
         KieBase kbase = readKnowledgeBase();
         KieSession ksession = createSession(kbase);
         ksession.getWorkItemManager().registerWorkItemHandler("Handler",
-                                                              new JavaHandlerWorkItemHandler(ksession));
+                                                              new SpringHandlerWorkItemHandler(ksession));
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("employeeId",
                    "12345-ABC");

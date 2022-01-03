@@ -19,6 +19,7 @@ package org.jbpm.process.workitem.handler;
 import java.util.Map;
 
 import org.drools.core.spi.ProcessContext;
+import org.jbpm.process.workitem.context.ApplicationContextProvider;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
 import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
@@ -36,13 +37,15 @@ import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.internal.runtime.manager.RuntimeManagerRegistry;
 import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
 
-@Wid(widfile = "JavaDefinitions.wid", name = "Java",
-        displayName = "Java",
-        defaultHandler = "mvel: new org.jbpm.process.workitem.java.JavaHandlerWorkItemHandler(\"ksession\")",
+@Wid(widfile = "SpringDefinitions.wid", name = "Java",
+        displayName = "Spring",
+        defaultHandler = "mvel: new org.jbpm.process.workitem.java.SpringHandlerWorkItemHandler(\"ksession\")",
         documentation = "${artifactId}/index.html",
         category = "${artifactId}",
-        icon = "Java.png",
+        icon = "Spring.png",
         parameters = {
                 @WidParameter(name = "Class", required = true)
         },
@@ -50,18 +53,19 @@ import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
                 @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
         },
         serviceInfo = @WidService(category = "${name}", description = "${description}",
-                keywords = "java,handler,class,execute",
-                action = @WidAction(title = "Execute an existing Java Workitem Handler"),
+                keywords = "java,handler,class,execute,spring",
+                action = @WidAction(title = "Execute an existing Java Workitem Handler as Spring Service"),
                 authinfo = @WidAuth
         ))
-public class JavaHandlerWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
+public class SpringHandlerWorkItemHandler extends AbstractLogOrThrowWorkItemHandler{
 
     private KieSession ksession;
+    private ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
     
-    public JavaHandlerWorkItemHandler() {        
+    public SpringHandlerWorkItemHandler() {
     }
     
-    public JavaHandlerWorkItemHandler(KieSession ksession) {  
+    public SpringHandlerWorkItemHandler(KieSession ksession) {
         this.ksession = ksession;
     }
 
@@ -75,8 +79,15 @@ public class JavaHandlerWorkItemHandler extends AbstractLogOrThrowWorkItemHandle
 
             String className = (String) workItem.getParameter("Class");
 
-            Class<JavaHandler> c = (Class<JavaHandler>) Class.forName(className);
-            JavaHandler handler = c.newInstance();
+            if (applicationContext == null) {
+                throw new IllegalStateException("applicationContext not available");
+            }
+            SpringHandler handler;
+            try {
+                handler = (SpringHandler) applicationContext.getBean(Class.forName(className));
+            } catch (BeansException e) {
+                throw new IllegalArgumentException(String.format("No handler found for %s", className), e);
+            }
             
             KieSession localksession = ksession;
             RuntimeManager runtimeManager = null;
