@@ -38,8 +38,7 @@ public class RecordHandler implements SpringHandler {
         // will throw a NPE as Spring Autowiring will not work with construction by reflection
         // https://github.com/kiegroup/jbpm-work-items/blob/main/java-workitem/src/main/java/org/jbpm/process/workitem/handler/JavaHandlerWorkItemHandler.java#L79
         // It should be possible to make a SpringHandlerWorkItemHandler that does a bean lookup instead of creating a new instance
-        //customConfig.getName();
-        System.out.println(customConfig.getName());
+        String configuredName = customConfig.getName();
 
         String employeeId = (String) kcontext.getVariable("employeeId");
         // look up employee in for example db

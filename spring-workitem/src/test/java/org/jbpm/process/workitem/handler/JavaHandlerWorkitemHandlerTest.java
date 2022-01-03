@@ -69,7 +69,6 @@ public class JavaHandlerWorkitemHandlerTest extends AbstractBaseTest {
         assertThat(bean.getName(), is("John Doe"));
     }
 
-    //@Test(expected = WorkflowRuntimeException.class)
     @Test
     public void testHandler() throws Exception {
         KieBase kbase = readKnowledgeBase();
