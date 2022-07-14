@@ -38,7 +38,7 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import io.strimzi.StrimziKafkaContainer;
+import io.strimzi.test.container.StrimziKafkaContainer;
 
 import static org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.clients.producer.ProducerConfig.CLIENT_ID_CONFIG;
@@ -63,7 +63,9 @@ public abstract class KafkaProxyBase extends KafkaBaseTest {
     public Network network = Network.newNetwork();
 
     @Rule
-    public StrimziKafkaContainer kafka = new StrimziKafkaContainer().withNetwork(network);
+    public StrimziKafkaContainer kafka = new StrimziKafkaContainer()
+                                                .withKafkaVersion(System.getProperty("kafka.container.version"))
+                                                .withNetwork(network);
 
     @Rule
     public ToxiproxyContainer toxiproxy  = new ToxiproxyContainer(DockerImageName.parse(TOXIPROXY_IMAGE))
