@@ -203,6 +203,7 @@
               <toxiproxy.image>shopify/toxiproxy:2.1.4</toxiproxy.image>
               <toxiproxy.port>9093</toxiproxy.port>
               <org.kie.executor.jms>false</org.kie.executor.jms>
+              <kafka.container.version>${version.org.apache.kafka}</kafka.container.version>
             </systemPropertyVariables>
           </configuration>
         </plugin>
