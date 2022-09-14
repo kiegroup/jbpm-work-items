@@ -25,6 +25,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -195,5 +198,13 @@ public class KafkaFixture {
         } catch (Throwable ex) {
             return false;
         }
+    }
+    
+    protected static String getVersion(String version) {
+        Matcher matcher = Pattern.compile("(\\d+\\.\\d+\\.\\d+)").matcher(version);
+        if (matcher.find()) {  
+          return matcher.group(1);
+        } else
+          throw new RuntimeException("Incorrect pattern version "+version);
     }
 }
