@@ -64,7 +64,7 @@ public abstract class KafkaProxyBase extends KafkaBaseTest {
 
     @Rule
     public StrimziKafkaContainer kafka = new StrimziKafkaContainer()
-                                                .withKafkaVersion(System.getProperty("kafka.container.version"))
+                                                .withKafkaVersion(KafkaFixture.getVersion(System.getProperty("kafka.container.version")))
                                                 .withNetwork(network);
 
     @Rule

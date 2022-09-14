@@ -71,7 +71,7 @@ public class KafkaSampleTest extends KafkaBaseTest {
     CountDownLatchEventListener countDownLatchEventListener;
     
     @Rule
-    public StrimziKafkaContainer kafka = new StrimziKafkaContainer();
+    public StrimziKafkaContainer kafka = new StrimziKafkaContainer().withKafkaVersion(KafkaFixture.getVersion(System.getProperty("kafka.container.version")));
     
     protected static KafkaFixture kafkaFixture = new KafkaFixture();
     
