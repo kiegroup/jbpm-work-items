@@ -55,7 +55,7 @@
     <version.squareup.okhttp3>3.8.1</version.squareup.okhttp3>
     <version.rxjava>1.2.4</version.rxjava>
     <version.owm>2.5.2.2</version.owm>
-    <version.commons.net>3.6</version.commons.net>
+    <version.commons.net>3.8.0</version.commons.net>
     <version.maven.embedder>3.3.3</version.maven.embedder>
     <version.wildfly.maven.plugin>1.2.1.Final</version.wildfly.maven.plugin>
     <version.war.plugin>3.2.2</version.war.plugin>
