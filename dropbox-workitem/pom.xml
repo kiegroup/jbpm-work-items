@@ -124,7 +124,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-remote-resources-plugin</artifactId>
-        <version>1.5</version>
+        <version>3.0.0</version>
         <configuration>
           <resourceBundles>
             <resourceBundle>${project.groupId}:template-resources:${project.version}</resourceBundle>
