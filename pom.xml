@@ -44,7 +44,7 @@
     <version.google.tasks>v1-rev48-1.23.0</version.google.tasks>
     <version.google.drive>v2-rev285-1.23.0</version.google.drive>
     <version.google.translate>1.30.0</version.google.translate>
-    <version.ibm.developer.cloud>4.2.1</version.ibm.developer.cloud>
+    <version.ibm.developer.cloud>6.14.2</version.ibm.developer.cloud>
     <version.dropbox.core>3.0.5</version.dropbox.core>
     <version.jetty>8.1.17.v20150415</version.jetty>
     <version.twitter4j>4.0.6</version.twitter4j>
