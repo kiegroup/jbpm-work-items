@@ -47,7 +47,7 @@
     <version.ibm.developer.cloud>4.2.1</version.ibm.developer.cloud>
     <version.dropbox.core>3.0.5</version.dropbox.core>
     <version.jetty>8.1.17.v20150415</version.jetty>
-    <version.twitter4j>4.0.6</version.twitter4j>
+    <version.twitter4j>4.1.2</version.twitter4j>
     <version.egit.github>2.1.5</version.egit.github>
     <version.atlassian.jira>1.0</version.atlassian.jira>
     <version.web3j>3.3.1</version.web3j>
