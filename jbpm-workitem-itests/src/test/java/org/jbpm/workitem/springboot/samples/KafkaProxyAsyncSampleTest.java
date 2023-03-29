@@ -17,11 +17,13 @@
 package org.jbpm.workitem.springboot.samples;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.jbpm.services.api.RuntimeDataService;
+import org.jbpm.services.api.model.ProcessInstanceDesc;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -123,13 +125,13 @@ public class KafkaProxyAsyncSampleTest extends KafkaProxyBase {
         CountDownLatch latch = new CountDownLatch(1);
         
         kafkaProxy.setConnectionCut(true);
-        //Kafka WIH will try during  publish config max.block.ms -60 seconds by default- to get connected to Kafka
-        //TimeoutException: Topic PAM_Events not present in metadata after 60000 ms.
-        Long processInstanceId= processService.startProcess(deploymentId, KAFKA_WIH_PROCESS, VARIABLES_MAP);
-        
-        assertTrue(processInstanceId > 0);
         
         try {
+            //Kafka WIH will try during  publish config max.block.ms -60 seconds by default- to get connected to Kafka
+            //TimeoutException: Topic PAM_Events not present in metadata after 60000 ms.
+            Long processInstanceId= processService.startProcess(deploymentId, KAFKA_WIH_PROCESS, VARIABLES_MAP);
+            assertTrue(processInstanceId > 0);
+
             startOtherProcess();
             
             // After more than 60 seconds, connection has not been reestablished and process keeps on active
@@ -138,7 +140,7 @@ public class KafkaProxyAsyncSampleTest extends KafkaProxyBase {
             
             startOtherProcess();
         } finally {
-            processService.abortProcessInstance(processInstanceId);
+            abortAllProcesses();
         }
     }
     
@@ -152,5 +154,14 @@ public class KafkaProxyAsyncSampleTest extends KafkaProxyBase {
         //It's not hung during Kafka broker down
         Map<String, Object> outcome = processService.computeProcessOutcome(deploymentId, HELLO_PROCESS, singletonMap("name", "Grogu"));
         assertEquals("Hello Grogu", outcome.get("outcome"));
+    }
+    
+    protected void abortAllProcesses() {
+        Collection<ProcessInstanceDesc> activeInstances = runtimeDataService.getProcessInstances(singletonList(STATE_ACTIVE), null, null);
+        if (activeInstances != null) {
+            for (ProcessInstanceDesc instance : activeInstances) {
+                processService.abortProcessInstance(instance.getDeploymentId(), instance.getId());
+            }
+        }
     }
 }
