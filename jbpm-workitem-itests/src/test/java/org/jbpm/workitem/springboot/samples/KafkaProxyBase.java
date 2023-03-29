@@ -17,6 +17,7 @@
 package org.jbpm.workitem.springboot.samples;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -53,6 +54,8 @@ public abstract class KafkaProxyBase extends KafkaBaseTest {
     
     protected static final int TOXY_PROXY_PORT = Integer.parseInt(System.getProperty("toxiproxy.port"));
     
+    private static final String VERSION = String.join(".", Arrays.copyOfRange(System.getProperty("kafka.container.version", "3.1.0").split("\\."), 0, 3));
+    
     @ClassRule
     public static final SpringClassRule scr = new SpringClassRule();
  
@@ -64,7 +67,7 @@ public abstract class KafkaProxyBase extends KafkaBaseTest {
 
     @Rule
     public StrimziKafkaContainer kafka = new StrimziKafkaContainer()
-                                                .withKafkaVersion(System.getProperty("kafka.container.version"))
+                                                .withKafkaVersion(VERSION)
                                                 .withNetwork(network);
 
     @Rule
