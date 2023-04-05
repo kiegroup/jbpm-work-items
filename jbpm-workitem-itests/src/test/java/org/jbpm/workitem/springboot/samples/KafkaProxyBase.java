@@ -17,6 +17,7 @@
 package org.jbpm.workitem.springboot.samples;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -38,7 +39,7 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import io.strimzi.StrimziKafkaContainer;
+import io.strimzi.test.container.StrimziKafkaContainer;
 
 import static org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.clients.producer.ProducerConfig.CLIENT_ID_CONFIG;
@@ -53,6 +54,8 @@ public abstract class KafkaProxyBase extends KafkaBaseTest {
     
     protected static final int TOXY_PROXY_PORT = Integer.parseInt(System.getProperty("toxiproxy.port"));
     
+    private static final String VERSION = String.join(".", Arrays.copyOfRange(System.getProperty("kafka.container.version", "3.1.0").split("\\."), 0, 3));
+    
     @ClassRule
     public static final SpringClassRule scr = new SpringClassRule();
  
@@ -63,7 +66,9 @@ public abstract class KafkaProxyBase extends KafkaBaseTest {
     public Network network = Network.newNetwork();
 
     @Rule
-    public StrimziKafkaContainer kafka = new StrimziKafkaContainer().withNetwork(network);
+    public StrimziKafkaContainer kafka = new StrimziKafkaContainer()
+                                                .withKafkaVersion(VERSION)
+                                                .withNetwork(network);
 
     @Rule
     public ToxiproxyContainer toxiproxy  = new ToxiproxyContainer(DockerImageName.parse(TOXIPROXY_IMAGE))
