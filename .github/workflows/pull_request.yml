@@ -20,7 +20,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         java-version: [8, 11]
-        maven-version: ['3.8.1']
+        maven-version: ['3.8.2']
       fail-fast: true
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.os }} - Java ${{ matrix.java-version }} - Maven
