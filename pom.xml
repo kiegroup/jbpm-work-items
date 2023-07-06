@@ -39,7 +39,7 @@
     <version.org.kie>${project.version}</version.org.kie>
     <version.google.api.services.calendar>v3-rev87-1.19.0</version.google.api.services.calendar>
     <version.google.api.services.gmail>v1-rev72-1.23.0</version.google.api.services.gmail>
-    <version.google.http.client>1.23.0</version.google.http.client>
+    <version.google.http.client>1.39.2</version.google.http.client>
     <version.google.sheets>v4-rev488-1.23.0</version.google.sheets>
     <version.google.tasks>v1-rev48-1.23.0</version.google.tasks>
     <version.google.drive>v2-rev285-1.23.0</version.google.drive>
