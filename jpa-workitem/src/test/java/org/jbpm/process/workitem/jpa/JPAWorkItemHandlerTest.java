@@ -356,7 +356,7 @@ public class JPAWorkItemHandlerTest {
         driverProperties.setProperty("password",
                                      "sa");
         driverProperties.setProperty("url",
-                                     "jdbc:h2:mem:jpa-wih;MVCC=true");
+                                     "jdbc:h2:mem:jpa-wih;MODE=LEGACY;NON_KEYWORDS=VALUE");
         driverProperties.setProperty("driverClassName",
                                      "org.h2.Driver");
 
@@ -373,7 +373,7 @@ public class JPAWorkItemHandlerTest {
         public void start() {
             if (realH2Server == null || !realH2Server.isRunning(false)) {
                 try {
-                    realH2Server = Server.createTcpServer(new String[0]);
+                    realH2Server = Server.createTcpServer(new String[]{"-ifNotExists"});
                     realH2Server.start();
                     System.out.println("Started H2 Server...");
                 } catch (SQLException e) {
