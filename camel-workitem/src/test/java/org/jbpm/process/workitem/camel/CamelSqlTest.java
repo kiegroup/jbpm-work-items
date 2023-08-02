@@ -85,7 +85,7 @@ public class CamelSqlTest {
      */
     private static void setupDb() throws SQLException, URISyntaxException {
         File script = new File(CamelSqlTest.class.getResource("/init-db.sql").toURI());
-        RunScript.execute("jdbc:h2:mem:jbpm-db;MVCC=true",
+        RunScript.execute("jdbc:h2:mem:jbpm-db;MODE=LEGACY;NON_KEYWORDS=VALUE",
                           "sa",
                           "",
                           script.getAbsolutePath(),
