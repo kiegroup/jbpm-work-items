@@ -42,7 +42,7 @@
     <version.google.http.client>1.23.0</version.google.http.client>
     <version.google.sheets>v4-rev488-1.23.0</version.google.sheets>
     <version.google.tasks>v1-rev48-1.23.0</version.google.tasks>
-    <version.google.drive>v2-rev285-1.23.0</version.google.drive>
+    <version.google.drive>v3-rev20221023-2.0.0</version.google.drive>
     <version.google.translate>1.30.0</version.google.translate>
     <version.ibm.developer.cloud>4.2.1</version.ibm.developer.cloud>
     <version.dropbox.core>3.0.5</version.dropbox.core>
