@@ -234,7 +234,7 @@
       <plugin>
         <groupId>org.web3j</groupId>
         <artifactId>web3j-maven-plugin</artifactId>
-        <version>0.1.4</version>
+        <version>4.9.4</version>
         <configuration>
           <packageName>org.jbpm.process.workitem.ethereum.test.contract</packageName>
           <sourceDestination>src/test/java</sourceDestination>
