@@ -117,10 +117,6 @@
           <artifactId>hamcrest</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-jcl</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>org.junit.jupiter</groupId>
           <artifactId>junit-jupiter</artifactId>
         </exclusion>
