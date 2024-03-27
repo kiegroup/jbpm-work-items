@@ -56,11 +56,9 @@
     <version.rxjava>1.2.4</version.rxjava>
     <version.owm>2.5.2.2</version.owm>
     <version.commons.net>3.6</version.commons.net>
-    <version.maven.embedder>3.3.3</version.maven.embedder>
     <version.wildfly.maven.plugin>1.2.1.Final</version.wildfly.maven.plugin>
     <version.war.plugin>3.2.2</version.war.plugin>
     <version.apache.commons.io>2.5</version.apache.commons.io>
-    <version.maven.model>3.3.9</version.maven.model>
     <version.jslack>1.1.4</version.jslack>
     <version.org.xhtmlrenderer>9.1.15</version.org.xhtmlrenderer>
     <version.bouncycastle>1.67</version.bouncycastle>
@@ -471,41 +469,6 @@
         <groupId>commons-net</groupId>
         <artifactId>commons-net</artifactId>
         <version>${version.commons.net}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.maven</groupId>
-        <artifactId>maven-embedder</artifactId>
-        <version>${version.maven.embedder}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.aether</groupId>
-        <artifactId>aether-connector-basic</artifactId>
-        <version>${version.org.eclipse.aether}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.aether</groupId>
-        <artifactId>aether-transport-wagon</artifactId>
-        <version>${version.org.eclipse.aether}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-http</artifactId>
-        <version>${version.org.apache.maven.wagon}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-provider-api</artifactId>
-        <version>${version.org.apache.maven.wagon}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-http-lightweight</artifactId>
-        <version>${version.org.apache.maven.wagon}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.maven</groupId>
-        <artifactId>maven-model</artifactId>
-        <version>${version.maven.model}</version>
       </dependency>
       <dependency>
         <groupId>com.github.taycaldwell</groupId>
