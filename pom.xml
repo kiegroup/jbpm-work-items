@@ -63,7 +63,7 @@
     <version.maven.model>3.3.9</version.maven.model>
     <version.jslack>1.1.4</version.jslack>
     <version.org.xhtmlrenderer>9.1.15</version.org.xhtmlrenderer>
-    <version.bouncycastle>1.67</version.bouncycastle>
+    <version.bouncycastle>1.78</version.bouncycastle>
     <version.xmlsec>1.5.1</version.xmlsec>
     <version.google.guava>${version.com.google.guava}</version.google.guava>
     <version.riot.api>4.1.0</version.riot.api>
