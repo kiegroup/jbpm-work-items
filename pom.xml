@@ -61,7 +61,6 @@
     <version.apache.commons.io>2.5</version.apache.commons.io>
     <version.jslack>1.1.4</version.jslack>
     <version.org.xhtmlrenderer>9.1.15</version.org.xhtmlrenderer>
-    <version.bouncycastle>1.67</version.bouncycastle>
     <version.xmlsec>1.5.1</version.xmlsec>
     <version.google.guava>${version.com.google.guava}</version.google.guava>
     <version.riot.api>4.1.0</version.riot.api>
@@ -334,17 +333,6 @@
         <groupId>org.xhtmlrenderer</groupId>
         <artifactId>flying-saucer-pdf-itext5</artifactId>
         <version>${version.org.xhtmlrenderer}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.bouncycastle</groupId>
-        <artifactId>bcprov-jdk15to18</artifactId>
-        <version>${version.bouncycastle}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.bouncycastle</groupId>
-        <artifactId>bcpkix-jdk15to18</artifactId>
-        <version>${version.bouncycastle}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.santuario</groupId>
