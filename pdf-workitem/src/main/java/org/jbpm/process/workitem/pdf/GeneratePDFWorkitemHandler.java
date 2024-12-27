@@ -21,10 +21,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import freemarker.cache.StringTemplateLoader;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateExceptionHandler;
 import org.jbpm.document.Document;
 import org.jbpm.document.service.impl.DocumentImpl;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
@@ -40,7 +36,12 @@ import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xhtmlrenderer.pdf.ITextRenderer;
+
+import com.openhtmltopdf.bidi.support.ICUBidiReorderer;
+import com.openhtmltopdf.bidi.support.ICUBidiSplitter;
+import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
+
+
 
 @Wid(widfile = "GeneratePDFDefinitions.wid", name = "GeneratePDF",
         displayName = "GeneratePDF",
@@ -72,8 +73,8 @@ public class GeneratePDFWorkitemHandler extends AbstractLogOrThrowWorkItemHandle
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager workItemManager) {
 
-        try {
 
+        try {        	
             RequiredParameterValidator.validate(this.getClass(),
                                                 workItem);
 
@@ -85,40 +86,32 @@ public class GeneratePDFWorkitemHandler extends AbstractLogOrThrowWorkItemHandle
                 pdfName = "generatedpdf";
             }
 
-            Configuration cfg = new Configuration(freemarker.template.Configuration.VERSION_2_3_26);
-            cfg.setDefaultEncoding("UTF-8");
-            cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-            cfg.setLogTemplateExceptions(false);
-
-            StringTemplateLoader stringLoader = new StringTemplateLoader();
-            stringLoader.putTemplate("pdfTemplate",
-                                     templateXHTML);
-            cfg.setTemplateLoader(stringLoader);
+            logger.info(templateXHTML);
 
             StringWriter stringWriter = new StringWriter();
-
-            Template pdfTemplate = cfg.getTemplate("pdfTemplate");
-            pdfTemplate.process(workItem.getParameters(),
-                                stringWriter);
             resultXHTML = stringWriter.toString();
 
-            ITextRenderer renderer = new ITextRenderer();
-            renderer.setDocumentFromString(resultXHTML);
-            renderer.layout();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            PdfRendererBuilder builder = new PdfRendererBuilder();
+            builder.useFastMode();
+            builder.withHtmlContent(templateXHTML, null);
+            builder.toStream(baos);
+
+            // Enable RTL support
+            builder.useUnicodeBidiSplitter(new ICUBidiSplitter.ICUBidiSplitterFactory());
+            builder.useUnicodeBidiReorderer(new ICUBidiReorderer());
+            builder.defaultTextDirection(PdfRendererBuilder.TextDirection.RTL);
+
+            builder.run();
 
             Document document = new DocumentImpl();
             document.setName(pdfName + ".pdf");
             document.setLastModified(new Date());
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            renderer.createPDF(baos);
             document.setContent(baos.toByteArray());
 
-            results.put(RESULTS_VALUE,
-                        document);
+            results.put(RESULTS_VALUE, document);
 
-            workItemManager.completeWorkItem(workItem.getId(),
-                                             results);
+            workItemManager.completeWorkItem(workItem.getId(), results);
         } catch (Exception e) {
             logger.error(e.getMessage());
             handleException(e);
@@ -128,9 +121,5 @@ public class GeneratePDFWorkitemHandler extends AbstractLogOrThrowWorkItemHandle
     public void abortWorkItem(WorkItem workItem,
                               WorkItemManager manager) {
     }
-
-    // for testing
-    public String getResultXHTML() {
-        return resultXHTML;
-    }
+  
 }

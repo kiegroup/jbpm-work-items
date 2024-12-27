@@ -17,6 +17,24 @@
   </organization>
 
   <dependencies>
+  <dependency>
+  		<!-- ALWAYS required, usually included transitively. -->
+  		<groupId>com.openhtmltopdf</groupId>
+  		<artifactId>openhtmltopdf-core</artifactId>
+  		<version>1.0.10</version>
+  	</dependency>
+  	<dependency>
+  		<!-- Required for PDF output. -->
+  		<groupId>com.openhtmltopdf</groupId>
+  		<artifactId>openhtmltopdf-pdfbox</artifactId>
+  		<version>1.0.10</version>
+  	</dependency>
+  	  	<dependency>
+  		<!-- Optional, leave out if you do not need right-to-left or bi-directional text support. -->
+  		<groupId>com.openhtmltopdf</groupId>
+  		<artifactId>openhtmltopdf-rtl-support</artifactId>
+  		<version>1.0.10</version>
+  	</dependency>
     <dependency>
       <groupId>org.xhtmlrenderer</groupId>
       <artifactId>flying-saucer-core</artifactId>
