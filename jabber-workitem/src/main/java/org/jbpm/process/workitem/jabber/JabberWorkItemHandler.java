@@ -31,6 +31,7 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.kie.api.runtime.process.WorkItem;
@@ -117,11 +118,11 @@ public class JabberWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
             if (server != null && !server.equals("") && port != 0) {
                 if (connection == null) {
-                    connection = new XMPPConnection(conf);
+                    connection = new XMPPTCPConnection(conf);
                 }
             } else {
                 if (connection == null) {
-                    connection = new XMPPConnection(service);
+                    connection = new XMPPTCPConnection(service);
                 }
             }
 
@@ -138,7 +139,7 @@ public class JabberWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
             for (String toUser : toUsers) {
 
-                ChatManager chatmanager = connection.getChatManager();
+                ChatManager chatmanager = ChatManager.getInstanceFor(connection);
                 Chat chat = chatmanager.createChat(toUser,
                                                    null);
 
