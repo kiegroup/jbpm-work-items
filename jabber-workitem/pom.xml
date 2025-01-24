@@ -110,8 +110,10 @@
                 <rules>
                   <banDuplicateClasses>
                     <ignoreClasses combine.children="append">
-                      <!-- Bundled in jivesoftware:smack with little chance to get removed -->
+                      <!-- Bundled in org.igniterealtime.smack:smack-core with little chance to get removed -->
                       <ignoreClass>org.xmlpull.mxp1.MXParser</ignoreClass>
+                      <ignoreClass>org.xmlpull.v1.XmlPullParserFactory</ignoreClass>
+                      <ignoreClass>org.xmlpull.v1.XmlSerializer</ignoreClass>
                     </ignoreClasses>
                   </banDuplicateClasses>
                 </rules>
