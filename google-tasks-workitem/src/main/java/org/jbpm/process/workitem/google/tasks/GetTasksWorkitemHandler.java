@@ -83,7 +83,7 @@ public class GetTasksWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
                                                 workItem);
 
             Map<String, Object> results = new HashMap<String, Object>();
-            Long numOfTasksLong = Long.valueOf((String) workItem.getParameter("NumOfTasks"));
+            Integer numOfTasksLong = Integer.valueOf((String) workItem.getParameter("NumOfTasks"));
             List<TaskInfo> tasksResultsList = new ArrayList<>();
 
             if (numOfTasksLong <= 0) {
