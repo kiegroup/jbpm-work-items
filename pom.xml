@@ -61,7 +61,7 @@
     <version.apache.commons.io>2.5</version.apache.commons.io>
     <version.jslack>1.1.4</version.jslack>
     <version.org.xhtmlrenderer>9.1.15</version.org.xhtmlrenderer>
-    <version.xmlsec>2.2.6</version.xmlsec>
+    <!-- <version.xmlsec>2.2.6</version.xmlsec> -->
     <version.google.guava>${version.com.google.guava}</version.google.guava>
     <version.riot.api>4.1.0</version.riot.api>
     <version.jpastebin>1.0.1</version.jpastebin>
@@ -334,11 +334,13 @@
         <artifactId>flying-saucer-pdf-itext5</artifactId>
         <version>${version.org.xhtmlrenderer}</version>
       </dependency>
+      <!--
       <dependency>
         <groupId>org.apache.santuario</groupId>
         <artifactId>xmlsec</artifactId>
         <version>${version.xmlsec}</version>
       </dependency>
+      -->
       <dependency>
         <groupId>com.clickntap</groupId>
         <artifactId>vimeo</artifactId>
