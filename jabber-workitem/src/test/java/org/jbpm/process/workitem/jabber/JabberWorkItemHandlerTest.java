@@ -29,9 +29,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
@@ -53,14 +57,16 @@ public class JabberWorkItemHandlerTest {
     public void testSendMessage() throws Exception {
         ArgumentCaptor<Message> messageCaptor = ArgumentCaptor.forClass(Message.class);
 
+        try (MockedStatic<ChatManager> chatManagerMock = mockStatic(ChatManager.class)) {
+
         doNothing().when(xmppConnection).connect();
         doNothing().when(xmppConnection).login(anyString(),
                                                anyString());
         doNothing().when(xmppConnection).sendPacket(any(Presence.class));
         doNothing().when(xmppConnection).disconnect();
-        when(xmppConnection.getChatManager()).thenReturn(chatManager);
-        when(chatManager.createChat(anyString(),
-                                    anyObject())).thenReturn(chat);
+
+        chatManagerMock.when(() -> ChatManager.getInstanceFor(xmppConnection)).thenReturn(chatManager);
+        when(chatManager.createChat(anyString(), anyObject())).thenReturn(chat);
 
         TestWorkItemManager manager = new TestWorkItemManager();
         WorkItemImpl workItem = new WorkItemImpl();
@@ -91,23 +97,26 @@ public class JabberWorkItemHandlerTest {
                      manager.getResults().size());
         assertTrue(manager.getResults().containsKey(workItem.getId()));
 
-        verify(chat).sendMessage(messageCaptor.capture());
+        verify(chat).sendMessage(messageCaptor.capture()); 
         assertEquals("hello world",
-                     messageCaptor.getValue().getBody());
+                     messageCaptor.getValue().getBody()); 
+        }
     }
 
     @Test(expected = WorkItemHandlerRuntimeException.class)
     public void testSendMessageInvalidParams() throws Exception {
         ArgumentCaptor<Message> messageCaptor = ArgumentCaptor.forClass(Message.class);
 
+        try (MockedStatic<ChatManager> chatManagerMock = mockStatic(ChatManager.class)) {
+
         doNothing().when(xmppConnection).connect();
         doNothing().when(xmppConnection).login(anyString(),
                                                anyString());
         doNothing().when(xmppConnection).sendPacket(any(Presence.class));
         doNothing().when(xmppConnection).disconnect();
-        when(xmppConnection.getChatManager()).thenReturn(chatManager);
-        when(chatManager.createChat(anyString(),
-                                    anyObject())).thenReturn(chat);
+
+        chatManagerMock.when(() -> ChatManager.getInstanceFor(xmppConnection)).thenReturn(chatManager);
+        when(chatManager.createChat(anyString(), anyObject())).thenReturn(chat);
 
         TestWorkItemManager manager = new TestWorkItemManager();
         WorkItemImpl workItem = new WorkItemImpl();
@@ -122,5 +131,6 @@ public class JabberWorkItemHandlerTest {
         assertNotNull(manager.getResults());
         assertEquals(0,
                      manager.getResults().size());
-    }
+        }
+   }
 }
