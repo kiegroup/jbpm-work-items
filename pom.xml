@@ -37,13 +37,14 @@
     </checkstyle.header.template>
 
     <version.org.kie>${project.version}</version.org.kie>
-    <version.google.api.services.calendar>v3-rev87-1.19.0</version.google.api.services.calendar>
-    <version.google.api.services.gmail>v1-rev72-1.23.0</version.google.api.services.gmail>
-    <version.google.http.client>1.23.0</version.google.http.client>
-    <version.google.sheets>v4-rev488-1.23.0</version.google.sheets>
-    <version.google.tasks>v1-rev48-1.23.0</version.google.tasks>
-    <version.google.drive>v2-rev285-1.23.0</version.google.drive>
-    <version.google.translate>1.30.0</version.google.translate>
+    <version.google.api.services.calendar>v3-rev20210429-1.31.0</version.google.api.services.calendar>
+    <version.google.api.services.gmail>v1-rev20210614-1.31.0</version.google.api.services.gmail>
+    <version.google.http.client>1.31.0</version.google.http.client>
+    <version.google.api.client>1.31.1</version.google.api.client>
+    <version.google.sheets>v4-rev20210527-1.31.0</version.google.sheets>
+    <version.google.tasks>v1-rev20210109-1.31.0</version.google.tasks>
+    <version.google.drive>v3-rev20210612-1.31.0</version.google.drive>
+    <version.google.translate>1.31.0</version.google.translate>
     <version.ibm.developer.cloud>4.2.1</version.ibm.developer.cloud>
     <version.dropbox.core>3.0.5</version.dropbox.core>
     <version.jetty>8.1.17.v20150415</version.jetty>
@@ -222,7 +223,7 @@
       <dependency>
         <groupId>com.google.api-client</groupId>
         <artifactId>google-api-client</artifactId>
-        <version>${version.google.http.client}</version>
+        <version>${version.google.api.client}</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>

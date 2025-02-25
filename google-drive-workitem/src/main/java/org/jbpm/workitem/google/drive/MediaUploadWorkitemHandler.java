@@ -87,10 +87,10 @@ public class MediaUploadWorkitemHandler extends AbstractLogOrThrowWorkItemHandle
             Drive drive = auth.getDriveService(appName,
                                                clientSecret);
             File fileMetadata = new File();
-            fileMetadata.setTitle(docToUpload.getName());
-            fileMetadata.setAlternateLink(docToUpload.getLink());
+            fileMetadata.set("Title", docToUpload.getName());
+            fileMetadata.set("AlternateLink" ,docToUpload.getLink());
             if (docToUpload.getLastModified() != null) {
-                fileMetadata.setModifiedDate(new DateTime(docToUpload.getLastModified()));
+                fileMetadata.setModifiedTime(new DateTime(docToUpload.getLastModified()));
             }
 
             java.io.File tempDocFile = java.io.File.createTempFile(FilenameUtils.getBaseName(docToUpload.getName()),
@@ -102,12 +102,12 @@ public class MediaUploadWorkitemHandler extends AbstractLogOrThrowWorkItemHandle
             FileContent mediaContent = new FileContent(docMimeType,
                                                        tempDocFile);
 
-            Drive.Files.Insert insert = drive.files().insert(fileMetadata,
+            Drive.Files.Create create = drive.files().create(fileMetadata,
                                                              mediaContent);
-            MediaHttpUploader uploader = insert.getMediaHttpUploader();
+            MediaHttpUploader uploader = create.getMediaHttpUploader();
             uploader.setDirectUploadEnabled(true);
             uploader.setProgressListener(new MediaUploadProgressListener());
-            insert.execute();
+            create.execute();
 
             workItemManager.completeWorkItem(workItem.getId(),
                                              null);

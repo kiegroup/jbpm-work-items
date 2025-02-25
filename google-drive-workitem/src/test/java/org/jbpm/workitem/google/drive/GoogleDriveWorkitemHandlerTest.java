@@ -45,7 +45,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"jdk.internal.reflect.*"})
-@PrepareForTest({MediaHttpUploader.class, MediaHttpDownloader.class, Drive.Files.Insert.class, Drive.Files.Get.class})
+@PrepareForTest({MediaHttpUploader.class, MediaHttpDownloader.class, Drive.Files.Create.class, Drive.Files.Get.class})
 public class GoogleDriveWorkitemHandlerTest extends AbstractBaseTest {
 
     @Mock
@@ -69,18 +69,18 @@ public class GoogleDriveWorkitemHandlerTest extends AbstractBaseTest {
             MediaHttpUploader mediaHttpUploader = PowerMockito.mock(MediaHttpUploader.class);
             MediaHttpDownloader mediaHttpDownloader = PowerMockito.mock(MediaHttpDownloader.class);
 
-            Drive.Files.Insert gdriveFilesInsert = PowerMockito.mock(Drive.Files.Insert.class);
+            Drive.Files.Create gdriveFilesCreate = PowerMockito.mock(Drive.Files.Create.class);
             Drive.Files.Get gdriveFilesGet = PowerMockito.mock(Drive.Files.Get.class);
 
             when(auth.getDriveService(anyString(),
                                       anyString())).thenReturn(gdriveService);
             when(gdriveService.files()).thenReturn(gdriveFiles);
-            when(gdriveFiles.insert(any(File.class),
-                                    any(FileContent.class))).thenReturn(gdriveFilesInsert);
+            when(gdriveFiles.create(any(File.class),
+                                    any(FileContent.class))).thenReturn(gdriveFilesCreate);
             when(gdriveFiles.get(anyString())).thenReturn(gdriveFilesGet);
 
-            when(gdriveFilesInsert.getMediaHttpUploader()).thenReturn(mediaHttpUploader);
-            when(gdriveFilesInsert.execute()).thenReturn(new File());
+            when(gdriveFilesCreate.getMediaHttpUploader()).thenReturn(mediaHttpUploader);
+            when(gdriveFilesCreate.execute()).thenReturn(new File());
             when(gdriveFilesGet.getMediaHttpDownloader()).thenReturn(mediaHttpDownloader);
             when(gdriveFilesGet.executeMediaAsInputStream()).thenReturn(testInputStream);
         } catch (Exception e) {

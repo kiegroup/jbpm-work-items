@@ -73,7 +73,7 @@ public class GoogleTasksWorkitemHandlerTest extends AbstractBaseTest {
             when(tasksService.tasklists()).thenReturn(taskLists);
             when(taskLists.list()).thenReturn(taskListsList);
             when(taskLists.insert(any(TaskList.class))).thenReturn(taskListsInsert);
-            when(taskListsList.setMaxResults(anyLong())).thenReturn(taskListsList);
+            when(taskListsList.setMaxResults(anyInt())).thenReturn(taskListsList);
             when(taskListsList.execute()).thenReturn(taskListsModel);
             when(taskListsInsert.execute()).thenReturn(listOne);
         } catch (Exception e) {

@@ -218,6 +218,8 @@
                       <ignoreClass>org.aopalliance.*</ignoreClass>
                       <ignoreClass>javax.inject.*</ignoreClass>
                       <ignoreClass>org.apache.http.*</ignoreClass>
+                      <ignoreClass>com.sun.xml.*</ignoreClass>
+                      <ignoreClass>com.sun.istack.*</ignoreClass>
                     </ignoreClasses>
                   </banDuplicateClasses>
                 </rules>

@@ -84,7 +84,7 @@ public class AddTaskWorkitemHandler extends AbstractLogOrThrowWorkItemHandler {
             taskList.setTitle(taskName);
             taskList.setId(taskName);
             taskList.setKind(taskKind);
-            taskList.setUpdated(new DateTime(new Date()));
+            taskList.setUpdated((new Date()).toString());
 
             service.tasklists().insert(taskList).execute();
 
