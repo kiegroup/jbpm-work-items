@@ -38,7 +38,7 @@ public class SerializableInspectContainerResponse extends InspectContainerRespon
     private String hostsPath;
     private String logPath;
     private String id;
-    private Integer sizeRootFs;
+    private Long sizeRootFs;
     private String imageId;
     private String mountLabel;
     private String name;
@@ -142,7 +142,7 @@ public class SerializableInspectContainerResponse extends InspectContainerRespon
     }
 
     @Override
-    public Integer getSizeRootFs() {
+    public Long getSizeRootFs() {
         return sizeRootFs;
     }
 
