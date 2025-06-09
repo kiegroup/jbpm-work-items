@@ -59,7 +59,7 @@
     <version.commons.net>3.6</version.commons.net>
     <version.wildfly.maven.plugin>1.2.1.Final</version.wildfly.maven.plugin>
     <version.war.plugin>3.2.2</version.war.plugin>
-    <version.apache.commons.io>2.5</version.apache.commons.io>
+    <version.apache.commons.io>2.19.0</version.apache.commons.io>
     <version.jslack>1.1.4</version.jslack>
     <version.org.xhtmlrenderer>9.1.15</version.org.xhtmlrenderer>
     <version.xmlsec>2.2.6</version.xmlsec>
