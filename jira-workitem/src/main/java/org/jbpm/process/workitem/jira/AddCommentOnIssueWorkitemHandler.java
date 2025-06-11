@@ -15,11 +15,10 @@
  */
 package org.jbpm.process.workitem.jira;
 
-import com.atlassian.jira.rest.client.NullProgressMonitor;
-import com.atlassian.jira.rest.client.domain.Comment;
-import com.atlassian.jira.rest.client.domain.Issue;
-import com.atlassian.jira.rest.client.domain.User;
-import com.atlassian.jira.rest.client.domain.Visibility;
+import com.atlassian.jira.rest.client.api.domain.Comment;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.User;
+import com.atlassian.jira.rest.client.api.domain.Visibility;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
 import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
@@ -92,11 +91,8 @@ public class AddCommentOnIssueWorkitemHandler extends AbstractLogOrThrowWorkItem
                                     repoURI);
             }
 
-            NullProgressMonitor progressMonitor = new NullProgressMonitor();
-            Issue issue = auth.getIssueRestClient().getIssue(issueKey,
-                                                             progressMonitor);
-            User user = auth.getUserRestClient().getUser(commenter,
-                                                         progressMonitor);
+            Issue issue = auth.getIssueRestClient().getIssue(issueKey).claim();
+            User user = auth.getUserRestClient().getUser(commenter).claim();
 
             if (issue != null) {
                 Comment toAddComment = new Comment(null,
@@ -108,9 +104,7 @@ public class AddCommentOnIssueWorkitemHandler extends AbstractLogOrThrowWorkItem
                                                    new Visibility(Visibility.Type.GROUP,
                                                                   commentVisibleTo),
                                                    null);
-                auth.getIssueRestClient().addComment(progressMonitor,
-                                                     issue.getSelf(),
-                                                     toAddComment);
+                auth.getIssueRestClient().addComment(issue.getSelf(), toAddComment).claim();
 
                 workItemManager.completeWorkItem(workItem.getId(),
                                                  null);

@@ -19,12 +19,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.atlassian.jira.rest.client.NullProgressMonitor;
-import com.atlassian.jira.rest.client.domain.BasicIssue;
-import com.atlassian.jira.rest.client.domain.Issue;
-import com.atlassian.jira.rest.client.domain.IssueType;
-import com.atlassian.jira.rest.client.domain.input.IssueInput;
-import com.atlassian.jira.rest.client.domain.input.IssueInputBuilder;
+import com.atlassian.jira.rest.client.api.domain.BasicIssue;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.IssueType;
+import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
+import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
 import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
@@ -117,9 +116,8 @@ public class CreateIssueWorkitemHandler extends AbstractLogOrThrowWorkItemHandle
                 givenIssueType = "Bug";
             }
 
-            NullProgressMonitor progressMonitor = new NullProgressMonitor();
             // get the issue type for whats given
-            Iterable<IssueType> allIssueTypes = auth.getMetaDataRestClient().getIssueTypes(progressMonitor);
+            Iterable<IssueType> allIssueTypes = auth.getMetaDataRestClient().getIssueTypes().claim();
             for (IssueType myIssueType : allIssueTypes) {
                 if (myIssueType.getName().equals(givenIssueType)) {
                     issueTypeObj = myIssueType;
@@ -153,11 +151,9 @@ public class CreateIssueWorkitemHandler extends AbstractLogOrThrowWorkItemHandle
             }
 
             IssueInput issueInput = issueBuilder.build();
-            BasicIssue toCreateIssue = auth.getIssueRestClient().createIssue(issueInput,
-                                                                             progressMonitor);
+            BasicIssue toCreateIssue = auth.getIssueRestClient().createIssue(issueInput).claim();
 
-            Issue createdIssue = auth.getIssueRestClient().getIssue(toCreateIssue.getKey(),
-                                                                    progressMonitor);
+            Issue createdIssue = auth.getIssueRestClient().getIssue(toCreateIssue.getKey()).claim();
 
             results.put(RESULTS_VALUE,
                         createdIssue.getKey());

@@ -18,9 +18,9 @@ package org.jbpm.process.workitem.jira;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.atlassian.jira.rest.client.NullProgressMonitor;
-import com.atlassian.jira.rest.client.domain.BasicIssue;
-import com.atlassian.jira.rest.client.domain.SearchResult;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.BasicIssue;
+import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
 import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
@@ -94,12 +94,11 @@ public class JqlSearchWorkitemHandler extends AbstractLogOrThrowWorkItemHandler 
             Map<String, Object> results = new HashMap<String, Object>();
             Map<String, String> resultIssues = new HashMap<>();
 
-            NullProgressMonitor progressMonitor = new NullProgressMonitor();
-            SearchResult searchResult = auth.getSearchRestClient().searchJql(jqlQuery,
-                                                                             progressMonitor);
-            Iterable<BasicIssue> foundIssues = searchResult.getIssues();
+            
+            SearchResult searchResult = auth.getSearchRestClient().searchJql(jqlQuery).claim();
+            Iterable<Issue> foundIssues = searchResult.getIssues();
 
-            for (BasicIssue issue : foundIssues) {
+            for (Issue issue : foundIssues) {
                 resultIssues.put(issue.getKey(),
                                  issue.getSelf().toURL().toString());
             }

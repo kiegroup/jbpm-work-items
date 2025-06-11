@@ -18,12 +18,11 @@ package org.jbpm.process.workitem.jira;
 import java.util.Arrays;
 import java.util.Collection;
 
-import com.atlassian.jira.rest.client.NullProgressMonitor;
-import com.atlassian.jira.rest.client.domain.Comment;
-import com.atlassian.jira.rest.client.domain.Issue;
-import com.atlassian.jira.rest.client.domain.Transition;
-import com.atlassian.jira.rest.client.domain.input.FieldInput;
-import com.atlassian.jira.rest.client.domain.input.TransitionInput;
+import com.atlassian.jira.rest.client.api.domain.Comment;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.Transition;
+import com.atlassian.jira.rest.client.api.domain.input.FieldInput;
+import com.atlassian.jira.rest.client.api.domain.input.TransitionInput;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
 import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
@@ -93,13 +92,11 @@ public class ResolveIssueWorkitemHandler extends AbstractLogOrThrowWorkItemHandl
                                     repoURI);
             }
 
-            NullProgressMonitor progressMonitor = new NullProgressMonitor();
-            Issue issue = auth.getIssueRestClient().getIssue(issueKey,
-                                                             progressMonitor);
+            Issue issue = auth.getIssueRestClient().getIssue(issueKey).claim();
 
             if (issue != null) {
-                Iterable<Transition> transitions = auth.getIssueRestClient().getTransitions(issue.getTransitionsUri(),
-                                                                                            progressMonitor);
+                Iterable<Transition> transitions = auth.getIssueRestClient().getTransitions(issue.getTransitionsUri())
+                        .claim();
 
                 Transition resolveIssueTransition = getTransitionByName(transitions,
                                                                         "Resolve Issue");
@@ -108,9 +105,7 @@ public class ResolveIssueWorkitemHandler extends AbstractLogOrThrowWorkItemHandl
                 TransitionInput transitionInput = new TransitionInput(resolveIssueTransition.getId(),
                                                                       fieldInputs,
                                                                       Comment.valueOf(resolutionComment));
-                auth.getIssueRestClient().transition(issue.getTransitionsUri(),
-                                                     transitionInput,
-                                                     progressMonitor);
+                auth.getIssueRestClient().transition(issue.getTransitionsUri(), transitionInput).claim();
 
                 workItemManager.completeWorkItem(workItem.getId(),
                                                  null);

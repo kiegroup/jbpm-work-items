@@ -17,13 +17,14 @@ package org.jbpm.process.workitem.jira;
 
 import java.net.URI;
 
-import com.atlassian.jira.rest.client.IssueRestClient;
-import com.atlassian.jira.rest.client.JiraRestClient;
-import com.atlassian.jira.rest.client.MetadataRestClient;
-import com.atlassian.jira.rest.client.ProjectRestClient;
-import com.atlassian.jira.rest.client.SearchRestClient;
-import com.atlassian.jira.rest.client.UserRestClient;
-import com.atlassian.jira.rest.client.internal.jersey.JerseyJiraRestClientFactory;
+import com.atlassian.jira.rest.client.api.IssueRestClient;
+import com.atlassian.jira.rest.client.api.JiraRestClient;
+import com.atlassian.jira.rest.client.api.MetadataRestClient;
+import com.atlassian.jira.rest.client.api.ProjectRestClient;
+import com.atlassian.jira.rest.client.api.SearchRestClient;
+import com.atlassian.jira.rest.client.api.UserRestClient;
+import com.atlassian.jira.rest.client.api.JiraRestClientFactory;
+import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 
 public class JiraAuth {
 
@@ -32,7 +33,7 @@ public class JiraAuth {
     public JiraAuth(String username,
                     String password,
                     String repoURI) throws Exception {
-        JerseyJiraRestClientFactory factory = new JerseyJiraRestClientFactory();
+        JiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
         final URI jiraServerUri = new URI(repoURI);
 
         jiraRestClient = factory.createWithBasicHttpAuthentication(jiraServerUri,

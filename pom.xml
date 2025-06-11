@@ -50,7 +50,7 @@
     <version.jetty>8.1.17.v20150415</version.jetty>
     <version.twitter4j>4.0.6</version.twitter4j>
     <version.egit.github>2.1.5</version.egit.github>
-    <version.atlassian.jira>1.0</version.atlassian.jira>
+    <version.atlassian.jira>5.2.2</version.atlassian.jira>
     <version.web3j>3.3.1</version.web3j>
     <version.github.jnr>0.15</version.github.jnr>
     <version.squareup.okhttp3>4.12.0</version.squareup.okhttp3>
@@ -257,7 +257,12 @@
       </dependency>
       <dependency>
         <groupId>com.atlassian.jira</groupId>
-        <artifactId>jira-rest-java-client</artifactId>
+        <artifactId>jira-rest-java-client-core</artifactId>
+        <version>${version.atlassian.jira}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.atlassian.jira</groupId>
+        <artifactId>jira-rest-java-client-api</artifactId>
         <version>${version.atlassian.jira}</version>
       </dependency>
       <dependency>
@@ -1041,6 +1046,15 @@
       <id>central</id>
       <name>Central Repository</name>
       <url>https://repo.maven.apache.org/maven2</url>
+      <layout>default</layout>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>atlassian</id>
+      <name>Atlassian public Repository</name>
+      <url>https://maven.artifacts.atlassian.com/</url>
       <layout>default</layout>
       <snapshots>
         <enabled>false</enabled>

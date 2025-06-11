@@ -17,25 +17,35 @@ package org.jbpm.process.workitem.jira;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import com.atlassian.jira.rest.client.IssueRestClient;
-import com.atlassian.jira.rest.client.JiraRestClient;
-import com.atlassian.jira.rest.client.MetadataRestClient;
-import com.atlassian.jira.rest.client.ProgressMonitor;
-import com.atlassian.jira.rest.client.ProjectRestClient;
-import com.atlassian.jira.rest.client.SearchRestClient;
-import com.atlassian.jira.rest.client.UserRestClient;
-import com.atlassian.jira.rest.client.domain.BasicIssue;
-import com.atlassian.jira.rest.client.domain.Comment;
-import com.atlassian.jira.rest.client.domain.Issue;
-import com.atlassian.jira.rest.client.domain.IssueType;
-import com.atlassian.jira.rest.client.domain.SearchResult;
-import com.atlassian.jira.rest.client.domain.Transition;
-import com.atlassian.jira.rest.client.domain.User;
-import com.atlassian.jira.rest.client.domain.input.IssueInput;
-import com.atlassian.jira.rest.client.domain.input.TransitionInput;
+import javax.swing.ProgressMonitor;
+
+import com.atlassian.jira.rest.client.api.IssueRestClient;
+import com.atlassian.jira.rest.client.api.JiraRestClient;
+import com.atlassian.jira.rest.client.api.MetadataRestClient;
+import com.atlassian.jira.rest.client.api.ProjectRestClient;
+import com.atlassian.jira.rest.client.api.SearchRestClient;
+import com.atlassian.jira.rest.client.api.StatusCategory;
+import com.atlassian.jira.rest.client.api.UserRestClient;
+import com.atlassian.jira.rest.client.api.domain.BasicIssue;
+import com.atlassian.jira.rest.client.api.domain.BasicProject;
+import com.atlassian.jira.rest.client.api.domain.BasicVotes;
+import com.atlassian.jira.rest.client.api.domain.BasicWatchers;
+import com.atlassian.jira.rest.client.api.domain.Comment;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.IssueType;
+import com.atlassian.jira.rest.client.api.domain.SearchResult;
+import com.atlassian.jira.rest.client.api.domain.Transition;
+import com.atlassian.jira.rest.client.api.domain.User;
+import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
+import com.atlassian.jira.rest.client.api.domain.input.TransitionInput;
+import com.atlassian.jira.rest.client.api.domain.Status;
+
+import io.atlassian.util.concurrent.Promise;
+
 import org.drools.core.process.instance.impl.WorkItemImpl;
 import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 import org.jbpm.process.workitem.core.TestWorkItemManager;
@@ -46,6 +56,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -100,71 +112,107 @@ public class JiraWorkitemHandlerTest {
             List<IssueType> testIssueTypes = new ArrayList<>();
             testIssueTypes.add(testIssueType);
 
-            when(metadataRestClient.getIssueTypes(any(ProgressMonitor.class))).thenReturn(testIssueTypes);
+            @SuppressWarnings("unchecked")
+            Promise<Iterable<IssueType>> promiseIssueTypes = mock(Promise.class);
+            when(promiseIssueTypes.claim()).thenReturn(testIssueTypes); // Explicitly return the list
+            when(metadataRestClient.getIssueTypes()).thenReturn(promiseIssueTypes);
 
+            // Mock statuses
+            List<Status> testStatuses = new ArrayList<>();
+            testStatuses.add(new Status(testURI, 1L, "testStatus", "testStatusDesc", testURI, new StatusCategory(testURI, "testCategory", 1L, "testKey", "blue")));
+            @SuppressWarnings("unchecked")
+            Promise<Iterable<Status>> promiseStatuses = mock(Promise.class);
+            when(promiseStatuses.claim()).thenReturn(testStatuses);
+            when(metadataRestClient.getStatuses()).thenReturn(promiseStatuses);
             // issuerestclient
-            BasicIssue basicIssue = new BasicIssue(testURI,
-                                                   "testIssueKey");
-            when(issueRestClient.createIssue(any(IssueInput.class),
-                                             any(ProgressMonitor.class))).thenReturn(basicIssue);
+            BasicIssue basicIssue = new BasicIssue(testURI, "testIssueKey", 1L);
+            @SuppressWarnings("unchecked")
+            Promise<BasicIssue> promiseBasicIssue = mock(Promise.class);
+            when(promiseBasicIssue.claim()).thenReturn(basicIssue);
+            when(issueRestClient.createIssue(any(IssueInput.class))).thenReturn(promiseBasicIssue);
 
-            Issue issue = new Issue("",
-                                    null,
-                                    "testIssueKey",
-                                    null,
-                                    null,
-                                    null,
-                                    "",
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null);
-            when(issueRestClient.getIssue(any(),
-                                          any())).thenReturn(issue);
-            doNothing().when(issueRestClient).addComment(any(ProgressMonitor.class),
-                                                         any(URI.class),
-                                                         any(Comment.class));
+           // Mock StatusCategory
+            StatusCategory testStatusCategory = new StatusCategory(testURI, "testCategory", 1L, "testKey", "blue");
+            // Mock Status
+            Status testStatus = new Status(testURI, 1L, "testStatus", "testStatusDesc", testURI, testStatusCategory);
+            // Mock BasicProject
+            BasicProject testProject = new BasicProject(testURI, "testProjectKey", 1L, "testProject");
+            Issue issue = new Issue(
+                    "testSummary",
+                    testURI,
+                    "testIssueKey",
+                    1L,
+                    testProject,
+                    testIssueType,
+                    testStatus,
+                    "testDescription",
+                    null,
+                    null,
+                    new ArrayList<>(),
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    new ArrayList<>(),
+                    new ArrayList<>(),
+                    new ArrayList<>(),
+                    null,
+                    new ArrayList<>(),
+                    new ArrayList<>(),
+                    testURI,
+                    null,
+                    new BasicVotes(testURI, 0, false),
+                    new ArrayList<>(),
+                    new BasicWatchers(testURI, false, 1),
+                    new ArrayList<>(),
+                    null,
+                    null,
+                    null,
+                    new HashSet<>()
+            );
+            @SuppressWarnings("unchecked")
+            Promise<Issue> promiseIssue = mock(Promise.class);
+            when(promiseIssue.claim()).thenReturn(issue);
+            when(issueRestClient.getIssue(any(String.class))).thenReturn(promiseIssue); // Mock for getIssue(String)
+            // Mock addComment to return Promise<Void>
+            @SuppressWarnings("unchecked")
+            Promise<Void> promiseAddComment = mock(Promise.class);
+            when(promiseAddComment.claim()).thenReturn(null);
+            when(issueRestClient.addComment(any(URI.class), any(Comment.class))).thenReturn(promiseAddComment);
 
             Transition testTransition = new Transition("Resolve Issue",
                                                        1,
                                                        null);
             List<Transition> testAllTransitions = new ArrayList<>();
             testAllTransitions.add(testTransition);
-            when(issueRestClient.getTransitions((URI) any(),
-                                                any(ProgressMonitor.class))).thenReturn(testAllTransitions);
-            doNothing().when(issueRestClient).transition(any(URI.class),
-                                                         any(TransitionInput.class),
-                                                         any(ProgressMonitor.class));
+            @SuppressWarnings("unchecked")
+            Promise<Iterable<Transition>> promiseTransitions = mock(Promise.class);
+            when(promiseTransitions.claim()).thenReturn(testAllTransitions);
+            when(issueRestClient.getTransitions(any(URI.class))).thenReturn(promiseTransitions);
+            // Mock transition to return Promise<Void>
+            @SuppressWarnings("unchecked")
+            Promise<Void> promiseTransition = mock(Promise.class);
+            when(promiseTransition.claim()).thenReturn(null);
+            when(issueRestClient.transition(any(URI.class), any(TransitionInput.class))).thenReturn(promiseTransition);
 
             // searchrestclient
-            List<BasicIssue> testSearchResults = new ArrayList<>();
-            testSearchResults.add(basicIssue);
-            when(searchRestClient.searchJql(anyString(),
-                                            any(ProgressMonitor.class))).thenReturn(searchResults);
-            when(searchResults.getIssues()).thenReturn(testSearchResults);
+            BasicIssue basicIssueForSearch = new BasicIssue(testURI, "testIssueKey", 1L);
+            List<Issue> testSearchResults = new ArrayList<>();
+            testSearchResults.add(issue);
+            @SuppressWarnings("unchecked")
+            Promise<SearchResult> promiseSearchResult = mock(Promise.class);
+            @SuppressWarnings("unchecked")
+            SearchResult mockSearchResult = mock(SearchResult.class);
+            when(promiseSearchResult.claim()).thenReturn(mockSearchResult);
+            when(mockSearchResult.getIssues()).thenReturn(testSearchResults);
+            when(searchRestClient.searchJql(anyString())).thenReturn(promiseSearchResult);
 
             // userrestclient
-            when(userRestClient.getUser(anyString(),
-                                        any(ProgressMonitor.class))).thenReturn(user);
+            @SuppressWarnings("unchecked")
+            Promise<User> promiseUser = mock(Promise.class);
+            when(promiseUser.claim()).thenReturn(user);
+            when(userRestClient.getUser(anyString())).thenReturn(promiseUser);
         } catch (Exception e) {
             fail(e.getMessage());
         }
