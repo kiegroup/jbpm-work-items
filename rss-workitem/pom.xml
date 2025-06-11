@@ -18,7 +18,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>rome</groupId>
+      <groupId>com.rometools</groupId>
       <artifactId>rome</artifactId>
       <optional>true</optional>
     </dependency>

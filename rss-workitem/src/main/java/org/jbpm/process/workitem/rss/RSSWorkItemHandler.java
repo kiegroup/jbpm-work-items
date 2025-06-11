@@ -20,9 +20,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.XmlReader;
+import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.io.SyndFeedInput;
+import com.rometools.rome.io.XmlReader;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
 import org.jbpm.process.workitem.core.util.RequiredParameterValidator;
 import org.jbpm.process.workitem.core.util.Wid;
