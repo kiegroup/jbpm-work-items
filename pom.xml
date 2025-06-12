@@ -1052,13 +1052,9 @@
       </snapshots>
     </repository>
     <repository>
-      <id>atlassian</id>
-      <name>Atlassian public Repository</name>
-      <url>https://maven.artifacts.atlassian.com/</url>
-      <layout>default</layout>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
+      <id>atlassian-public</id>
+      <name>Atlassian Public Maven Repository</name>
+      <url>https://packages.atlassian.com/maven-public/</url>
     </repository>
 
     <repository>
