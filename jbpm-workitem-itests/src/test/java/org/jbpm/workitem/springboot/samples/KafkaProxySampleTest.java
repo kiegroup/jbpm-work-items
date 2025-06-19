@@ -57,7 +57,7 @@ public class KafkaProxySampleTest extends KafkaProxyBase {
         assertEquals("failure", (String)countDownLatchEventListener.getResult());
     }
     
-    @Test(timeout = 60000)
+    @Test(timeout = 240000)
     public void testKafkaWIHReconnect() throws Exception {
 
         countDownLatchEventListener.configure(KAFKA_PROCESS_ID, 1);

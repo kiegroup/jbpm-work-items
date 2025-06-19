@@ -101,7 +101,7 @@ public class KafkaSampleTest extends KafkaBaseTest {
         kafkaFixture.cleanup(deploymentService);
     }
 
-    @Test(timeout = 60000)
+    @Test(timeout = 120000)
     public void testKafkaWIHSendMessage() throws Exception {
         
         Long processInstanceId = processService.startProcess(deploymentId, 

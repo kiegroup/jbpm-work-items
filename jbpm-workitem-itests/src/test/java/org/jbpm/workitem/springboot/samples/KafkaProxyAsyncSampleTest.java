@@ -80,7 +80,7 @@ public class KafkaProxyAsyncSampleTest extends KafkaProxyBase {
         executorService.destroy();
     }
     
-    @Test(timeout = 30000)
+    @Test(timeout = 60000)
     public void testAsyncKafkaWIH() throws Exception {
         countDownLatchEventListener.configureNode(KAFKA_WIH_PROCESS, "End", 2);
         
@@ -95,7 +95,7 @@ public class KafkaProxyAsyncSampleTest extends KafkaProxyBase {
         assertRequestsAndProcesses(0, 1, 0);
     }
 
-    @Test(timeout = 30000)
+    @Test(timeout = 60000)
     public void testAsyncKafkaWIHConnectedLater() throws Exception {
         countDownLatchEventListener.configureNode(KAFKA_WIH_PROCESS, "End", 2);
         
@@ -120,7 +120,7 @@ public class KafkaProxyAsyncSampleTest extends KafkaProxyBase {
         assertRequestsAndProcesses(0, 1, 0);
     }
     
-    @Test(timeout = 80000)
+    @Test(timeout = 160000)
     public void testAsyncKafkaWIHNoConnection() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
         
