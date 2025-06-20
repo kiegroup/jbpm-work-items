@@ -25,6 +25,8 @@
 
   <properties>
     <start-class>org.jbpm.workitem.springboot.samples.JBPMApplication</start-class>
+    <version.io.strimzi.strimzi-test-container>0.107.0</version.io.strimzi.strimzi-test-container>
+    <version.org.testcontainers>1.16.3</version.org.testcontainers>
   </properties>
 
   <dependencyManagement>
@@ -79,10 +81,21 @@
       <artifactId>kafka-clients</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!-- Spring Boot v2 has no updates, but the tomcat version it uses has multiple CVEs -->
+    <!-- For this reason, we're going to include our own version of tomcat and exclude what it brings in -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
       <exclusions>
+        <exclusion>
+          <groupId>org.apache.tomcat.embed</groupId>
+          <artifactId>tomcat-embed-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.tomcat.embed</groupId>
+          <artifactId>tomcat-embed-websocket</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>org.apache.tomcat.embed</groupId>
           <artifactId>tomcat-embed-el</artifactId>
@@ -97,6 +110,21 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.apache.tomcat.embed</groupId>
+      <artifactId>tomcat-embed-websocket</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tomcat.embed</groupId>
+      <artifactId>tomcat-embed-core</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.tomcat</groupId>
+          <artifactId>tomcat-annotations-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
@@ -148,6 +176,10 @@
       <artifactId>jaxb-core</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+    </dependency>
   </dependencies>
 
   <!-- Meaningless change just to test the builds -->
@@ -194,8 +226,13 @@
               <toxiproxy.image>shopify/toxiproxy:2.1.4</toxiproxy.image>
               <toxiproxy.port>9093</toxiproxy.port>
               <org.kie.executor.jms>false</org.kie.executor.jms>
+              <version.org.apache.kafka>${version.org.apache.kafka}</version.org.apache.kafka>
+              <version.com.fasterxml.jackson.databind>${version.com.fasterxml.jackson.databind}</version.com.fasterxml.jackson.databind>
               <kafka.container.version>${version.org.apache.kafka}</kafka.container.version>
             </systemPropertyVariables>
+            <environmentVariables>
+              <TESTCONTAINERS_RYUK_DISABLED>true</TESTCONTAINERS_RYUK_DISABLED>
+            </environmentVariables>
           </configuration>
         </plugin>
       </plugins>
