@@ -27,13 +27,15 @@ import org.jbpm.process.workitem.core.util.WidParameter;
 import org.jbpm.process.workitem.core.util.service.WidAction;
 import org.jbpm.process.workitem.core.util.service.WidAuth;
 import org.jbpm.process.workitem.core.util.service.WidService;
-import org.jivesoftware.smack.Chat;
-import org.jivesoftware.smack.ChatManager;
+import org.jivesoftware.smack.AbstractXMPPConnection;
+import org.jivesoftware.smack.chat.Chat;
+import org.jivesoftware.smack.chat.ChatManager;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.slf4j.Logger;
@@ -42,8 +44,8 @@ import org.slf4j.LoggerFactory;
 @Wid(widfile = "JabberDefinitions.wid", name = "Jabber",
         displayName = "Jabber",
         defaultHandler = "mvel: new org.jbpm.process.workitem.jabber.JabberWorkItemHandler()",
-        documentation = "${artifactId}/index.html",
-        category = "${artifactId}",
+        documentation = "jabber-workitem/index.html",
+        category = "jabber-workitem",
         icon = "Jabber.png",
         parameters = {
                 @WidParameter(name = "User"),
@@ -55,9 +57,9 @@ import org.slf4j.LoggerFactory;
                 @WidParameter(name = "To", required = true)
         },
         mavenDepends = {
-                @WidMavenDepends(group = "${groupId}", artifact = "${artifactId}", version = "${version}")
+                @WidMavenDepends(group = "org.jbpm.contrib", artifact = "jabber-workitem", version = "7.67.2-SNAPSHOT")
         },
-        serviceInfo = @WidService(category = "${name}", description = "${description}",
+        serviceInfo = @WidService(category = "Jabber", description = "Send message via Jabber",
                 keywords = "jabber,im,xmpp,message,send",
                 action = @WidAction(title = "Send a message using Jabber"),
                 authinfo = @WidAuth(required = true, params = {"user", "password"},
@@ -74,11 +76,11 @@ public class JabberWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
     private int port;
     private String service;
     private String text;
-    private ConnectionConfiguration conf;
-    private XMPPConnection connection;
+    private XMPPTCPConnectionConfiguration conf;
+    private AbstractXMPPConnection connection;
 
     private List<String> toUsers = new ArrayList<String>();
-    
+
     public JabberWorkItemHandler(String user, String password) {
         this.user = user;
         this.password = password;
@@ -90,13 +92,13 @@ public class JabberWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
         try {
 
             RequiredParameterValidator.validate(this.getClass(),
-                                                workItem);
+                    workItem);
 
             this.user = (String) workItem.getParameter("User");
             this.password = (String) workItem.getParameter("Password");
             this.server = (String) workItem.getParameter("Server");
             String portString = (String) workItem.getParameter("Port");
-            if (portString != null && !portString.equals("")) {
+            if (portString != null && !portString.isEmpty()) {
                 this.port = Integer.valueOf((String) workItem.getParameter("Port"));
             }
             this.service = (String) workItem.getParameter("Service");
@@ -105,35 +107,32 @@ public class JabberWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
             String to = (String) workItem.getParameter("To");
 
             for (String s : to.split(";")) {
-                if (s != null && !"".equals(s)) {
+                if (s != null && !s.isEmpty()) {
                     this.toUsers.add(s);
                 }
             }
 
             if (conf == null) {
-                conf = new ConnectionConfiguration(server,
-                                                   port,
-                                                   service);
+                conf = XMPPTCPConnectionConfiguration.builder()
+                        .setHost(server).setPort(port).setServiceName(service).build();
             }
 
-            if (server != null && !server.equals("") && port != 0) {
+            if (server != null && !server.isEmpty() && port != 0) {
                 if (connection == null) {
                     connection = new XMPPTCPConnection(conf);
                 }
             } else {
-                if (connection == null) {
-                    connection = new XMPPTCPConnection(service);
-                }
+                throw new IllegalArgumentException("Missing required parameter: Server and/or Port");
             }
 
             connection.connect();
             logger.info("Connected to {}",
-                        connection.getHost());
+                    connection.getHost());
 
             connection.login(user,
-                             password);
+                    password);
             logger.info("Logged in as {}",
-                        connection.getUser());
+                    connection.getUser());
             Presence presence = new Presence(Presence.Type.available);
             connection.sendPacket(presence);
 
@@ -141,21 +140,21 @@ public class JabberWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
                 ChatManager chatmanager = ChatManager.getInstanceFor(connection);
                 Chat chat = chatmanager.createChat(toUser,
-                                                   null);
+                        null);
 
                 // google bounces back the default message types, you must use chat
                 Message msg = new Message(toUser,
-                                          Message.Type.chat);
+                        Message.Type.chat);
                 msg.setBody(text);
                 chat.sendMessage(msg);
                 logger.info("Message Sent {}",
-                            msg);
+                        msg);
             }
 
             connection.disconnect();
 
             manager.completeWorkItem(workItem.getId(),
-                                     null);
+                    null);
         } catch (Exception e) {
             handleException(e);
         }
@@ -166,12 +165,12 @@ public class JabberWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
     }
 
     // for testing
-    public void setConf(ConnectionConfiguration conf) {
+    public void setConf(XMPPTCPConnectionConfiguration conf) {
         this.conf = conf;
     }
 
     // for testing
-    public void setConnection(XMPPConnection connection) {
+    public void setConnection(AbstractXMPPConnection connection) {
         this.connection = connection;
     }
 }

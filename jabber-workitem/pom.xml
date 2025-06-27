@@ -24,6 +24,11 @@
     </dependency>
     <dependency>
       <groupId>org.igniterealtime.smack</groupId>
+      <artifactId>smack-im</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.igniterealtime.smack</groupId>
       <artifactId>smack-tcp</artifactId>
       <optional>true</optional>
     </dependency>

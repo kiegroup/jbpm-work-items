@@ -19,10 +19,10 @@ package org.jbpm.process.workitem.jabber;
 import org.drools.core.process.instance.impl.WorkItemImpl;
 import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 import org.jbpm.process.workitem.core.TestWorkItemManager;
-import org.jivesoftware.smack.Chat;
-import org.jivesoftware.smack.ChatManager;
-import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.chat.Chat;
+import org.jivesoftware.smack.chat.ChatManager;
+import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.junit.Test;
@@ -42,10 +42,10 @@ import static org.mockito.Mockito.*;
 public class JabberWorkItemHandlerTest {
 
     @Mock
-    ConnectionConfiguration connectionConf;
+    XMPPTCPConnectionConfiguration connectionConf;
 
     @Mock
-    XMPPConnection xmppConnection;
+    AbstractXMPPConnection xmppConnection;
 
     @Mock
     ChatManager chatManager;
@@ -59,7 +59,7 @@ public class JabberWorkItemHandlerTest {
 
         try (MockedStatic<ChatManager> chatManagerMock = mockStatic(ChatManager.class)) {
 
-        doNothing().when(xmppConnection).connect();
+        doReturn(null).when(xmppConnection).connect();
         doNothing().when(xmppConnection).login(anyString(),
                                                anyString());
         doNothing().when(xmppConnection).sendPacket(any(Presence.class));
@@ -108,8 +108,7 @@ public class JabberWorkItemHandlerTest {
         ArgumentCaptor<Message> messageCaptor = ArgumentCaptor.forClass(Message.class);
 
         try (MockedStatic<ChatManager> chatManagerMock = mockStatic(ChatManager.class)) {
-
-        doNothing().when(xmppConnection).connect();
+        doReturn(null).when(xmppConnection).connect();
         doNothing().when(xmppConnection).login(anyString(),
                                                anyString());
         doNothing().when(xmppConnection).sendPacket(any(Presence.class));
