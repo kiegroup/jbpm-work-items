@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.aksingh.owmjapis.core.OWM;
+import net.aksingh.owmjapis.core.OWMPro;
 import net.aksingh.owmjapis.core.OWM.Country;
 import net.aksingh.owmjapis.model.DailyWeatherForecast;
 import net.aksingh.owmjapis.model.param.ForecastData;
@@ -67,7 +67,7 @@ public class DailyForecastWorkitemHandler extends AbstractLogOrThrowWorkItemHand
     private static final String RESULTS_VALUES = "DailyForecastData";
 
     private String apiKey;
-    private OWM owm;
+    private OWMPro owm;
 
     public DailyForecastWorkitemHandler(String apiKey) {
         this.apiKey = apiKey;
@@ -88,13 +88,14 @@ public class DailyForecastWorkitemHandler extends AbstractLogOrThrowWorkItemHand
             DailyForecastData dfd = new DailyForecastData();
 
             if (owm == null) {
-                owm = new OWM(apiKey);
+                owm = new OWMPro(apiKey);
             }
 
             DailyWeatherForecast dailyWeatherForecast;
 
             if (countryCode == null) {
-                dailyWeatherForecast = owm.dailyWeatherForecastByCityName(cityName);
+                // 16 is the max count, unfortunately, the constant isn't exposed outside the library.
+                dailyWeatherForecast = owm.dailyWeatherForecastByCityName(cityName, 16);
             } else {
                 dailyWeatherForecast = owm.dailyWeatherForecastByCityName(cityName,
                                                                           Country.valueOf(countryCode));
@@ -150,7 +151,7 @@ public class DailyForecastWorkitemHandler extends AbstractLogOrThrowWorkItemHand
     }
 
     // for testing
-    public void setOWM(OWM owm) {
+    public void setOWM(OWMPro owm) {
         this.owm = owm;
     }
 }

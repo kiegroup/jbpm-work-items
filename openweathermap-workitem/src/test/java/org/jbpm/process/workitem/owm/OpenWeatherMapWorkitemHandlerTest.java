@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import net.aksingh.owmjapis.core.OWM;
+import net.aksingh.owmjapis.core.OWMPro;
 import net.aksingh.owmjapis.core.OWM.Country;
 import net.aksingh.owmjapis.model.CurrentWeather;
 import net.aksingh.owmjapis.model.DailyWeatherForecast;
@@ -46,16 +46,16 @@ import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({OWM.class, CurrentWeather.class, DailyWeatherForecast.class, Main.class, City.class, ForecastData.class, Temp.class})
+@PrepareForTest({OWMPro.class, CurrentWeather.class, DailyWeatherForecast.class, Main.class, City.class, ForecastData.class, Temp.class})
 @PowerMockIgnore({"jdk.internal.reflect.*"})
 public class OpenWeatherMapWorkitemHandlerTest extends AbstractBaseTest {
 
-    private OWM owm;
+    private OWMPro owm;
 
     @Before
     public void setUp() {
         try {
-            owm = PowerMockito.mock(OWM.class);
+            owm = PowerMockito.mock(OWMPro.class);
             CurrentWeather currentWeather = PowerMockito.mock(CurrentWeather.class);
             DailyWeatherForecast dailyWeatherForecast = PowerMockito.mock(DailyWeatherForecast.class);
             Main mainData = PowerMockito.mock(Main.class);
@@ -69,7 +69,7 @@ public class OpenWeatherMapWorkitemHandlerTest extends AbstractBaseTest {
             when(owm.currentWeatherByCityName(anyString(),
                                               any(Country.class))).thenReturn(currentWeather);
 
-            when(owm.dailyWeatherForecastByCityName(anyString())).thenReturn(dailyWeatherForecast);
+            when(owm.dailyWeatherForecastByCityName(anyString(), any(Integer.class))).thenReturn(dailyWeatherForecast);
             when(owm.dailyWeatherForecastByCityName(anyString(),
                                                     any(Country.class))).thenReturn(dailyWeatherForecast);
 
