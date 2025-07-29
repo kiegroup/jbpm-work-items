@@ -36,10 +36,10 @@ public class RepoServiceIntegrationTest {
     private static RepoService repoService;
 
     // update this when new workitem is added
-    private static int TOTAL_MODULES = Integer.parseInt(System.getProperty("total.mod.count", "41"));
+    private static int TOTAL_MODULES = Integer.parseInt(System.getProperty("total.mod.count", "8"));
 
     // update this when new workitem handlers are added
-    private static int TOTAL_SERVICES = Integer.parseInt(System.getProperty("total.wi.count", "95"));
+    private static int TOTAL_SERVICES = Integer.parseInt(System.getProperty("total.wi.count", "18"));
 
     @BeforeClass
     public static void init() throws Exception {
