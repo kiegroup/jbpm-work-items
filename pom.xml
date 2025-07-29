@@ -37,40 +37,12 @@
     </checkstyle.header.template>
 
     <version.org.kie>${project.version}</version.org.kie>
-    <version.google.api.services.calendar>v3-rev20210429-1.31.0</version.google.api.services.calendar>
-    <version.google.api.services.gmail>v1-rev20210614-1.31.0</version.google.api.services.gmail>
-    <version.google.http.client>1.31.0</version.google.http.client>
-    <version.google.api.client>1.31.1</version.google.api.client>
-    <version.google.sheets>v4-rev20210527-1.31.0</version.google.sheets>
-    <version.google.tasks>v1-rev20210109-1.31.0</version.google.tasks>
-    <version.google.drive>v3-rev20210612-1.31.0</version.google.drive>
-    <version.google.translate>1.31.0</version.google.translate>
-    <version.ibm.developer.cloud>4.2.1</version.ibm.developer.cloud>
-    <version.dropbox.core>3.0.5</version.dropbox.core>
-    <version.jetty>8.1.17.v20150415</version.jetty>
-    <version.twitter4j>4.0.6</version.twitter4j>
-    <version.egit.github>2.1.5</version.egit.github>
-    <version.atlassian.jira>1.0</version.atlassian.jira>
-    <version.web3j>3.3.1</version.web3j>
-    <version.github.jnr>0.15</version.github.jnr>
-    <version.squareup.okhttp3>4.12.0</version.squareup.okhttp3>
-    <version.rxjava>1.2.4</version.rxjava>
-    <version.owm>2.5.3.0</version.owm>
     <version.commons.net>3.6</version.commons.net>
     <version.wildfly.maven.plugin>1.2.1.Final</version.wildfly.maven.plugin>
     <version.war.plugin>3.2.2</version.war.plugin>
     <version.apache.commons.io>2.19.0</version.apache.commons.io>
-    <version.jslack>1.1.4</version.jslack>
-    <version.org.xhtmlrenderer>9.1.15</version.org.xhtmlrenderer>
-    <version.xmlsec>2.2.6</version.xmlsec>
     <version.google.guava>${version.com.google.guava}</version.google.guava>
-    <version.riot.api>4.1.0</version.riot.api>
-    <version.jpastebin>1.0.1</version.jpastebin>
-    <version.vimeo>1.10</version.vimeo>
     <version.json>20140107</version.json>
-    <version.google.maps>0.9.0</version.google.maps>
-    <version.okta>1.3.0</version.okta>
-    <version.docker-java>3.4.1</version.docker-java>
     <!-- OSGI tests properties -->
     <version.org.apache.karaf>4.2.0</version.org.apache.karaf>
     <version.org.ops4j.pax.exam>4.13.4</version.org.ops4j.pax.exam>
@@ -161,149 +133,9 @@
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
-        <groupId>com.google.oauth-client</groupId>
-        <artifactId>google-oauth-client</artifactId>
-        <version>${version.google.http.client}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.oauth-client</groupId>
-        <artifactId>google-oauth-client-java6</artifactId>
-        <version>${version.google.http.client}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.http-client</groupId>
-        <artifactId>google-http-client</artifactId>
-        <version>${version.google.http.client}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.apis</groupId>
-        <artifactId>google-api-services-calendar</artifactId>
-        <version>${version.google.api.services.calendar}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.apis</groupId>
-        <artifactId>google-api-services-gmail</artifactId>
-        <version>${version.google.api.services.gmail}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.http-client</groupId>
-        <artifactId>google-http-client-jackson2</artifactId>
-        <version>${version.google.http.client}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.oauth-client</groupId>
-        <artifactId>google-oauth-client-jetty</artifactId>
-        <version>${version.google.http.client}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.apis</groupId>
-        <artifactId>google-api-services-sheets</artifactId>
-        <version>${version.google.sheets}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.apis</groupId>
-        <artifactId>google-api-services-tasks</artifactId>
-        <version>${version.google.tasks}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.apis</groupId>
-        <artifactId>google-api-services-drive</artifactId>
-        <version>${version.google.drive}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.cloud</groupId>
-        <artifactId>google-cloud-translate</artifactId>
-        <version>${version.google.translate}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.cloud</groupId>
-        <artifactId>google-cloud-core</artifactId>
-        <version>${version.google.translate}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.api-client</groupId>
-        <artifactId>google-api-client</artifactId>
-        <version>${version.google.api.client}</version>
-      </dependency>
-      <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>${version.google.guava}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.ibm.watson.developer_cloud</groupId>
-        <artifactId>java-sdk</artifactId>
-        <version>${version.ibm.developer.cloud}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.ibm.watson.developer_cloud</groupId>
-        <artifactId>visual-recognition</artifactId>
-        <version>${version.ibm.developer.cloud}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.ibm.watson.developer_cloud</groupId>
-        <artifactId>core</artifactId>
-        <version>${version.ibm.developer.cloud}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.dropbox.core</groupId>
-        <artifactId>dropbox-core-sdk</artifactId>
-        <version>${version.dropbox.core}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.mylyn.github</groupId>
-        <artifactId>org.eclipse.egit.github.core</artifactId>
-        <version>${version.egit.github}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.atlassian.jira</groupId>
-        <artifactId>jira-rest-java-client</artifactId>
-        <version>${version.atlassian.jira}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.github.docker-java</groupId>
-        <artifactId>docker-java</artifactId>
-        <version>${version.docker-java}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.web3j</groupId>
-        <artifactId>core</artifactId>
-        <version>${version.web3j}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.web3j</groupId>
-        <artifactId>abi</artifactId>
-        <version>${version.web3j}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.web3j</groupId>
-        <artifactId>crypto</artifactId>
-        <version>${version.web3j}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.web3j</groupId>
-        <artifactId>tuples</artifactId>
-        <version>${version.web3j}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.web3j</groupId>
-        <artifactId>utils</artifactId>
-        <version>${version.web3j}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.github.jnr</groupId>
-        <artifactId>jnr-unixsocket</artifactId>
-        <version>${version.github.jnr}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.squareup.okhttp3</groupId>
-        <artifactId>okhttp</artifactId>
-        <version>${version.squareup.okhttp3}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.reactivex</groupId>
-        <artifactId>rxjava</artifactId>
-        <version>${version.rxjava}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.camel</groupId>
@@ -321,59 +153,10 @@
         <version>${version.org.apache.camel}</version>
       </dependency>
       <dependency>
-        <groupId>com.github.seratch</groupId>
-        <artifactId>jslack</artifactId>
-        <version>${version.jslack}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.xhtmlrenderer</groupId>
-        <artifactId>flying-saucer-core</artifactId>
-        <version>${version.org.xhtmlrenderer}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.xhtmlrenderer</groupId>
-        <artifactId>flying-saucer-pdf-itext5</artifactId>
-        <version>${version.org.xhtmlrenderer}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.santuario</groupId>
-        <artifactId>xmlsec</artifactId>
-        <version>${version.xmlsec}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.clickntap</groupId>
-        <artifactId>vimeo</artifactId>
-        <version>${version.vimeo}</version>
-      </dependency>
-
-      <dependency>
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
         <version>${version.json}</version>
         <scope>provided</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org</groupId>
-        <artifactId>jpastebin</artifactId>
-        <version>${version.jpastebin}</version>
-      </dependency>
-
-
-      <dependency>
-        <groupId>com.okta.sdk</groupId>
-        <artifactId>okta-sdk-api</artifactId>
-        <version>${version.okta}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.okta.sdk</groupId>
-        <artifactId>okta-sdk-impl</artifactId>
-        <version>${version.okta}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.okta.sdk</groupId>
-        <artifactId>okta-sdk-httpclient</artifactId>
-        <version>${version.okta}</version>
       </dependency>
 
       <!-- test depends -->
@@ -434,11 +217,6 @@
         <version>${version.org.eclipse.jetty}</version>
       </dependency>
       <dependency>
-        <groupId>org.twitter4j</groupId>
-        <artifactId>twitter4j-core</artifactId>
-        <version>${version.twitter4j}</version>
-      </dependency>
-      <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-persistence-jpa</artifactId>
         <version>${version.org.kie}</version>
@@ -450,24 +228,9 @@
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
-        <groupId>net.aksingh</groupId>
-        <artifactId>owm-japis</artifactId>
-        <version>${version.owm}</version>
-      </dependency>
-      <dependency>
         <groupId>commons-net</groupId>
         <artifactId>commons-net</artifactId>
         <version>${version.commons.net}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.github.taycaldwell</groupId>
-        <artifactId>riot-api-java</artifactId>
-        <version>${version.riot.api}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.maps</groupId>
-        <artifactId>google-maps-services</artifactId>
-        <version>${version.google.maps}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.resteasy</groupId>
@@ -488,67 +251,7 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
-        <artifactId>archive-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>dropbox-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
         <artifactId>exec-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>ftp-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>google-calendar-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>google-drive-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>google-translate-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>google-mail-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>google-sheets-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>google-tasks-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>ibm-watson-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>ifttt-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>jabber-workitem</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -558,67 +261,7 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
-        <artifactId>jpa-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>parser-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>rss-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>transform-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>twitter-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>github-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>jira-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>ethereum-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
         <artifactId>camel-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>openweathermap-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>mavenembedder-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>slack-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>pdf-workitem</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -626,49 +269,16 @@
         <artifactId>execute-sql-workitem</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>riot-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>pastebin-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>vimeo-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
+
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
         <artifactId>kafka-workitem</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>google-maps-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>okta-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>docker-workitem</artifactId>
-        <version>${project.version}</version>
-      </dependency>
+
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
         <artifactId>repository</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>long-running-rest-workitem</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -681,133 +291,7 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
-        <artifactId>archive-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>dropbox-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
         <artifactId>exec-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>ftp-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>google-calendar-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>google-drive-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>google-translate-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>google-mail-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>google-sheets-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>google-tasks-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>ibm-watson-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>ifttt-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>jabber-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>java-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>jpa-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>parser-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>rss-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>transform-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>twitter-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>github-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>jira-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>ethereum-workitem</artifactId>
         <version>${project.version}</version>
         <type>zip</type>
       </dependency>
@@ -819,55 +303,7 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
-        <artifactId>openweathermap-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>mavenembedder-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>slack-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>pdf-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>long-running-rest-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
         <artifactId>execute-sql-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>riot-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>pastebin-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>vimeo-workitem</artifactId>
         <version>${project.version}</version>
         <type>zip</type>
       </dependency>
@@ -879,22 +315,11 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm.contrib</groupId>
-        <artifactId>google-maps-workitem</artifactId>
+        <artifactId>java-workitem</artifactId>
         <version>${project.version}</version>
         <type>zip</type>
       </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>okta-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.contrib</groupId>
-        <artifactId>docker-workitem</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
+
       <!-- jbpm workitem zip depends -->
       <dependency>
         <groupId>org.jbpm</groupId>
@@ -1076,6 +501,15 @@
     </repository>
   </repositories>
 
+  <modules>
+    <module>kafka-workitem</module>
+    <module>template-resources</module>
+    <module>camel-workitem</module>
+    <module>repository</module>
+    <module>karaf-itests</module>
+    <module>jbpm-workitem-itests</module>
+  </modules>
+
   <scm>
     <connection>scm:git:https://github.com/kiegroup/jbpm-work-items.git</connection>
     <developerConnection>scm:git:git@github.com:kiegroup/jbpm-work-items.git</developerConnection>
@@ -1099,76 +533,4 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
-
-  <profiles>
-    <profile>
-      <id>all</id>
-      <activation>
-        <property>
-          <name>!productized</name>
-        </property>
-      </activation>
-      <modules>
-        <module>template-resources</module>
-        <module>archive-workitem</module>
-        <module>exec-workitem</module>
-        <module>ftp-workitem</module>
-        <module>jabber-workitem</module>
-        <module>java-workitem</module>
-        <module>jpa-workitem</module>
-        <module>parser-workitem</module>
-        <module>rss-workitem</module>
-        <module>transform-workitem</module>
-        <module>google-calendar-workitem</module>
-        <module>google-mail-workitem</module>
-        <module>google-sheets-workitem</module>
-        <module>google-tasks-workitem</module>
-        <module>google-drive-workitem</module>
-        <module>google-translate-workitem</module>
-        <module>ibm-watson-workitem</module>
-        <module>dropbox-workitem</module>
-        <module>ifttt-workitem</module>
-        <module>twitter-workitem</module>
-        <module>github-workitem</module>
-        <module>jira-workitem</module>
-        <module>ethereum-workitem</module>
-        <module>camel-workitem</module>
-        <module>openweathermap-workitem</module>
-        <module>mavenembedder-workitem</module>
-        <module>slack-workitem</module>
-        <module>pdf-workitem</module>
-        <module>execute-sql-workitem</module>
-        <module>riot-workitem</module>
-        <module>pastebin-workitem</module>
-        <module>vimeo-workitem</module>
-        <module>kafka-workitem</module>
-        <module>google-maps-workitem</module>
-        <module>okta-workitem</module>
-        <module>docker-workitem</module>
-        <module>repository</module>
-        <module>repository-springboot</module>
-        <module>repository-wildfly</module>
-        <module>karaf-itests</module>
-        <module>long-running-rest-workitem</module>
-        <module>jbpm-workitem-itests</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>productized</id>
-      <activation>
-        <property>
-          <name>productized</name>
-          <value>true</value>
-        </property>
-      </activation>
-      <modules>
-        <module>kafka-workitem</module>
-        <module>template-resources</module>
-        <module>camel-workitem</module>
-        <module>repository</module>
-        <module>karaf-itests</module>
-        <module>jbpm-workitem-itests</module>
-      </modules>
-    </profile>
-  </profiles>
 </project>
