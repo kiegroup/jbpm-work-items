@@ -25,6 +25,11 @@
 
   <properties>
     <start-class>org.jbpm.workitem.springboot.samples.JBPMApplication</start-class>
+    <version.io.strimzi.strimzi-test-container>0.109.2</version.io.strimzi.strimzi-test-container>
+    <version.org.testcontainers>1.16.3</version.org.testcontainers>
+    <!-- There is no strimzi-test-container for the Kafka version 3.7.2 that is currently used in kie-parent.
+         This is a temporary override, needs to be removed after the next Kafka version upgrade. -->
+    <kafka.version.override.strimzi>3.7.1</kafka.version.override.strimzi>
   </properties>
 
   <dependencyManagement>
@@ -232,7 +237,7 @@
               <org.kie.executor.jms>false</org.kie.executor.jms>
               <version.org.apache.kafka>${version.org.apache.kafka}</version.org.apache.kafka>
               <version.com.fasterxml.jackson.databind>${version.com.fasterxml.jackson.databind}</version.com.fasterxml.jackson.databind>
-              <kafka.container.version>${version.org.apache.kafka}</kafka.container.version>
+              <kafka.container.version>${kafka.version.override.strimzi}</kafka.container.version>
             </systemPropertyVariables>
             <environmentVariables>
               <TESTCONTAINERS_RYUK_DISABLED>true</TESTCONTAINERS_RYUK_DISABLED>
