@@ -37,6 +37,11 @@
     </dependency>
 
     <dependency>
+      <groupId>com.github.docker-java</groupId>
+      <artifactId>docker-java-transport-netty</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-document</artifactId>
       <scope>provided</scope>
