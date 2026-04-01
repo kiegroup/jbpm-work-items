@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.camel.impl.SimpleRegistry;
+import org.apache.camel.support.SimpleRegistry;
 import org.h2.tools.DeleteDbFiles;
 import org.h2.tools.RunScript;
 import org.jbpm.test.persistence.util.PersistenceUtil;
@@ -65,7 +65,8 @@ public class CamelSqlTest {
         context = setupWithPoolingDataSource("org.jbpm.contrib.camel-workitem");
 
         SimpleRegistry simpleRegistry = new SimpleRegistry();
-        simpleRegistry.put("jdbc/testDS1",
+        simpleRegistry.bind
+                ("jdbc/testDS1",
                            context.get(DATASOURCE));
 
         handler = new SQLCamelWorkitemHandler("queryResult",

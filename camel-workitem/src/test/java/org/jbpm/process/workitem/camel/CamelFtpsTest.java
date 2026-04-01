@@ -73,8 +73,8 @@ public class CamelFtpsTest extends CamelFtpBaseTest {
         workItem.setParameter("payload",
                               testData);
 
-        workItem.setParameter("isImplicit",
-                              "true");
+        workItem.setParameter("implicit",
+                "true");
         workItem.setParameter("securityProtocol",
                               "TLS");
 
