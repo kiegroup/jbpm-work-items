@@ -158,6 +158,11 @@
           <artifactId>jakarta.xml.bind-api</artifactId>
         </dependency>
         <dependency>
+          <groupId>com.sun.activation</groupId>
+          <artifactId>jakarta.activation</artifactId>
+        </dependency>
+        <!--
+        <dependency>
           <groupId>com.sun.xml.bind</groupId>
           <artifactId>jaxb-impl</artifactId>
         </dependency>
@@ -165,10 +170,7 @@
           <groupId>com.sun.xml.bind</groupId>
           <artifactId>jaxb-core</artifactId>
         </dependency>
-        <dependency>
-          <groupId>jakarta.activation</groupId>
-          <artifactId>jakarta.activation-api</artifactId>
-        </dependency>
+        -->
       </dependencies>
     </profile>
   </profiles>
