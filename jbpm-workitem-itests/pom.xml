@@ -25,8 +25,7 @@
 
   <properties>
     <start-class>org.jbpm.workitem.springboot.samples.JBPMApplication</start-class>
-    <version.io.strimzi.strimzi-test-container>0.107.0</version.io.strimzi.strimzi-test-container>
-    <version.org.testcontainers>1.16.3</version.org.testcontainers>
+    <version.io.strimzi.strimzi-test-container>0.109.2</version.io.strimzi.strimzi-test-container>
   </properties>
 
   <dependencyManagement>
@@ -168,6 +167,12 @@
       <groupId>io.strimzi</groupId>
       <artifactId>strimzi-test-container</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-slf4j-impl</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!--Java 11 test dependencies-->
